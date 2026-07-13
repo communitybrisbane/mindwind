@@ -1,0 +1,2584 @@
+- generic [ref=e2]:
+  - banner:
+    - generic:
+      - generic [ref=e4]:
+        - button " メニュー" [ref=e7] [cursor=pointer]:
+          - generic:
+            - text: 
+            - generic: 
+            - generic: メニュー
+        - link [ref=e9] [cursor=pointer]:
+          - /url: /index.html
+          - img "明治大学" [ref=e10]
+      - generic [ref=e11]:
+        - button " 検索" [ref=e13] [cursor=pointer]:
+          - generic:
+            - text: 
+            - generic: 
+            - generic: 検索
+        - button " language" [ref=e15] [cursor=pointer]:
+          - generic:
+            - text: 
+            - generic: 
+            - generic: language
+        - link " アクセス" [ref=e17] [cursor=pointer]:
+          - /url: /koho/campus_guide/index.html
+          - generic [ref=e18]: 
+          - generic [ref=e19]: アクセス
+        - link " 寄付" [ref=e21] [cursor=pointer]:
+          - /url: https://bokin.meiji.jp/
+          - generic [ref=e22]: 
+          - generic [ref=e23]: 寄付
+    - generic:                                                                                                                
+  - generic [ref=e24]:
+    - link [ref=e25] [cursor=pointer]:
+      - /url: https://meijinow.jp/global
+      - generic [ref=e26]:
+        - generic:
+          - paragraph
+          - paragraph
+    - generic [ref=e28]:
+      - heading "留学報告書 【交換型：北米】" [level=1] [ref=e30]
+      - list [ref=e33]:
+        - listitem [ref=e34]:
+          - link "ホーム" [ref=e35] [cursor=pointer]:
+            - /url: /index.html
+          - text: ">"
+        - listitem [ref=e36]:
+          - link "国際連携・留学" [ref=e37] [cursor=pointer]:
+            - /url: /cip/index.html
+          - text: ">"
+        - listitem [ref=e38]:
+          - link "海外留学・学内国際交流を希望する方へ" [ref=e39] [cursor=pointer]:
+            - /url: /cip/from/index.html
+          - text: ">"
+        - listitem [ref=e40]: 留学報告書 【交換型：北米】
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - list [ref=e47]:
+          - listitem [ref=e48]:
+            - link " アメリカ" [ref=e49] [cursor=pointer]:
+              - /url: "#title2-3"
+          - listitem [ref=e50]:
+            - link " カナダ" [ref=e51] [cursor=pointer]:
+              - /url: "#title3-3"
+        - generic [ref=e52]:
+          - heading "アメリカ" [level=3] [ref=e55]
+          - generic [ref=e60]:
+            - heading "オレゴン大学" [level=5] [ref=e63]
+            - list [ref=e65]:
+              - listitem [ref=e66]:
+                - link " 2025年度 留学報告書 (1) 政治経済学部 " [ref=e67] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/8_Final_2025_US_Oregon.pdf
+              - listitem [ref=e68]:
+                - link " 2025年度 留学報告書 (2) 法学部 " [ref=e69] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/7_Final_2025_US_Oregon.pdf
+              - listitem [ref=e70]:
+                - link " 2025年度 留学近況報告書 (1) 法学部 " [ref=e71] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/7_Middle_2025_US_Oregon.pdf
+              - listitem [ref=e72]:
+                - link " 2025年度 留学近況報告書 (2) 政治経済学部 " [ref=e73] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/8_Middle_2025_US_Oregon.pdf
+              - listitem [ref=e74]:
+                - link " 2024年度 留学報告書 (1) " [ref=e75] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/5_Final_2024_US_Oregon.pdf
+              - listitem [ref=e76]:
+                - link " 2024年度 留学報告書 (2) " [ref=e77] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/6_Final_2024_US_Oregon.pdf
+              - listitem [ref=e78]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e79] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/5_Middle_2024_US_Oregon.pdf
+              - listitem [ref=e80]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e81] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/6_Middle_2024_US_Oregon.pdf
+              - listitem [ref=e82]:
+                - link " 2018年度 留学報告書 " [ref=e83] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Oregon_14.pdf
+              - listitem [ref=e84]:
+                - link " 2018年度 留学近況報告書 " [ref=e85] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Oregon_14.pdf
+              - listitem [ref=e86]:
+                - link " 2017年度 留学報告書 " [ref=e87] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_US_Oregon_47.pdf
+              - listitem [ref=e88]:
+                - link " 2017年度 留学近況報告書 " [ref=e89] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_Oregon.pdf
+              - listitem [ref=e90]:
+                - link " 2016年度 留学近況報告書 " [ref=e91] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Oregon.pdf
+              - listitem [ref=e92]:
+                - link " 2015年度 留学報告書 " [ref=e93] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_Oregon.pdf
+              - listitem [ref=e94]:
+                - link " 2015年度 留学近況報告書 " [ref=e95] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Oregon.pdf
+              - listitem [ref=e96]:
+                - link " 2014年度 留学報告書 " [ref=e97] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Oregon.pdf
+              - listitem [ref=e98]:
+                - link " 2014年度 留学近況報告書 (1) " [ref=e99] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Oregon_1.pdf
+              - listitem [ref=e100]:
+                - link " 2014年度 留学近況報告書 (2) " [ref=e101] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Oregon_2.pdf
+              - listitem [ref=e102]:
+                - link " 2013年度 留学報告書 " [ref=e103] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Oregon.pdf
+              - listitem [ref=e104]:
+                - link " 2013年度 留学近況報告書 " [ref=e105] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Oregon.pdf
+              - listitem [ref=e106]:
+                - link " 2012年度 留学報告書 (1) " [ref=e107] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Oregon_1.pdf
+              - listitem [ref=e108]:
+                - link " 2012年度 留学報告書 (2) " [ref=e109] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Oregon_2.pdf
+              - listitem [ref=e110]:
+                - link " 2012年度 留学近況報告書 (1) " [ref=e111] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Oregon_1.pdf
+              - listitem [ref=e112]:
+                - link " 2012年度 留学近況報告書 (2) " [ref=e113] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Oregon_2.pdf
+              - listitem [ref=e114]:
+                - link " 2011年度 留学報告書 " [ref=e115] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Final_Oregon.pdf
+              - listitem [ref=e116]:
+                - link " 2011年度 留学近況報告書 (1) " [ref=e117] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Oregon_1.pdf
+              - listitem [ref=e118]:
+                - link " 2011年度留学近況報告書 (2) " [ref=e119] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Oregon_2.pdf
+          - generic [ref=e120]:
+            - heading "アイオワ大学" [level=5] [ref=e123]
+            - list [ref=e125]:
+              - listitem [ref=e126]:
+                - link " 2019年度 留学報告書 " [ref=e127] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Iowa_53.pdf
+              - listitem [ref=e128]:
+                - link " 2019年度 留学近況報告書 " [ref=e129] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Iowa_53.pdf
+              - listitem [ref=e130]:
+                - link " 2018年度 留学報告書 (1) " [ref=e131] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Iowa_37.pdf
+              - listitem [ref=e132]:
+                - link " 2018年度 留学報告書 (2) " [ref=e133] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Iowa_31.pdf
+              - listitem [ref=e134]:
+                - link " 2018年度 留学報告書 (3) " [ref=e135] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Iowa_39.pdf
+              - listitem [ref=e136]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e137] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Iowa_37.pdf
+              - listitem [ref=e138]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e139] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Iowa_31.pdf
+              - listitem [ref=e140]:
+                - link " 2018年度 留学近況報告書 (3) " [ref=e141] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Iowa_39.pdf
+              - listitem [ref=e142]:
+                - link " 2017年度 留学近況報告書 " [ref=e143] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_Iowa.pdf
+              - listitem [ref=e144]:
+                - link " 2016年度 留学近況報告書 " [ref=e145] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Iowa.pdf
+              - listitem [ref=e146]:
+                - link " 2015年度 留学報告書 " [ref=e147] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Fall_Iowa.pdf
+              - listitem [ref=e148]:
+                - link " 2015年度 留学近況報告書 " [ref=e149] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Iowa.pdf
+              - listitem [ref=e150]:
+                - link " 2014年度 留学報告書 " [ref=e151] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Iowa.pdf
+              - listitem [ref=e152]:
+                - link " 2014年度 留学近況報告書 " [ref=e153] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Iowa.pdf
+              - listitem [ref=e154]:
+                - link " 2013年度 留学報告書 " [ref=e155] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Iowa.pdf
+              - listitem [ref=e156]:
+                - link " 2013年度 留学近況報告書 " [ref=e157] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Iowa.pdf
+              - listitem [ref=e158]:
+                - link " 2011年度 留学報告書 " [ref=e159] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Final_Iowa.pdf
+              - listitem [ref=e160]:
+                - link " 2011年度 留学近況報告書 (1) " [ref=e161] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Iowa_1.pdf
+              - listitem [ref=e162]:
+                - link " 2011年度留学近況報告書 (2) " [ref=e163] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Iowa_2.pdf
+          - generic [ref=e164]:
+            - heading "サザンイリノイ大学カーボンデール校" [level=5] [ref=e167]
+            - list [ref=e169]:
+              - listitem [ref=e170]:
+                - link " 2025年度 留学報告書 (1) 国際日本学部 " [ref=e171] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Final_2025_US_SouthernIllinois_carbondale.pdf
+              - listitem [ref=e172]:
+                - link " 2025年度 留学報告書 (2) 国際日本学部 " [ref=e173] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Final_2025_US_SouthernIllinois_carbondale.pdf
+              - listitem [ref=e174]:
+                - link " 2025年度 留学近況報告書 (1) 国際日本学部 " [ref=e175] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Middle_2025_US_SouthernIllinois_carbondale.pdf
+              - listitem [ref=e176]:
+                - link " 2025年度 留学近況報告書 (2) 国際日本学部 " [ref=e177] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Middle_2025_US_SouthernIllinois_carbondale.pdf
+              - listitem [ref=e178]:
+                - link " 2024年度 留学報告書 " [ref=e179] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/7_Final_2024_US_SouthernIllinois_carbondale.pdf
+              - listitem [ref=e180]:
+                - link " 2024年度 留学近況報告書 " [ref=e181] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/7_Middle_2024_US_SouthernIllinois_carbondale.pdf
+              - listitem [ref=e182]:
+                - link " 2023年度 留学報告書 (1) " [ref=e183] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Final_2023_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e184]:
+                - link " 2023年度 留学報告書 (2) " [ref=e185] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Final_2023_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e186]:
+                - link " 2023年度 留学報告書 (3) " [ref=e187] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Final_2023_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e188]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e189] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Middle_2023_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e190]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e191] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Middle_2023_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e192]:
+                - link " 2023年度 留学近況報告書 (3) " [ref=e193] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Middle_2023_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e194]:
+                - link " 2022年度 留学報告書 (1) " [ref=e195] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Final_2022_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e196]:
+                - link " 2022年度 留学報告書 (2) " [ref=e197] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Final_2022_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e198]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e199] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Middle_2022_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e200]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e201] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Middle_2022_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e202]:
+                - link " 2021年度 留学報告書 (1) " [ref=e203] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Final_2021_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e204]:
+                - link " 2021年度 留学報告書 (2) " [ref=e205] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Final_2021_US_Southern_Illinoisity_Carbondale.pdf
+              - listitem [ref=e206]:
+                - link " 2021年度 留学報告書 (3) " [ref=e207] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Final_2021_US_SouthernIllinois_Carbondale.pdf
+              - listitem [ref=e208]:
+                - link " 2021年度 留学近況報告書 (1) " [ref=e209] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Middle_2021_US_SouthernIllinoisCarbondale.pdf
+              - listitem [ref=e210]:
+                - link " 2021年度 留学近況報告書 (2) " [ref=e211] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Middle_2021_US_SouthernIllinoisCarbondale.pdf
+              - listitem [ref=e212]:
+                - link " 2021年度 留学近況報告書 (3) " [ref=e213] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Middle_2021_US_SouthernIllinoisCarbondale.pdf
+              - listitem [ref=e214]:
+                - link " 2021年度 留学近況報告書 (4) " [ref=e215] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Middle_2021_US_SouthernIllinoisCarbondale.pdf
+              - listitem [ref=e216]:
+                - link " 2019年度 留学報告書 " [ref=e217] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SouthernIllinois_62.pdf
+              - listitem [ref=e218]:
+                - link " 2019年度 留学近況報告書 " [ref=e219] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_SouthernIllinois_62.pdf
+              - listitem [ref=e220]:
+                - link " 2018年度 留学報告書 " [ref=e221] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_SouthernIllinois_32.pdf
+              - listitem [ref=e222]:
+                - link " 2018年度 留学近況報告書 " [ref=e223] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_SouthernIllinois_32.pdf
+              - listitem [ref=e224]:
+                - link " 2017年度 留学近況報告書 " [ref=e225] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_SouthernIllinois.pdf
+              - listitem [ref=e226]:
+                - link " 2016年度 留学近況報告書 " [ref=e227] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_SIUC.pdf
+              - listitem [ref=e228]:
+                - link " 2014年度 留学報告書 " [ref=e229] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_SIU.pdf
+              - listitem [ref=e230]:
+                - link " 2014年度 留学近況報告書 " [ref=e231] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_SIU.pdf
+              - listitem [ref=e232]:
+                - link " 2013年度 留学報告書 " [ref=e233] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_SIU.pdf
+              - listitem [ref=e234]:
+                - link " 2013年度 留学近況報告書 " [ref=e235] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_SIU.pdf
+              - listitem [ref=e236]:
+                - link " 2012年度 留学報告書 " [ref=e237] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_SIU.pdf
+              - listitem [ref=e238]:
+                - link " 2012年度 留学近況報告書 " [ref=e239] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_SIU.pdf
+              - listitem [ref=e240]:
+                - link " 2011年度 留学報告書 " [ref=e241] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Final_SIU.pdf
+              - listitem [ref=e242]:
+                - link " 2011年度 留学近況報告書 " [ref=e243] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_SIU.pdf
+          - generic [ref=e244]:
+            - heading "ニューヨーク州立大学ニューパルツ校" [level=5] [ref=e247]
+            - list [ref=e249]:
+              - listitem [ref=e250]:
+                - link " 2025年度 留学報告書 政治経済学部 " [ref=e251] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Final_2025_US_NewYork_NewPaltz.pdf
+              - listitem [ref=e252]:
+                - link " 2025年度 留学近況報告書 政治経済学部 " [ref=e253] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Middle_2025_US_NewYork_NewPaltz.pdf
+              - listitem [ref=e254]:
+                - link " 2024年度 留学報告書 (1) " [ref=e255] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Final_2024_US_NewYork_NewPaltz.pdf
+              - listitem [ref=e256]:
+                - link " 2024年度 留学報告書 (2) " [ref=e257] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/8_Final_2024_US_NewYork_NewPaltz.pdf
+              - listitem [ref=e258]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e259] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/8_Middle_2024_US_NewYork_NewPaltz.pdf
+              - listitem [ref=e260]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e261] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Middle_2024_US_NewYork_NewPaltz.pdf
+              - listitem [ref=e262]:
+                - link " 2023年度 留学報告書 " [ref=e263] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Final_2023_US_NewNorkState_NewPaltz.pdf
+              - listitem [ref=e264]:
+                - link " 2023年度 留学近況報告書 " [ref=e265] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Middle_2023_US_NewNorkState_NewPaltz.pdf
+              - listitem [ref=e266]:
+                - link " 2022年度 留学報告書 (1) " [ref=e267] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Final_2022_US_NewNorkState_NewPaltz.pdf
+              - listitem [ref=e268]:
+                - link " 2022年度 留学報告書 (2) " [ref=e269] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Final_2022_US_NewNorkState_NewPaltz.pdf
+              - listitem [ref=e270]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e271] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Middle_2022_US_NewNorkState_NewPaltz.pdf
+              - listitem [ref=e272]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e273] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Middle_2022_US_NewNorkState_NewPaltz.pdf
+              - listitem [ref=e274]:
+                - link " 2021年度 留学報告書 " [ref=e275] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Final_2021_US_StateUniversityNewYork_NewPaltz.pdf
+              - listitem [ref=e276]:
+                - link " 2021年度 留学近況報告 " [ref=e277] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Middle_2021_US_NewYorkNewPaltz.pdf
+              - listitem [ref=e278]:
+                - link " 2019年度 留学報告書 (1) " [ref=e279] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NewYorkNewPaltz_76.pdf
+              - listitem [ref=e280]:
+                - link " 2019年度 留学報告書 (2) " [ref=e281] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NewYorkNewPaltz_74.pdf
+              - listitem [ref=e282]:
+                - link " 2019年度 留学報告書 (3) " [ref=e283] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NewYorkNewPaltz_75.pdf
+              - listitem [ref=e284]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e285] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NewYorkNewPaltz_74.pdf
+              - listitem [ref=e286]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e287] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NewYorkNewPaltz_75.pdf
+              - listitem [ref=e288]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e289] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NewYorkNewPaltz_76.pdf
+              - listitem [ref=e290]:
+                - link " 2018年度 留学報告書 (1) " [ref=e291] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_NYNewPaltz_27.pdf
+              - listitem [ref=e292]:
+                - link " 2018年度 留学報告書 (2) " [ref=e293] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_NYNewPaltz_44.pdf
+              - listitem [ref=e294]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e295] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_NYNewPaltz_27.pdf
+              - listitem [ref=e296]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e297] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_NYNewPaltz_44.pdf
+              - listitem [ref=e298]:
+                - link " 2017年度 留学報告書 (1) " [ref=e299] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_US_NYNewPalts_43.pdf
+              - listitem [ref=e300]:
+                - link " 2017年度 留学報告書 (2) " [ref=e301] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2017_US_NYNewPalts_53.pdf
+              - listitem [ref=e302]:
+                - link " 2017年度 留学近況報告書 (1) " [ref=e303] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_SUNY.pdf
+              - listitem [ref=e304]:
+                - link " 2017年度 留学近況報告書 (2) " [ref=e305] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_SUNY2.pdf
+              - listitem [ref=e306]:
+                - link " 2016年度 留学近況報告書 " [ref=e307] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_SUNY.pdf
+              - listitem [ref=e308]:
+                - link " 2015年度 留学報告書 (1) " [ref=e309] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_SUNY2.pdf
+              - listitem [ref=e310]:
+                - link " 2015年度 留学報告書 (2) " [ref=e311] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_SUNY.pdf
+              - listitem [ref=e312]:
+                - link " 2015年度 留学近況報告書 (1) " [ref=e313] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_SUNY_1.pdf
+              - listitem [ref=e314]:
+                - link " 2015年度 留学近況報告書 (2) " [ref=e315] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_SUNY_2.pdf
+              - listitem [ref=e316]:
+                - link " 2014年度 留学報告書 " [ref=e317] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_SUNY_2.pdf
+              - listitem [ref=e318]:
+                - link " 2014年度 留学近況報告書 (1) " [ref=e319] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_SUNY_1.pdf
+              - listitem [ref=e320]:
+                - link " 2014年度 留学近況報告書 (2) " [ref=e321] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_SUNY_2.pdf
+              - listitem [ref=e322]:
+                - link " 2013年度 留学報告書 " [ref=e323] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_SUNY_2.pdf
+              - listitem [ref=e324]:
+                - link " 2013年度 留学近況報告書 (1) " [ref=e325] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_SUNY_1.pdf
+              - listitem [ref=e326]:
+                - link " 2013年度 留学近況報告書 (2) " [ref=e327] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_SUNY_2.pdf
+              - listitem [ref=e328]:
+                - link " 2012年度 留学報告書 " [ref=e329] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_SUNY.pdf
+              - listitem [ref=e330]:
+                - link " 2012年度 留学近況報告書 (1) " [ref=e331] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_SUNY_1.pdf
+              - listitem [ref=e332]:
+                - link " 2012年度 留学近況報告書 (2) " [ref=e333] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_SUNY_2.pdf
+              - listitem [ref=e334]:
+                - link " 2011年度 留学近況報告書 (1) " [ref=e335] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_SUNY_1.pdf
+              - listitem [ref=e336]:
+                - link " 2011年度 留学近況報告書 (2) " [ref=e337] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_SUNY_2.pdf
+          - generic [ref=e338]:
+            - heading "ニューヨーク州立大学バッファロー校" [level=5] [ref=e341]
+            - list [ref=e343]:
+              - listitem [ref=e344]:
+                - link " 2025年度 留学報告書 (1) 法学部 " [ref=e345] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Final_2025_US_NewYork_Buffalo.pdf
+              - listitem [ref=e346]:
+                - link " 2025年度 留学報告書 (2) 経営学部 " [ref=e347] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Final_2025_US_NewYork_Buffalo.pdf
+              - listitem [ref=e348]:
+                - link " 2025年度 留学報告書 (3) 国際日本学部 " [ref=e349] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Final_2025_US_NewYork_Buffalo.pdf
+              - listitem [ref=e350]:
+                - link " 2025年度 留学近況報告書 (1) 法学部 " [ref=e351] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Middle_2025_US_NewYork_Buffalo.pdf
+              - listitem [ref=e352]:
+                - link " 2025年度 留学近況報告書 (2) 経営学部 " [ref=e353] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Middle_2025_US_NewYork_Buffalo.pdf
+              - listitem [ref=e354]:
+                - link " 2025年度 留学近況報告書 (3) 国際日本学部 " [ref=e355] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Middle_2025_US_NewYork_Buffalo.pdf
+              - listitem [ref=e356]:
+                - link " 2024年度 留学報告書 (1) " [ref=e357] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Final_2024_US_NewYork_Buffalo.pdf
+              - listitem [ref=e358]:
+                - link " 2024年度 留学報告書 (2) " [ref=e359] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Final_2024_US_NewYork_Buffalo.pdf
+              - listitem [ref=e360]:
+                - link " 2024年度 留学報告書 (3) " [ref=e361] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Final_2024_US_NewYork_Buffalo.pdf
+              - listitem [ref=e362]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e363] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Middle_2024_US_NewYork_Buffalo.pdf
+              - listitem [ref=e364]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e365] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Middle_2024_US_NewYork_Buffalo.pdf
+              - listitem [ref=e366]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e367] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Middle_2024_US_NewYork_Buffalo.pdf
+              - listitem [ref=e368]:
+                - link " 2023年度 留学報告書 (1) " [ref=e369] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Final_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e370]:
+                - link " 2023年度 留学報告書 (2) " [ref=e371] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Final_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e372]:
+                - link " 2023年度 留学報告書 (3) " [ref=e373] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Final_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e374]:
+                - link " 2023年度 留学報告書 (4) " [ref=e375] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Final_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e376]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e377] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Middle_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e378]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e379] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Middle_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e380]:
+                - link " 2023年度 留学近況報告書 (3) " [ref=e381] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Middle_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e382]:
+                - link " 2023年度 留学近況報告書 (4) " [ref=e383] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Middle_2023_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e384]:
+                - link " 2022年度 留学報告書 (1) " [ref=e385] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Final_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e386]:
+                - link " 2022年度 留学報告書 (2) " [ref=e387] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Final_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e388]:
+                - link " 2022年度 留学報告書 (3) " [ref=e389] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Final_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e390]:
+                - link " 2022年度 留学報告書 (4) " [ref=e391] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Final_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e392]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e393] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Middle_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e394]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e395] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Middle_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e396]:
+                - link " 2022年度 留学近況報告書 (3) " [ref=e397] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Middle_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e398]:
+                - link " 2022年度 留学近況報告書 (4) " [ref=e399] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Middle_2022_US_Buffalo_StateNewYork.pdf
+              - listitem [ref=e400]:
+                - link " 2021年度 留学報告書 " [ref=e401] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Final_2021_US_UniversityBuffalo_NewYork.pdf
+              - listitem [ref=e402]:
+                - link " 2021年度 留学近況報告書 " [ref=e403] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/5_Middle_2021_US_NewYorkBuffalo_SUNY.pdf
+              - listitem [ref=e404]:
+                - link " 2018年度 留学報告書 " [ref=e405] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_NYSUBuffalo_23.pdf
+              - listitem [ref=e406]:
+                - link " 2018年度 留学近況報告書 " [ref=e407] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_NYBuffalo_23.pdf
+              - listitem [ref=e408]:
+                - link " 2016年度 留学近況報告書 " [ref=e409] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_UB.pdf
+          - generic [ref=e410]:
+            - heading "ニューヨーク市立大学スタテンアイランド校" [level=5] [ref=e413]
+            - list [ref=e415]:
+              - listitem [ref=e416]:
+                - link " 2025年度 留学報告書 (1) 国際日本学部 " [ref=e417] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Final_2025_US_NewYork_StatenIsland.pdf
+              - listitem [ref=e418]:
+                - link " 2025年度 留学報告書 (2) 経営学部 " [ref=e419] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Final_2025_US_NewYork_StatenIsland.pdf
+              - listitem [ref=e420]:
+                - link " 2025年度 留学近況報告書 (1) 経営学部 " [ref=e421] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Middle_2025_US_NewYork_StatenIsland.pdf
+              - listitem [ref=e422]:
+                - link " 2025年度 留学近況報告書 (2) 国際日本学部 " [ref=e423] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Middle_2025_US_NewYork_StatenIsland.pdf
+              - listitem [ref=e424]:
+                - link " 2023年度 留学報告書 (1) " [ref=e425] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Final_2023_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e426]:
+                - link " 2023年度 留学報告書 (2) " [ref=e427] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Final_2023_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e428]:
+                - link " 2023年度 留学報告書 (3) " [ref=e429] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Final_2023_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e430]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e431] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Middle_2023_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e432]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e433] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Middle_2023_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e434]:
+                - link " 2023年度 留学近況報告書 (3) " [ref=e435] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Middle_2023_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e436]:
+                - link " 2022年度 留学報告書 (1) " [ref=e437] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Final_2022_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e438]:
+                - link " 2022年度 留学報告書 (2) " [ref=e439] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Final_2022_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e440]:
+                - link " 2022年度 留学報告書 (3) " [ref=e441] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Final_2022_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e442]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e443] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Middle_2022_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e444]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e445] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Middle_2022_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e446]:
+                - link " 2022年度 留学近況報告書 (3) " [ref=e447] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Middle_2022_US_StatenIsland_NewYork.pdf
+              - listitem [ref=e448]:
+                - link " 2019年度 留学報告書 (1) " [ref=e449] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_StatenIsland_72.pdf
+              - listitem [ref=e450]:
+                - link " 2019年度 留学報告書 (2) " [ref=e451] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_StatenIsland_73.pdf
+              - listitem [ref=e452]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e453] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NewYorkStatenIsland_72.pdf
+              - listitem [ref=e454]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e455] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NewYorkStatenIsland_73.pdf
+          - generic [ref=e456]:
+            - heading "アラバマ大学" [level=5] [ref=e459]
+            - list [ref=e461]:
+              - listitem [ref=e462]:
+                - link " 2014年度 留学報告書 " [ref=e463] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Alabama.pdf
+              - listitem [ref=e464]:
+                - link " 2014年度 留学近況報告書 " [ref=e465] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Alabama.pdf
+              - listitem [ref=e466]:
+                - link " 2013年度 留学報告書 " [ref=e467] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Alabama.pdf
+              - listitem [ref=e468]:
+                - link " 2013年度 留学近況報告書 " [ref=e469] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Alabama.pdf
+              - listitem [ref=e470]:
+                - link " 2012年度 留学報告書 " [ref=e471] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Alabama.pdf
+              - listitem [ref=e472]:
+                - link " 2012年度 留学近況報告書 " [ref=e473] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Alabama.pdf
+              - listitem [ref=e474]:
+                - link " 2011年度 留学近況報告書 " [ref=e475] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Alabama.pdf
+              - listitem [ref=e476]:
+                - link " 2010年度 留学報告書 " [ref=e477] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2010_Final_Alabama.pdf
+          - generic [ref=e478]:
+            - heading "ミズーリ州立大学" [level=5] [ref=e481]
+            - list [ref=e483]:
+              - listitem [ref=e484]:
+                - link " 2013年度 留学報告書 " [ref=e485] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Missouri.pdf
+              - listitem [ref=e486]:
+                - link " 2013年度 留学近況報告書 " [ref=e487] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Missouri.pdf
+              - listitem [ref=e488]:
+                - link " 2011年度 留学近況報告書 " [ref=e489] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Missouri.pdf
+              - listitem [ref=e490]:
+                - link " 2010年度 留学報告書 " [ref=e491] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2010_Final_Missouri.pdf
+          - generic [ref=e492]:
+            - heading "ノースイースタン大学" [level=5] [ref=e495]
+            - list [ref=e497]:
+              - listitem [ref=e498]:
+                - link " 2023年度 留学報告書 (1) " [ref=e499] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Final_2023_US_Northeastern.pdf
+              - listitem [ref=e500]:
+                - link " 2023年度 留学報告書 (2) " [ref=e501] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Final_2023_US_Northeastern.pdf
+              - listitem [ref=e502]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e503] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Middle_2023_US_Northeastern.pdf
+              - listitem [ref=e504]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e505] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Middle_2023_US_Northeastern.pdf
+              - listitem [ref=e506]:
+                - link " 2021年度 留学報告書 " [ref=e507] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Final_2021_US_NortheasternUniversity.pdf
+              - listitem [ref=e508]:
+                - link " 2021年度 留学近況報告書 " [ref=e509] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/4_Middle_2021_US_Northeastern.pdf
+              - listitem [ref=e510]:
+                - link " 2019年度 留学報告書 (1) " [ref=e511] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Northeastern_83.pdf
+              - listitem [ref=e512]:
+                - link " 2019年度 留学報告書 (2) " [ref=e513] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Northeastern_82.pdf
+              - listitem [ref=e514]:
+                - link " 2019年度 留学報告書 (3) " [ref=e515] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Northeastern_84.pdf
+              - listitem [ref=e516]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e517] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Northeastern_82.pdf
+              - listitem [ref=e518]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e519] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Northeastern_83.pdf
+              - listitem [ref=e520]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e521] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Northeastern_84.pdf
+              - listitem [ref=e522]:
+                - link " 2019年度 留学近況報告書 (4) " [ref=e523] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Northeastern_85.pdf
+              - listitem [ref=e524]:
+                - link " 2017年度 留学報告書 " [ref=e525] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_US_NorthEastern_11.pdf
+              - listitem [ref=e526]:
+                - link " 2017年度 留学近況報告書 " [ref=e527] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_Northeastern.pdf
+              - listitem [ref=e528]:
+                - link " 2016年度 留学近況報告書 " [ref=e529] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Northeastern.pdf
+              - listitem [ref=e530]:
+                - link " 2015年度 留学報告書 " [ref=e531] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_Northeastern.pdf
+              - listitem [ref=e532]:
+                - link " 2015年度 留学近況報告書 " [ref=e533] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Northeastern.pdf
+              - listitem [ref=e534]:
+                - link " 2014年度 留学報告書 " [ref=e535] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Northeastern.pdf
+              - listitem [ref=e536]:
+                - link " 2014年度 留学近況報告書 " [ref=e537] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Northeastern.pdf
+              - listitem [ref=e538]:
+                - link " 2013年度 留学報告書 " [ref=e539] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Northeastern.pdf
+              - listitem [ref=e540]:
+                - link " 2013年度 留学近況報告書 " [ref=e541] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Northeastern.pdf
+              - listitem [ref=e542]:
+                - link " 2011年度 留学報告書 " [ref=e543] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Final_Northeastern.pdf
+              - listitem [ref=e544]:
+                - link " 2011年度 留学近況報告書 " [ref=e545] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_Northeastern.pdf
+          - generic [ref=e546]:
+            - heading "マリアン大学インディアナポリス校" [level=5] [ref=e549]
+            - list [ref=e551]:
+              - listitem [ref=e552]:
+                - link " 2024年度 留学報告書 " [ref=e553] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/59_Final_2024_US_Marian_Indianapolis.pdf
+              - listitem [ref=e554]:
+                - link " 2024年度 留学近況報告書 " [ref=e555] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/59_Middle_2024_US_Marian_Indianapolis.pdf
+          - generic [ref=e556]:
+            - heading "メンフィス大学" [level=5] [ref=e559]
+            - list [ref=e561]:
+              - listitem [ref=e562]:
+                - link " 2024年度 留学報告書 " [ref=e563] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Final_2024_US_Memphis.pdf
+              - listitem [ref=e564]:
+                - link " 2024年度 留学近況報告書 " [ref=e565] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Middle_2024_US_Memphis.pdf
+              - listitem [ref=e566]:
+                - link " 2023年度 留学報告書 (1) " [ref=e567] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Final_2023_US_Memphis.pdf
+              - listitem [ref=e568]:
+                - link " 2023年度 留学報告書 (2) " [ref=e569] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Final_2023_US_Memphis.pdf
+              - listitem [ref=e570]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e571] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Middle_2023_US_Memphis.pdf
+              - listitem [ref=e572]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e573] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Middle_2023_US_Memphis.pdf
+              - listitem [ref=e574]:
+                - link " 2022年度 留学報告書 (1) " [ref=e575] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Final_2022_US_Memphis.pdf
+              - listitem [ref=e576]:
+                - link " 2022年度 留学報告書 (2) " [ref=e577] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Final_2022_US_Memphis.pdf
+              - listitem [ref=e578]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e579] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Middle_2022_US_Memphis.pdf
+              - listitem [ref=e580]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e581] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Middle_2022_US_Memphis.pdf
+              - listitem [ref=e582]:
+                - link " 2021年度 留学報告書 (1) " [ref=e583] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/4_Final_2021_US_Memphis.pdf
+              - listitem [ref=e584]:
+                - link " 2021年度 留学報告書 (2) " [ref=e585] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Final_2021_US_Memphis.pdf
+              - listitem [ref=e586]:
+                - link " 2021年度 留学近況報告書 (1) " [ref=e587] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Middle_2021_US_Memphis.pdf
+              - listitem [ref=e588]:
+                - link " 2021年度 留学近況報告書 (2) " [ref=e589] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Middle_2021_US_Memphis.pdf
+              - listitem [ref=e590]:
+                - link " 2019年度 留学報告書 " [ref=e591] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Memphis_86.pdf
+              - listitem [ref=e592]:
+                - link " 2019年度 留学近況報告書 " [ref=e593] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Memphis_86.pdf
+              - listitem [ref=e594]:
+                - link " 2015年度 留学報告書 " [ref=e595] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_Memphis.pdf
+              - listitem [ref=e596]:
+                - link " 2015年度 留学近況報告書 " [ref=e597] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Memphis_1.pdf
+              - listitem [ref=e598]:
+                - link " 2014年度 留学報告書 " [ref=e599] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Memphis.pdf
+              - listitem [ref=e600]:
+                - link " 2014年度 留学近況報告書 " [ref=e601] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Memphis.pdf
+              - listitem [ref=e602]:
+                - link " 2013年度 留学報告書 " [ref=e603] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Memphis.pdf
+              - listitem [ref=e604]:
+                - link " 2013年度 留学近況報告書 " [ref=e605] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Memphis.pdf
+              - listitem [ref=e606]:
+                - link " 2012年度留学報告書 (1) " [ref=e607] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Memphis_1.pdf
+              - listitem [ref=e608]:
+                - link " 2012年度 留学報告書 (2) " [ref=e609] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Memphis_2.pdf
+              - listitem [ref=e610]:
+                - link " 2012年度 留学近況報告書 (1) " [ref=e611] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Memphis_1.pdf
+              - listitem [ref=e612]:
+                - link " 2012年度 留学近況報告書 (2) " [ref=e613] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Memphis_2.pdf
+          - generic [ref=e614]:
+            - heading "テンプル大学" [level=5] [ref=e617]
+            - list [ref=e619]:
+              - listitem [ref=e620]:
+                - link " 2025年度 留学報告書 (1) 文学部 " [ref=e621] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Final_2025_US_Temple.pdf
+              - listitem [ref=e622]:
+                - link " 2025年度 留学報告書 (2) 文学研究科 " [ref=e623] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Final_2025_US_Temple.pdf
+              - listitem [ref=e624]:
+                - link " 2025年度 留学近況報告書 (1) 文学部 " [ref=e625] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Middle_2025_US_Temple.pdf
+              - listitem [ref=e626]:
+                - link " 2025年度 留学近況報告書 (2) 文学研究科 " [ref=e627] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/15_Middle_2025_US_Temple.pdf
+              - listitem [ref=e628]:
+                - link " 2023年度 留学報告書 (1) " [ref=e629] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Final_2023_US_Temple.pdf
+              - listitem [ref=e630]:
+                - link " 2023年度 留学報告書 (2) " [ref=e631] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Final_2023_US_Temple.pdf
+              - listitem [ref=e632]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e633] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Middle_2023_US_Temple.pdf
+              - listitem [ref=e634]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e635] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Middle_2023_US_Temple.pdf
+              - listitem [ref=e636]:
+                - link " 2022年度 留学報告書 (1) " [ref=e637] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Final_2022_US_Temple.pdf
+              - listitem [ref=e638]:
+                - link " 2022年度 留学報告書 (2) " [ref=e639] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Final_2022_US_Temple.pdf
+              - listitem [ref=e640]:
+                - link " 2022年度 留学報告書 (3) " [ref=e641] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Final_2022_US_Temple.pdf
+              - listitem [ref=e642]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e643] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Middle_2022_US_Temple.pdf
+              - listitem [ref=e644]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e645] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Middle_2022_US_Temple.pdf
+              - listitem [ref=e646]:
+                - link " 2022年度 留学近況報告書 (3) " [ref=e647] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Middle_2022_US_Temple.pdf
+              - listitem [ref=e648]:
+                - link " 2021年度 留学報告書 " [ref=e649] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Final_2021_US_TempleUniversity.pdf
+              - listitem [ref=e650]:
+                - link " 2021年度 留学近況報告書 " [ref=e651] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/10_Middle_2021_US_Temple.pdf
+              - listitem [ref=e652]:
+                - link " 2019年度 留学報告書 (1) " [ref=e653] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Temple_70.pdf
+              - listitem [ref=e654]:
+                - link " 2019年度 留学報告書 (2) " [ref=e655] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Temple_71.pdf
+              - listitem [ref=e656]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e657] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Temple_70.pdf
+              - listitem [ref=e658]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e659] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Temple_71.pdf
+              - listitem [ref=e660]:
+                - link " 2018年度 留学報告書 (1) " [ref=e661] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Temple_17.pdf
+              - listitem [ref=e662]:
+                - link " 2018年度 留学報告書 (2) " [ref=e663] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Temple_19.pdf
+              - listitem [ref=e664]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e665] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Temple_17.pdf
+              - listitem [ref=e666]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e667] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Temple_19.pdf
+              - listitem [ref=e668]:
+                - link " 2016年度 留学近況報告書 " [ref=e669] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Temple.pdf
+              - listitem [ref=e670]:
+                - link " 2014年度 留学報告書 " [ref=e671] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Temple.pdf
+              - listitem [ref=e672]:
+                - link " 2014年度 留学近況報告書 " [ref=e673] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Temple.pdf
+              - listitem [ref=e674]:
+                - link " 2013年度 留学報告書 " [ref=e675] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Temple.pdf
+              - listitem [ref=e676]:
+                - link " 2013年度 留学近況報告書 " [ref=e677] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Temple.pdf
+          - generic [ref=e678]:
+            - heading "南ユタ大学" [level=5] [ref=e681]
+            - list [ref=e683]:
+              - listitem [ref=e684]:
+                - link " 2025年度 留学報告書 (1) 商学部 " [ref=e685] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Final_2025_US_SouthernUtah.pdf
+              - listitem [ref=e686]:
+                - link " 2025年度 留学報告書 (2) 国際日本学部 " [ref=e687] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Final_2025_US_SouthernUtah.pdf
+              - listitem [ref=e688]:
+                - link " 2025年度 留学近況報告書 (1) 商学部 " [ref=e689] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/16_Middle_2025_US_SouthernUtah.pdf
+              - listitem [ref=e690]:
+                - link " 2025年度 留学近況報告書 (2) 国際日本学部 " [ref=e691] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Middle_2025_US_SouthernUtah.pdf
+              - listitem [ref=e692]:
+                - link " 2024年度 留学報告書 (1) " [ref=e693] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Final_2024_US_SouthernUtah.pdf
+              - listitem [ref=e694]:
+                - link " 2024年度 留学報告書 (2) " [ref=e695] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Final_2024_US_SouthernUtah.pdf
+              - listitem [ref=e696]:
+                - link " 2024年度 留学報告書 (3) " [ref=e697] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Final_2024_US_SouthernUtah.pdf
+              - listitem [ref=e698]:
+                - link " 2024年度 留学報告書 (4) " [ref=e699] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Final_2024_US_SouthernUtah.pdf
+              - listitem [ref=e700]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e701] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Middle_2024_US_SouthernUtah.pdf
+              - listitem [ref=e702]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e703] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Middle_2024_US_SouthernUtah.pdf
+              - listitem [ref=e704]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e705] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Middle_2024_US_SouthernUtah.pdf
+              - listitem [ref=e706]:
+                - link " 2024年度 留学近況報告書 (4) " [ref=e707] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Middle_2024_US_SouthernUtah.pdf
+              - listitem [ref=e708]:
+                - link " 2023年度 留学報告書 (1) " [ref=e709] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Final_2023_US_SouthernUtah.pdf
+              - listitem [ref=e710]:
+                - link " 2023年度 留学報告書 (2) " [ref=e711] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Final_2023_US_SouthernUtah.pdf
+              - listitem [ref=e712]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e713] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Middle_2023_US_SouthernUtah.pdf
+              - listitem [ref=e714]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e715] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Middle_2023_US_SouthernUtah.pdf
+              - listitem [ref=e716]:
+                - link " 2022年度 留学報告書 (1) " [ref=e717] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Final_2022_US_SouthernUtah.pdf
+              - listitem [ref=e718]:
+                - link " 2022年度 留学報告書 (2) " [ref=e719] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Final_2022_US_SouthernUtah.pdf
+              - listitem [ref=e720]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e721] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Middle_2022_US_SouthernUtah.pdf
+              - listitem [ref=e722]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e723] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Middle_2022_US_SouthernUtah.pdf
+              - listitem [ref=e724]:
+                - link " 2019年度 留学報告書 " [ref=e725] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SouthUtah_88.pdf
+              - listitem [ref=e726]:
+                - link " 2019年度 留学近況報告書 " [ref=e727] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_SouthernUtah_88.pdf
+              - listitem [ref=e728]:
+                - link " 2018年度 留学報告書 " [ref=e729] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_SouthernUtah_11.pdf
+              - listitem [ref=e730]:
+                - link " 2018年度 留学近況報告書 " [ref=e731] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_SouthernUtah_11.pdf
+              - listitem [ref=e732]:
+                - link " 2017年度 留学報告書 " [ref=e733] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2017_US_SouthernUtah_24.pdf
+              - listitem [ref=e734]:
+                - link " 2017年度 留学近況報告書 " [ref=e735] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_SouthernUtha1.pdf
+              - listitem [ref=e736]:
+                - link " 2016年度 留学報告書 " [ref=e737] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2016_SUU.pdf
+              - listitem [ref=e738]:
+                - link " 2016年度 留学近況報告書 " [ref=e739] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_SUU.pdf
+              - listitem [ref=e740]:
+                - link " 2013年度 留学報告書 " [ref=e741] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_SUU.pdf
+              - listitem [ref=e742]:
+                - link " 2013年度 留学近況報告書 " [ref=e743] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_SUU.pdf
+          - generic [ref=e744]:
+            - heading "ネブラスカ大学オマハ校" [level=5] [ref=e747]
+            - list [ref=e749]:
+              - listitem [ref=e750]:
+                - link " 2025年度 留学報告書 (1) 国際日本学部 " [ref=e751] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Final_2025_US_Nebraska_Omaha.pdf
+              - listitem [ref=e752]:
+                - link " 2025年度 留学報告書 (2) 国際日本学部 " [ref=e753] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Final_2025_US_Nebraska_Omaha.pdf
+              - listitem [ref=e754]:
+                - link " 2025年度 留学近況報告書 (1) 国際日本学部 " [ref=e755] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Middle_2025_US_Nebraska_Omaha.pdf
+              - listitem [ref=e756]:
+                - link " 2025年度 留学近況報告書 (2) 国際日本学部 " [ref=e757] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Middle_2025_US_Nebraska_Omaha.pdf
+              - listitem [ref=e758]:
+                - link " 2024年度 留学報告書 (1) " [ref=e759] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Final_2024_US_Nebraska_Omaha.pdf
+              - listitem [ref=e760]:
+                - link " 2024年度 留学報告書 (2) " [ref=e761] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Final_2024_US_Nebraska_Omaha.pdf
+              - listitem [ref=e762]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e763] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/18_Middle_2024_US_Nebraska_Omaha.pdf
+              - listitem [ref=e764]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e765] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Middle_2024_US_Nebraska_Omaha.pdf
+              - listitem [ref=e766]:
+                - link " 2023年度 留学報告書 (1) " [ref=e767] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Final_2023_US_Nebraska_Omaha.pdf
+              - listitem [ref=e768]:
+                - link " 2023年度 留学報告書 (2) " [ref=e769] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Final_2024_US_Nebraska_Omaha.pdf
+              - listitem [ref=e770]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e771] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Middle_2023_US_Nebraska_Omaha.pdf
+              - listitem [ref=e772]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e773] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Middle_2023_US_Nebraska_Omaha.pdf
+              - listitem [ref=e774]:
+                - link " 2022年度 留学報告書 (1) " [ref=e775] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Final_2022_US_Nebraska_Omaha.pdf
+              - listitem [ref=e776]:
+                - link " 2022年度 留学報告書 (2) " [ref=e777] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Final_2022_US_Nebraska_Omaha.pdf
+              - listitem [ref=e778]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e779] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Middle_2022_US_Nebraska_Omaha.pdf
+              - listitem [ref=e780]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e781] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Middle_2022_US_Nebraska_Omaha.pdf
+              - listitem [ref=e782]:
+                - link " 2022年度 留学報告書 " [ref=e783] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2_Final_2022_US_UniversityNebraska_Omaha.pdf
+              - listitem [ref=e784]:
+                - link " 2022年度 留学近況報告書 " [ref=e785] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/7_Middle_2022_US_Nebraska.pdf
+              - listitem [ref=e786]:
+                - link " 2019年度 留学報告書 (1) " [ref=e787] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NebraskaOmaha_80.pdf
+              - listitem [ref=e788]:
+                - link " 2019年度 留学報告書 (2) " [ref=e789] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NebraskaOmaha_79.pdf
+              - listitem [ref=e790]:
+                - link " 2019年度 留学報告書 (3) " [ref=e791] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NebraskaOmaha_81.pdf
+              - listitem [ref=e792]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e793] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NebraskaOmaha_79.pdf
+              - listitem [ref=e794]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e795] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NebraskaOmaha_80.pdf
+              - listitem [ref=e796]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e797] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NebraskaOmaha_81.pdf
+              - listitem [ref=e798]:
+                - link " 2018年度 留学報告書 (1) " [ref=e799] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Nebraska_7.pdf
+              - listitem [ref=e800]:
+                - link " 2018年度 留学報告書 (2) " [ref=e801] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Nebraska_15.pdf
+              - listitem [ref=e802]:
+                - link " 2018年度 留学報告書 (3) " [ref=e803] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Nebraska_21.pdf
+              - listitem [ref=e804]:
+                - link " 2018年度 留学報告書 (4) " [ref=e805] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Nebraska_43.pdf
+              - listitem [ref=e806]:
+                - link " 2018年度 留学報告書 (5) " [ref=e807] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Nebraska_49.pdf
+              - listitem [ref=e808]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e809] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Nebraska_7.pdf
+              - listitem [ref=e810]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e811] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Nebraska_15.pdf
+              - listitem [ref=e812]:
+                - link " 2018年度 留学近況報告書 (3) " [ref=e813] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Nebraska_21.pdf
+              - listitem [ref=e814]:
+                - link " 2018年度 留学近況報告書 (4) " [ref=e815] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Nebraska_43.pdf
+              - listitem [ref=e816]:
+                - link " 2018年度 留学近況報告書 (5) " [ref=e817] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Nebraska_49.pdf
+              - listitem [ref=e818]:
+                - link " 2017年度 留学報告書 (1) " [ref=e819] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_NebrasukaOmaha.pdf
+              - listitem [ref=e820]:
+                - link " 2017年度 留学報告書 (2) " [ref=e821] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2017_NebraskaOmaha2.pdf
+              - listitem [ref=e822]:
+                - link " 2017年度 留学報告書 (3) " [ref=e823] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2017_NebraskaOmaha3.pdf
+              - listitem [ref=e824]:
+                - link " 2017年度 留学報告書 (4) " [ref=e825] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_NeburasukaOmaha4.pdf
+              - listitem [ref=e826]:
+                - link " 2017年度 留学近況報告書 (1) " [ref=e827] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_NebraskaOmaha1.pdf
+              - listitem [ref=e828]:
+                - link " 2017年度 留学近況報告書 (2) " [ref=e829] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_NebraskaOmaha2.pdf
+              - listitem [ref=e830]:
+                - link " 2017年度 留学近況報告書 (3) " [ref=e831] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_NebraskaOmaha3.pdf
+              - listitem [ref=e832]:
+                - link " 2017年度 留学近況報告書 (4) " [ref=e833] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_NebraskaOmaha4.pdf
+              - listitem [ref=e834]:
+                - link " 2016年度 留学近況報告書 (1) " [ref=e835] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_UNO_2.pdf
+              - listitem [ref=e836]:
+                - link " 2016年 留学近況報告書 (2) " [ref=e837] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_UNO.pdf
+              - listitem [ref=e838]:
+                - link " 2015年度 留学報告書 " [ref=e839] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_UNO.pdf
+              - listitem [ref=e840]:
+                - link " 2015年度 留学近況報告書 " [ref=e841] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_UNO_1.pdf
+              - listitem [ref=e842]:
+                - link " 2014年度 留学報告書 (1) " [ref=e843] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_UNO_1.pdf
+              - listitem [ref=e844]:
+                - link " 2014年度 留学報告書 (2) " [ref=e845] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_UNO_2.pdf
+              - listitem [ref=e846]:
+                - link " 2014年度 留学近況報告書 (1) " [ref=e847] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_UNO_1.pdf
+              - listitem [ref=e848]:
+                - link " 2014年度 留学近況報告書 (2) " [ref=e849] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_UNO_2.pdf
+          - generic [ref=e850]:
+            - heading "ジョージア大学" [level=5] [ref=e853]
+            - list [ref=e855]:
+              - listitem [ref=e856]:
+                - link " 2025年度 留学報告書 経営学部 " [ref=e857] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Final_2025_US_Georgia.pdf
+              - listitem [ref=e858]:
+                - link " 2025年度 留学近況報告書 経営学部 " [ref=e859] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Middle_2025_US_Georgia.pdf
+              - listitem [ref=e860]:
+                - link " 2024年度 留学報告書 (1) " [ref=e861] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Final_2024_US_Georgia.pdf
+              - listitem [ref=e862]:
+                - link " 2024年度 留学報告書 (2) " [ref=e863] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Final_2024_US_Georgia.pdf
+              - listitem [ref=e864]:
+                - link " 2024年度 留学報告書 (3) " [ref=e865] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Final_2024_US_Georgia.pdf
+              - listitem [ref=e866]:
+                - link " 2024年度 留学報告書 (4) " [ref=e867] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Final_2024_US_Georgia.pdf
+              - listitem [ref=e868]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e869] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/20_Middle_2024_US_Georgia.pdf
+              - listitem [ref=e870]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e871] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/21_Middle_2024_US_Georgia.pdf
+              - listitem [ref=e872]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e873] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Middle_2024_US_Georgia.pdf
+              - listitem [ref=e874]:
+                - link " 2024年度 留学近況報告書 (4) " [ref=e875] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/23_Middle_2024_US_Georgia.pdf
+              - listitem [ref=e876]:
+                - link " 2023年度 留学報告書 (1) " [ref=e877] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Final_2023_US_Georgia.pdf
+              - listitem [ref=e878]:
+                - link " 2023年度 留学報告書 (2) " [ref=e879] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Final_2023_US_Georgia.pdf
+              - listitem [ref=e880]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e881] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Middle_2023_US_Georgia.pdf
+              - listitem [ref=e882]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e883] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Middle_2023_US_Georgia.pdf
+              - listitem [ref=e884]:
+                - link " 2022年度 留学報告書 " [ref=e885] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Final_2022_US_Georgia.pdf
+              - listitem [ref=e886]:
+                - link " 2022年度 留学近況報告書 " [ref=e887] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Middle_2022_US_Georgia.pdf
+              - listitem [ref=e888]:
+                - link " 2021年度 留学報告書 (1) " [ref=e889] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/13_Final_2021_US_UniversityGeorgia.pdf
+              - listitem [ref=e890]:
+                - link " 2021年度 留学報告書 (2) " [ref=e891] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Final_2021_US_Georgia.pdf
+              - listitem [ref=e892]:
+                - link " 2021年度 留学報告書 (3) " [ref=e893] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Final_2021_US_UniversityGeorgia.pdf
+              - listitem [ref=e894]:
+                - link " 2021年度 留学近況報告書 (1) " [ref=e895] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/1_Middle_2021_US_Georgia.pdf
+              - listitem [ref=e896]:
+                - link " 2021年度 留学近況報告書 (2) " [ref=e897] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Middle_2021_US_Georgia.pdf
+              - listitem [ref=e898]:
+                - link " 2021年度 留学近況報告書 (3) " [ref=e899] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Middle_2021_US_Georgia.pdf
+              - listitem [ref=e900]:
+                - link " 2019年度 留学報告書 " [ref=e901] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Georgia_65.pdf
+              - listitem [ref=e902]:
+                - link " 2019年度 留学近況報告書 " [ref=e903] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Georgia_65.pdf
+              - listitem [ref=e904]:
+                - link " 2018年度 留学報告書 (1) " [ref=e905] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Georgia_25.pdf
+              - listitem [ref=e906]:
+                - link " 2018年度 留学報告書 (2) " [ref=e907] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Georgia_46.pdf
+              - listitem [ref=e908]:
+                - link " 2018年度 留学報告書 (3) " [ref=e909] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_Georgia_29.pdf
+              - listitem [ref=e910]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e911] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Gerogia_25.pdf
+              - listitem [ref=e912]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e913] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Gerogia_46.pdf
+              - listitem [ref=e914]:
+                - link " 2018年度 留学近況報告書 (3) " [ref=e915] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_Gerogia_29.pdf
+              - listitem [ref=e916]:
+                - link " 2017年度 留学近況報告書 " [ref=e917] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_Georgia.pdf
+              - listitem [ref=e918]:
+                - link " 2016年度 留学近況報告書 (1) " [ref=e919] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Georgia_2.pdf
+              - listitem [ref=e920]:
+                - link " 2016年度 留学近況報告書 (2) " [ref=e921] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Georgia.pdf
+              - listitem [ref=e922]:
+                - link " 2015年度 留学報告書 (1) " [ref=e923] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_Georgia.pdf
+              - listitem [ref=e924]:
+                - link " 2015年度 留学報告書 (2) " [ref=e925] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Final_Georgia_2.pdf
+              - listitem [ref=e926]:
+                - link " 2015年度 留学近況報告書 (1) " [ref=e927] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Georgia_1.pdf
+              - listitem [ref=e928]:
+                - link " 2015年度 留学近況報告書 (2) " [ref=e929] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Georgia_2.pdf
+          - generic [ref=e930]:
+            - heading "カリフォルニア州立大学ロングビーチ校" [level=5] [ref=e933]
+            - list [ref=e935]:
+              - listitem [ref=e936]:
+                - link " 2025年度 留学報告書 (1) 商学部 " [ref=e937] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e938]:
+                - link " 2025年度 留学報告書 (2) 政治経済学部 " [ref=e939] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e940]:
+                - link " 2025年度 留学報告書 (3) 経営学部 " [ref=e941] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e942]:
+                - link " 2025年度 留学報告書 (4) 国際日本学部 " [ref=e943] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e944]:
+                - link " 2025年度 留学報告書 (5) 国際日本学部 " [ref=e945] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e946]:
+                - link " 2025年度 留学報告書 (6) 商学部 " [ref=e947] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e948]:
+                - link " 2025年度 留学報告書 (7) 国際日本学部 " [ref=e949] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e950]:
+                - link " 2025年度 留学報告書 (8) 国際日本学部 " [ref=e951] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e952]:
+                - link " 2025年度 留学報告書 (9) 国際日本学部 " [ref=e953] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Final_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e954]:
+                - link " 2025年度 留学近況報告書 (1) 商学部 " [ref=e955] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e956]:
+                - link " 2025年度 留学近況報告書 (2) 商学部 " [ref=e957] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e958]:
+                - link " 2025年度 留学近況報告書 (3) 政治経済学部 " [ref=e959] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e960]:
+                - link " 2025年度 留学近況報告書 (4) 経営学部 " [ref=e961] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e962]:
+                - link " 2025年度 留学近況報告書 (5) 国際日本学部 " [ref=e963] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e964]:
+                - link " 2025年度 留学近況報告書 (6) 国際日本学部 " [ref=e965] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e966]:
+                - link " 2025年度 留学近況報告書 (7) 国際日本学部 " [ref=e967] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e968]:
+                - link " 2025年度 留学近況報告書 (8) 国際日本学部 " [ref=e969] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e970]:
+                - link " 2025年度 留学近況報告書 (9) 国際日本学部 " [ref=e971] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Middle_2025_US_CSU_LongBeach.pdf
+              - listitem [ref=e972]:
+                - link " 2024年度 留学報告書 (1) " [ref=e973] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e974]:
+                - link " 2024年度 留学報告書 (2) " [ref=e975] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e976]:
+                - link " 2024年度 留学報告書 (3) " [ref=e977] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e978]:
+                - link " 2024年度 留学報告書 (4) " [ref=e979] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e980]:
+                - link " 2024年度 留学報告書 (5) " [ref=e981] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e982]:
+                - link " 2024年度 留学報告書 (6) " [ref=e983] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e984]:
+                - link " 2024年度 留学報告書 (7) " [ref=e985] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e986]:
+                - link " 2024年度 留学報告書 (8) " [ref=e987] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Final_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e988]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e989] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/24_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e990]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e991] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/25_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e992]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e993] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e994]:
+                - link " 2024年度 留学近況報告書 (4) " [ref=e995] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/27_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e996]:
+                - link " 2024年度 留学近況報告書 (5) " [ref=e997] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/28_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e998]:
+                - link " 2024年度 留学近況報告書 (6) " [ref=e999] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e1000]:
+                - link " 2024年度 留学近況報告書 (7) " [ref=e1001] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e1002]:
+                - link " 2024年度 留学近況報告書 (8) " [ref=e1003] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Middle_2024_US_CSU_LongBeach.pdf
+              - listitem [ref=e1004]:
+                - link " 2023年度 留学報告書 (1) " [ref=e1005] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Final_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1006]:
+                - link " 2023年度 留学報告書 (2) " [ref=e1007] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Final_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1008]:
+                - link " 2023年度 留学報告書 (3) " [ref=e1009] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Final_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1010]:
+                - link " 2023年度 留学報告書 (4) " [ref=e1011] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Final_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1012]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e1013] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Middle_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1014]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e1015] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Middle_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1016]:
+                - link " 2023年度 留学近況報告書 (3) " [ref=e1017] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Middle_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1018]:
+                - link " 2023年度 留学近況報告書 (4) " [ref=e1019] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Middle_2023_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1020]:
+                - link " 2022年度 留学報告書 (1) " [ref=e1021] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Final_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1022]:
+                - link " 2022年度 留学報告書 (2) " [ref=e1023] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Final_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1024]:
+                - link " 2022年度 留学報告書 (3) " [ref=e1025] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Final_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1026]:
+                - link " 2022年度 留学報告書 (4) " [ref=e1027] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Final_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1028]:
+                - link " 2022年度 留学報告書 (5) " [ref=e1029] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Final_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1030]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e1031] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Middle_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1032]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e1033] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/31_Middle_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1034]:
+                - link " 2022年度 留学近況報告書 (3) " [ref=e1035] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Middle_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1036]:
+                - link " 2022年度 留学近況報告書 (4) " [ref=e1037] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Middle_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1038]:
+                - link " 2022年度 留学近況報告書 (5) " [ref=e1039] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Middle_2022_US_CaliforniaState_LongBeach.pdf
+              - listitem [ref=e1040]:
+                - link " 2021年度 留学報告書 " [ref=e1041] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2_Final_2021_US_CSULB.pdf
+              - listitem [ref=e1042]:
+                - link " 2021年度 留学近況報告書 " [ref=e1043] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/3_Middle_2021_US_CSULB.pdf
+              - listitem [ref=e1044]:
+                - link " 2020年度 留学報告書 (オンライン留学） " [ref=e1045] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2020_US_CSULB_7OL.pdf
+              - listitem [ref=e1046]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1047] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_55.pdf
+              - listitem [ref=e1048]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1049] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_56.pdf
+              - listitem [ref=e1050]:
+                - link " 2019年度 留学報告書 (3) " [ref=e1051] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_57.pdf
+              - listitem [ref=e1052]:
+                - link " 2019年度 留学報告書 (4) " [ref=e1053] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_58.pdf
+              - listitem [ref=e1054]:
+                - link " 2019年度 留学報告書 (5) " [ref=e1055] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_59.pdf
+              - listitem [ref=e1056]:
+                - link " 2019年度 留学報告書 (6) " [ref=e1057] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_60.pdf
+              - listitem [ref=e1058]:
+                - link " 2019年度 留学報告書 (7) " [ref=e1059] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSULB_61.pdf
+              - listitem [ref=e1060]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1061] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_55.pdf
+              - listitem [ref=e1062]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1063] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_56.pdf
+              - listitem [ref=e1064]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e1065] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_58.pdf
+              - listitem [ref=e1066]:
+                - link " 2019年度 留学近況報告書 (4) " [ref=e1067] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_59.pdf
+              - listitem [ref=e1068]:
+                - link " 2019年度 留学近況報告書 (5) " [ref=e1069] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_60.pdf
+              - listitem [ref=e1070]:
+                - link " 2019年度 留学近況報告書 (6) " [ref=e1071] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_57.pdf
+              - listitem [ref=e1072]:
+                - link " 2019年度 留学近況報告書 (7) " [ref=e1073] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSULongbeach_61.pdf
+              - listitem [ref=e1074]:
+                - link " 2018年度 留学報告書 (1) " [ref=e1075] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_5.pdf
+              - listitem [ref=e1076]:
+                - link " 2018年度 留学報告書 (2) " [ref=e1077] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_9.pdf
+              - listitem [ref=e1078]:
+                - link " 2018年度 留学報告書 (3) " [ref=e1079] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_22.pdf
+              - listitem [ref=e1080]:
+                - link " 2018年度 留学報告書 (4) " [ref=e1081] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_33.pdf
+              - listitem [ref=e1082]:
+                - link " 2018年度 留学報告書 (5) " [ref=e1083] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_35.pdf
+              - listitem [ref=e1084]:
+                - link " 2018年度 留学報告書 (6) " [ref=e1085] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_24.pdf
+              - listitem [ref=e1086]:
+                - link " 2018年度 留学報告書 (7) " [ref=e1087] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_42.pdf
+              - listitem [ref=e1088]:
+                - link " 2018年度 留学報告書 (8) " [ref=e1089] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_48.pdf
+              - listitem [ref=e1090]:
+                - link " 2018年度 留学報告書 (9) " [ref=e1091] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_47.pdf
+              - listitem [ref=e1092]:
+                - link " 2018年度 留学報告書 (10) " [ref=e1093] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_CSULB_34.pdf
+              - listitem [ref=e1094]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e1095] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_5.pdf
+              - listitem [ref=e1096]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e1097] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_9.pdf
+              - listitem [ref=e1098]:
+                - link " 2018年度 留学近況報告書 (3) " [ref=e1099] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_22.pdf
+              - listitem [ref=e1100]:
+                - link " 2018年度 留学近況報告書 (4) " [ref=e1101] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_33.pdf
+              - listitem [ref=e1102]:
+                - link " 2018年度 留学近況報告書 (5) " [ref=e1103] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_35.pdf
+              - listitem [ref=e1104]:
+                - link " 2018年度 留学近況報告書 (6) " [ref=e1105] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_24.pdf
+              - listitem [ref=e1106]:
+                - link " 2018年度 留学近況報告書 (7) " [ref=e1107] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_42.pdf
+              - listitem [ref=e1108]:
+                - link " 2018年度 留学近況報告書 (8) " [ref=e1109] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_48.pdf
+              - listitem [ref=e1110]:
+                - link " 2018年度 留学近況報告書 (9) " [ref=e1111] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_47.pdf
+              - listitem [ref=e1112]:
+                - link " 2018年度 留学近況報告書 (10) " [ref=e1113] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_CSULB_34.pdf
+              - listitem [ref=e1114]:
+                - link " 2017年度 留学報告書 (1) " [ref=e1115] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_CaliforniaLongBeach_EX.pdf
+              - listitem [ref=e1116]:
+                - link " 2017年度 留学報告書 (2) " [ref=e1117] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2017_CaliforniaLongBeach_EX2.pdf
+              - listitem [ref=e1118]:
+                - link " 2017年度 留学近況報告書 (1) " [ref=e1119] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_LongBeach_EX1.pdf
+              - listitem [ref=e1120]:
+                - link " 2017年度 留学近況報告書 (2) " [ref=e1121] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_LongBeach_EX2.pdf
+          - generic [ref=e1122]:
+            - heading "カリフォルニア州立大学チャンネル・アイランズ校" [level=5] [ref=e1125]
+            - list [ref=e1127]:
+              - listitem [ref=e1128]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1129] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/48_Final_2024_US_CSU_ChannelIslands.pdf
+              - listitem [ref=e1130]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1131] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/49_Final_2024_US_CSU_ChannelIslands.pdf
+              - listitem [ref=e1132]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1133] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/48_Middle_2024_US_CSU_ChannelIslands.pdf
+              - listitem [ref=e1134]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1135] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/49_Middle_2024_US_CSU_ChannelIslands.pdf
+              - listitem [ref=e1136]:
+                - link " 2022年度 留学報告書 （秋出発） " [ref=e1137] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Final_2022_US_CaliforniaState_ChannelIslands.pdf
+              - listitem [ref=e1138]:
+                - link " 2022年度 留学近況報告書 （秋出発） " [ref=e1139] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Middle_2022_US_CaliforniaState_ChannelIslands.pdf
+              - listitem [ref=e1140]:
+                - link " 2022年度 留学報告書 （春出発） " [ref=e1141] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/3_Final_2022_US_CSUniversity_ChannelIslands.pdf
+              - listitem [ref=e1142]:
+                - link " 2022年度 留学近況報告書（春出発） " [ref=e1143] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/6_Middle_2022_US_CSU_ChannelIslands.pdf
+              - listitem [ref=e1144]:
+                - link " 2021年度 留学報告書 " [ref=e1145] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/9_Final_2021_US_CSUChannelIslands.pdf
+              - listitem [ref=e1146]:
+                - link " 2021年度 留学近況報告書 " [ref=e1147] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/29_Middle_2021_US_CSUCannelIslands.pdf
+              - listitem [ref=e1148]:
+                - link " 2019年度 留学報告書 " [ref=e1149] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CSUchannelislands_54.pdf
+              - listitem [ref=e1150]:
+                - link " 2019年度 留学近況報告書 " [ref=e1151] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CSUchannelislands_54.pdf
+          - generic [ref=e1152]:
+            - heading "カリフォルニア州立大学ドミンゲス・ヒルズ校" [level=5] [ref=e1155]
+            - list [ref=e1157]:
+              - listitem [ref=e1158]:
+                - link " 2025年度 留学報告書 (1) 商学部 " [ref=e1159] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/59_Final_2025_US_CSU_Dominguez.pdf
+              - listitem [ref=e1160]:
+                - link " 2025年度 留学報告書 (2) 商学部 " [ref=e1161] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/60_Final_2025_US_CSU_Dominguez.pdf
+              - listitem [ref=e1162]:
+                - link " 2025年度 留学報告書 (3) 経営学部 " [ref=e1163] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/61_Final_2025_US_CSU_Dominguez.pdf
+              - listitem [ref=e1164]:
+                - link " 2025年度 留学近況報告書 (1) 商学部 " [ref=e1165] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/59_Middle_2025_US_CSU_Dominguez.pdf
+              - listitem [ref=e1166]:
+                - link " 2025年度 留学近況報告書 (2) 商学部 " [ref=e1167] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/60_Middle_2025_US_CSU_Dominguez.pdf
+              - listitem [ref=e1168]:
+                - link " 2025年度 留学近況報告書 (3) 経営学部 " [ref=e1169] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/61_Middle_2025_US_CSU_Dominguez.pdf
+              - listitem [ref=e1170]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1171] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/56_Final_2024_US_CSU_Dominguez.pdf
+              - listitem [ref=e1172]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1173] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/55_Final_2024_US_CSU_Dominguez.pdf
+              - listitem [ref=e1174]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1175] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/55_Middle_2024_US_CSU_Dominguez.pdf
+              - listitem [ref=e1176]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1177] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/56_Middle_2024_US_CSU_Dominguez.pdf
+              - listitem [ref=e1178]:
+                - link " 2023年度 留学報告書 (1) " [ref=e1179] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Final_2023_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1180]:
+                - link " 2023年度 留学報告書 (2) " [ref=e1181] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Final_2023_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1182]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e1183] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Middle_2023_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1184]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e1185] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Middle_2023_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1186]:
+                - link " 2022年度 留学報告書 (1) " [ref=e1187] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Final_2022_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1188]:
+                - link " 2022年度 留学報告書 (2) " [ref=e1189] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Final_2022_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1190]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e1191] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Middle_2022_US_CaliforniaState_DominguezHills.pdf
+              - listitem [ref=e1192]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e1193] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Middle_2022_US_CaliforniaState_DominguezHills.pdf
+          - generic [ref=e1194]:
+            - heading "ノーザン州立大学" [level=5] [ref=e1197]
+            - list [ref=e1199]:
+              - listitem [ref=e1200]:
+                - link " 2025年度 留学報告書 (1) 国際日本学部 " [ref=e1201] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Final_2025_US_Northern.pdf
+              - listitem [ref=e1202]:
+                - link " 2025年度 留学報告書 (2) 国際日本学部 " [ref=e1203] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Final_2025_US_Northern.pdf
+              - listitem [ref=e1204]:
+                - link " 2025年度 留学報告書 (3) 国際日本学部 " [ref=e1205] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Final_2025_US_Northern.pdf
+              - listitem [ref=e1206]:
+                - link " 2025年度 留学報告書 (4) 国際日本学部 " [ref=e1207] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Final_2025_US_Northern.pdf
+              - listitem [ref=e1208]:
+                - link " 2025年度 留学報告書 (5) 商学部 " [ref=e1209] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Final_2025_US_Northern.pdf
+              - listitem [ref=e1210]:
+                - link " 2025年度 留学報告書 (6) 商学部 " [ref=e1211] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Final_2025_US_Northern.pdf
+              - listitem [ref=e1212]:
+                - link " 2025年度 留学報告書 (7) 経営学部 " [ref=e1213] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Final_2025_US_Northern.pdf
+              - listitem [ref=e1214]:
+                - link " 2025年度 留学報告書 (8) 情報コミュニケーション学部 " [ref=e1215] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Final_2025_US_Northern.pdf
+              - listitem [ref=e1216]:
+                - link " 2025年度 留学報告書 (9) 国際日本学部 " [ref=e1217] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Final_2025_US_Northern.pdf
+              - listitem [ref=e1218]:
+                - link " 2025年度 留学報告書 (10) 国際日本学部 " [ref=e1219] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Final_2025_US_Northern.pdf
+              - listitem [ref=e1220]:
+                - link " 2025年度 留学報告書 (11) 国際日本学部 " [ref=e1221] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Final_2025_US_Northern.pdf
+              - listitem [ref=e1222]:
+                - link " 2025年度 留学報告書 (12) 国際日本学部 " [ref=e1223] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Final_2025_US_Northern.pdf
+              - listitem [ref=e1224]:
+                - link " 2025年度 留学近況報告書 (1) 商学部 " [ref=e1225] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1226]:
+                - link " 2025年度 留学近況報告書 (2) 商学部 " [ref=e1227] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1228]:
+                - link " 2025年度 留学近況報告書 (3) 経営学部 " [ref=e1229] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1230]:
+                - link " 2025年度 留学近況報告書 (4) 情報コミュニケーション学部 " [ref=e1231] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1232]:
+                - link " 2025年度 留学近況報告書 (5) 国際日本学部 " [ref=e1233] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1234]:
+                - link " 2025年度 留学近況報告書 (6) 国際日本学部 " [ref=e1235] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1236]:
+                - link " 2025年度 留学近況報告書 (7) 国際日本学部 " [ref=e1237] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1238]:
+                - link " 2025年度 留学近況報告書 (8) 国際日本学部 " [ref=e1239] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1240]:
+                - link " 2025年度 留学近況報告書 (9) 国際日本学部 " [ref=e1241] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1242]:
+                - link " 2025年度 留学近況報告書 (10) 国際日本学部 " [ref=e1243] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1244]:
+                - link " 2025年度 留学近況報告書 (11) 国際日本学部 " [ref=e1245] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1246]:
+                - link " 2025年度 留学近況報告書 (12) 国際日本学部 " [ref=e1247] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Middle_2025_US_Northern.pdf
+              - listitem [ref=e1248]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1249] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Final_2024_US_Northern.pdf
+              - listitem [ref=e1250]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1251] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Final_2024_US_Northern.pdf
+              - listitem [ref=e1252]:
+                - link " 2024年度 留学報告書 (3) " [ref=e1253] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Final_2024_US_Northern.pdf
+              - listitem [ref=e1254]:
+                - link " 2024年度 留学報告書 (4) " [ref=e1255] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Final_2024_US_Northern.pdf
+              - listitem [ref=e1256]:
+                - link " 2024年度 留学報告書 (5) " [ref=e1257] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Final_2024_US_Northern.pdf
+              - listitem [ref=e1258]:
+                - link " 2024年度 留学報告書 (6) " [ref=e1259] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Final_2024_US_Northern.pdf
+              - listitem [ref=e1260]:
+                - link " 2024年度 留学報告書 (7) " [ref=e1261] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Final_2024_US_Northern.pdf
+              - listitem [ref=e1262]:
+                - link " 2024年度 留学報告書 (8) " [ref=e1263] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Final_2024_US_Northern.pdf
+              - listitem [ref=e1264]:
+                - link " 2024年度 留学報告書 (9) " [ref=e1265] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Final_2024_US_Northern.pdf
+              - listitem [ref=e1266]:
+                - link " 2024年度 留学報告書 (10) " [ref=e1267] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Final_2024_US_Northern.pdf
+              - listitem [ref=e1268]:
+                - link " 2024年度 留学報告書 (11) " [ref=e1269] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Final_2024_US_Northern.pdf
+              - listitem [ref=e1270]:
+                - link " 2024年度 留学報告書 (12) " [ref=e1271] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Final_2024_US_Northern.pdf
+              - listitem [ref=e1272]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1273] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1274]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1275] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/34_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1276]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e1277] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1278]:
+                - link " 2024年度 留学近況報告書 (4) " [ref=e1279] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1280]:
+                - link " 2024年度 留学近況報告書 (5) " [ref=e1281] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1282]:
+                - link " 2024年度 留学近況報告書 (6) " [ref=e1283] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1284]:
+                - link " 2024年度 留学近況報告書 (7) " [ref=e1285] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1286]:
+                - link " 2024年度 留学近況報告書 (8) " [ref=e1287] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1288]:
+                - link " 2024年度 留学近況報告書 (9) " [ref=e1289] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1290]:
+                - link " 2024年度 留学近況報告書 (10) " [ref=e1291] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1292]:
+                - link " 2024年度 留学近況報告書 (11) " [ref=e1293] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1294]:
+                - link " 2024年度 留学近況報告書 (12) " [ref=e1295] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Middle_2024_US_Northern.pdf
+              - listitem [ref=e1296]:
+                - link " 2023年度 留学報告書 (1) " [ref=e1297] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Final_2023_US_NorthernState.pdf
+              - listitem [ref=e1298]:
+                - link " 2023年度 留学報告書 (2) " [ref=e1299] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/131_Final_2023_US_NorthernState.pdf
+              - listitem [ref=e1300]:
+                - link " 2023年度 留学報告書 (3) " [ref=e1301] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/132_Final_2023_US_NorthernState.pdf
+              - listitem [ref=e1302]:
+                - link " 2023年度 留学報告書 (4) " [ref=e1303] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Final_2023_US_NorthernState.pdf
+              - listitem [ref=e1304]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e1305] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Middle_2023_US_NorthernState.pdf
+              - listitem [ref=e1306]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e1307] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Middle_2023_US_NorthernState.pdf
+              - listitem [ref=e1308]:
+                - link " 2023年度 留学近況報告書 (3) " [ref=e1309] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/131_Middle_2023_US_NorthernState.pdf
+              - listitem [ref=e1310]:
+                - link " 2023年度 留学近況報告書 (4) " [ref=e1311] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/132_Middle_2023_US_NorthernState.pdf
+              - listitem [ref=e1312]:
+                - link " 2022年度 留学報告書 " [ref=e1313] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Final_2022_US_NorthernState.pdf
+              - listitem [ref=e1314]:
+                - link " 2022年度 留学近況報告書 " [ref=e1315] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/35_Middle_2022_US_NorthernState.pdf
+              - listitem [ref=e1316]:
+                - link " 2020年度 留学報告書 （オンライン留学） " [ref=e1317] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2020_US_NorthernState_8OL.pdf
+              - listitem [ref=e1318]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1319] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NorthernState_91.pdf
+              - listitem [ref=e1320]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1321] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NorthernState_93.pdf
+              - listitem [ref=e1322]:
+                - link " 2019年度 留学報告書 (3) " [ref=e1323] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NorthenState_92.pdf
+              - listitem [ref=e1324]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1325] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NorthenState_91.pdf
+              - listitem [ref=e1326]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1327] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NorthenState_92.pdf
+              - listitem [ref=e1328]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e1329] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_NorthenState_93.pdf
+              - listitem [ref=e1330]:
+                - link " 2018年度 留学報告書 (1) " [ref=e1331] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_NothernState_40.pdf
+              - listitem [ref=e1332]:
+                - link " 2018年度 留学報告書 (2) " [ref=e1333] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_NothernState_30.pdf
+              - listitem [ref=e1334]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e1335] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_NorthernState_40.pdf
+              - listitem [ref=e1336]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e1337] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_NorthernState_30.pdf
+          - generic [ref=e1338]:
+            - heading "サンフランシスコ州立大学" [level=5] [ref=e1341]
+            - list [ref=e1343]:
+              - listitem [ref=e1344]:
+                - link " 2025年度 留学報告書 (1) 法学部 " [ref=e1345] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1346]:
+                - link " 2025年度 留学報告書 (2) 商学部 " [ref=e1347] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1348]:
+                - link " 2025年度 留学報告書 (3) 国際日本学部 " [ref=e1349] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/51_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1350]:
+                - link " 2025年度 留学報告書 (4) 国際日本学部 " [ref=e1351] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/53_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1352]:
+                - link " 2025年度 留学報告書 (5) 商学部 " [ref=e1353] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/48_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1354]:
+                - link " 2025年度 留学報告書 (6) 政治経済学部 " [ref=e1355] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/49_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1356]:
+                - link " 2025年度 留学報告書 (7) 国際日本学部 " [ref=e1357] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/52_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1358]:
+                - link " 2025年度 留学報告書 (8) 国際日本学部 " [ref=e1359] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/54_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1360]:
+                - link " 2025年度 留学報告書 (9) 国際日本学部 " [ref=e1361] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/55_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1362]:
+                - link " 2025年度 留学報告書 (10) 政治経済学部 " [ref=e1363] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/50_Final_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1364]:
+                - link " 2025年度 留学近況報告書 (1) 法学部 " [ref=e1365] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1366]:
+                - link " 2025年度 留学近況報告書 (2) 商学部 " [ref=e1367] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1368]:
+                - link " 2025年度 留学近況報告書 (3) 商学部 " [ref=e1369] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/48_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1370]:
+                - link " 2025年度 留学近況報告書 (4) 政治経済学部 " [ref=e1371] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/49_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1372]:
+                - link " 2025年度 留学近況報告書 (5) 政治経済学部 " [ref=e1373] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/50_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1374]:
+                - link " 2025年度 留学近況報告書 (6) 国際日本学部 " [ref=e1375] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/51_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1376]:
+                - link " 2025年度 留学近況報告書 (7) 国際日本学部 " [ref=e1377] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/52_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1378]:
+                - link " 2025年度 留学近況報告書 (8) 国際日本学部 " [ref=e1379] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/53_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1380]:
+                - link " 2025年度 留学近況報告書 (9) 国際日本学部 " [ref=e1381] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/54_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1382]:
+                - link " 2025年度 留学近況報告書 (10) 国際日本学部 " [ref=e1383] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/55_Middle_2025_US_SanFrancisco.pdf
+              - listitem [ref=e1384]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1385] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Final_2024_US_SanFrancisco.pdf
+              - listitem [ref=e1386]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1387] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Final_2024_US_SanFrancisco.pdf
+              - listitem [ref=e1388]:
+                - link " 2024年度 留学報告書 (3) " [ref=e1389] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Final_2024_US_SanFrancisco.pdf
+              - listitem [ref=e1390]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1391] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Middle_2024_US_SanFrancisco.pdf
+              - listitem [ref=e1392]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1393] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Middle_2024_US_SanFrancisco.pdf
+              - listitem [ref=e1394]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e1395] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Middle_2024_US_SanFrancisco.pdf
+              - listitem [ref=e1396]:
+                - link " 2023年度 留学報告書 " [ref=e1397] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Final_2023_US_SanFranciscoState.pdf
+              - listitem [ref=e1398]:
+                - link " 2023年度 留学近況報告書 " [ref=e1399] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Middle_2023_US_SanFranciscoState.pdf
+              - listitem [ref=e1400]:
+                - link " 2022年度 留学報告書 " [ref=e1401] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Final_2022_US_SanFranciscoState.pdf
+              - listitem [ref=e1402]:
+                - link " 2022年度 留学近況報告書 " [ref=e1403] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Middle_2022_US_SanFranciscoState.pdf
+              - listitem [ref=e1404]:
+                - link " 2021年度 留学報告書 (1) " [ref=e1405] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/3_Final_2021_US_SFState.pdf
+              - listitem [ref=e1406]:
+                - link " 2021年度 留学報告書 (2) " [ref=e1407] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Final_2021_US_SanFranciscoState.pdf
+              - listitem [ref=e1408]:
+                - link " 2021年度 留学報告書 (3) " [ref=e1409] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Final_2021_US_SanFranciscoStateUniversity.pdf
+              - listitem [ref=e1410]:
+                - link " 2021年度 留学近況報告書 (1) " [ref=e1411] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Middle_2021_US_SanFrancisco.pdf
+              - listitem [ref=e1412]:
+                - link " 2021年度 留学近況報告書 (2) " [ref=e1413] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/19_Middle_2021_US_SanFrancisco.pdf
+              - listitem [ref=e1414]:
+                - link " 2021年度 留学近況報告書 (3) " [ref=e1415] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/26_Middle_2021_US_SanFrancisco.pdf
+              - listitem [ref=e1416]:
+                - link " 2020年度 留学報告書 （オンライン留学）（1） " [ref=e1417] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2020_US_SanfransiscoState_9OL.pdf
+              - listitem [ref=e1418]:
+                - link " 2020年度 留学報告書 （オンライン留学）（2） " [ref=e1419] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2020_US_SanfransiscoState_10OL.pdf
+              - listitem [ref=e1420]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1421] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SanFranciscoState_95.pdf
+              - listitem [ref=e1422]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1423] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SanFranciscoState_94.pdf
+              - listitem [ref=e1424]:
+                - link " 2019年度 留学報告書 (3) " [ref=e1425] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SanFranciscoState_96.pdf
+              - listitem [ref=e1426]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1427] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Sanfransico_94.pdf
+              - listitem [ref=e1428]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1429] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Sanfransico_95.pdf
+              - listitem [ref=e1430]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e1431] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Sanfransico_96.pdf
+              - listitem [ref=e1432]:
+                - link " 2018年度 留学報告書 (1) " [ref=e1433] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_SunFranciscoState_12.pdf
+              - listitem [ref=e1434]:
+                - link " 2018年度 留学報告書 (2) " [ref=e1435] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_US_SunFranciscoState_10.pdf
+              - listitem [ref=e1436]:
+                - link " 2018年度 留学近況報告書 (1) " [ref=e1437] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_SanFranciscoState_12.pdf
+              - listitem [ref=e1438]:
+                - link " 2018年度 留学近況報告書 (2) " [ref=e1439] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_US_SanFranciscoState_10.pdf
+          - generic [ref=e1440]:
+            - heading "アーカンソー州立大学" [level=5] [ref=e1443]
+            - list [ref=e1445]:
+              - listitem [ref=e1446]:
+                - link " 2025年度 留学報告書 (1) 政治経済学部 " [ref=e1447] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/57_Final_2025_US_Arkansas.pdf
+              - listitem [ref=e1448]:
+                - link " 2025年度 留学報告書 (2) 商学部 " [ref=e1449] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/56_Final_2025_US_Arkansas.pdf
+              - listitem [ref=e1450]:
+                - link " 2025年度 留学近況報告書 (1) 商学部 " [ref=e1451] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/56_Middle_2025_US_Arkansas.pdf
+              - listitem [ref=e1452]:
+                - link " 2025年度 留学近況報告書 (2) 政治経済学部 " [ref=e1453] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/57_Middle_2025_US_Arkansas.pdf
+              - listitem [ref=e1454]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1455] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/50_Final_2024_US_Arkansas.pdf
+              - listitem [ref=e1456]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1457] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/52_Final_2024_US_Arkansas.pdf
+              - listitem [ref=e1458]:
+                - link " 2024年度 留学報告書 (3) " [ref=e1459] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/51_Final_2024_US_Arkansas.pdf
+              - listitem [ref=e1460]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1461] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/50_Middle_2024_US_Arkansas.pdf
+              - listitem [ref=e1462]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1463] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/51_Middle_2024_US_Arkansas.pdf
+              - listitem [ref=e1464]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e1465] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/52_Middle_2024_US_Arkansas.pdf
+              - listitem [ref=e1466]:
+                - link " 2023年度 留学報告書 " [ref=e1467] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Final_2023_US_ArkansasState.pdf
+              - listitem [ref=e1468]:
+                - link " 2023年度 留学近況報告書 " [ref=e1469] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Middle_2023_US_ArkansasState.pdf
+              - listitem [ref=e1470]:
+                - link " 2022年度 留学報告書 " [ref=e1471] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Final_2022_US_ArkansasState.pdf
+              - listitem [ref=e1472]:
+                - link " 2022年度 留学近況報告書 " [ref=e1473] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/40_Middle_2022_US_ArkansasState.pdf
+              - listitem [ref=e1474]:
+                - link " 2021年度 留学報告書 " [ref=e1475] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/30_Final_2021_US_ArkansasState.pdf
+              - listitem [ref=e1476]:
+                - link " 2021年度 留学近況報告書 " [ref=e1477] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/22_Middle_2021_US_ArkansasState.pdf
+              - listitem [ref=e1478]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1479] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Arkansas_89.pdf
+              - listitem [ref=e1480]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1481] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_Arkansas_90.pdf
+              - listitem [ref=e1482]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1483] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Arkansas_89.pdf
+              - listitem [ref=e1484]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1485] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Arkansas_90.pdf
+          - generic [ref=e1486]:
+            - heading "ネバダ大学リノ校" [level=5] [ref=e1489]
+            - list [ref=e1491]:
+              - listitem [ref=e1492]:
+                - link " 2025年度 留学報告書 (1) 政治経済学部 " [ref=e1493] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/63_Final_2025_US_Nevada_Rino.pdf
+              - listitem [ref=e1494]:
+                - link " 2025年度 留学報告書 (2) 法学部 " [ref=e1495] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/62_Final_2025_US_Nevada_Rino.pdf
+              - listitem [ref=e1496]:
+                - link " 2025年度 留学近況報告書 (1) 法学部 " [ref=e1497] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/62_Middle_2025_US_Nevada_Rino.pdf
+              - listitem [ref=e1498]:
+                - link " 2025年度 留学近況報告書 (2) 政治経済学部 " [ref=e1499] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/63_Middle_2025_US_Nevada_Rino.pdf
+              - listitem [ref=e1500]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1501] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/58_Final_2024_US_Nevada_Rino.pdf
+              - listitem [ref=e1502]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1503] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/57_Final_2024_US_Nevada_Rino.pdf
+              - listitem [ref=e1504]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1505] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/57_Middle_2024_US_Nevada_Rino.pdf
+              - listitem [ref=e1506]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1507] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/58_Middle_2024_US_Nevada_Rino.pdf
+              - listitem [ref=e1508]:
+                - link " 2023年度 留学報告書 (1) " [ref=e1509] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Final_2023_US_Nevada_Reno.pdf
+              - listitem [ref=e1510]:
+                - link " 2023年度 留学報告書 (2) " [ref=e1511] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/48_Final_2023_US_Nevada_Reno.pdf
+              - listitem [ref=e1512]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e1513] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Middle_2023_US_Nevada_Reno.pdf
+              - listitem [ref=e1514]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e1515] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/48_Middle_2023_US_Nevada_Reno.pdf
+              - listitem [ref=e1516]:
+                - link " 2022年度 留学報告書 (1) " [ref=e1517] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Final_2022_US_Nevada_Reno.pdf
+              - listitem [ref=e1518]:
+                - link " 2022年度 留学報告書 (2) " [ref=e1519] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Final_2022_US_Nevada_Reno.pdf
+              - listitem [ref=e1520]:
+                - link " 2022年度 留学報告書 (3) " [ref=e1521] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Final_2022_US_Nevada_Reno.pdf
+              - listitem [ref=e1522]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e1523] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/43_Middle_2022_US_Nevada_Reno.pdf
+              - listitem [ref=e1524]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e1525] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Middle_2022_US_Nevada_Reno.pdf
+              - listitem [ref=e1526]:
+                - link " 2022年度 留学近況報告書 (3) " [ref=e1527] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/45_Middle_2022_US_Nevada_Reno.pdf
+              - listitem [ref=e1528]:
+                - link " 2021年度 留学報告書 (1) " [ref=e1529] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/5_Final_2021_US_NevadaReno.pdf
+              - listitem [ref=e1530]:
+                - link " 2021年度 留学報告書 (2) " [ref=e1531] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/11_Final_2021_US_NevadaReno.pdf
+              - listitem [ref=e1532]:
+                - link " 2021年度 留学近況報告書 (1) " [ref=e1533] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/14_Middle_2021_US_NevadaReno.pdf
+              - listitem [ref=e1534]:
+                - link " 2021年度 留学近況報告書 (2) " [ref=e1535] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Middle_2021_US_NevadaReno.pdf
+              - listitem [ref=e1536]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1537] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NevadaReno_78.pdf
+              - listitem [ref=e1538]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1539] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_NevadaReno_77.pdf
+              - listitem [ref=e1540]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1541] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Nevadreno_77.pdf
+              - listitem [ref=e1542]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1543] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_Nevadreno_78.pdf
+          - generic [ref=e1544]:
+            - heading "サンディエゴ州立大学" [level=5] [ref=e1547]
+            - list [ref=e1549]:
+              - listitem [ref=e1550]:
+                - link " 2025年度 留学報告書 国際日本学部 " [ref=e1551] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Final_2025_US_SanDiego.pdf
+              - listitem [ref=e1552]:
+                - link " 2025年度 留学近況報告書 国際日本学部 " [ref=e1553] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/33_Middle_2025_US_SanDiego.pdf
+              - listitem [ref=e1554]:
+                - link " 2024年度 留学報告書 " [ref=e1555] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Final_2024_US_SanDiego.pdf
+              - listitem [ref=e1556]:
+                - link " 2024年度 留学近況報告書 " [ref=e1557] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/32_Middle_2024_US_SanDiego.pdf
+              - listitem [ref=e1558]:
+                - link " 2023年度 留学報告書 " [ref=e1559] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Final_2023_US_SanDiegoState.pdf
+              - listitem [ref=e1560]:
+                - link " 2023年度 留学近況報告書 " [ref=e1561] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/38_Middle_2023_US_SanDiegoState.pdf
+              - listitem [ref=e1562]:
+                - link " 2021年度 留学報告書 (1) " [ref=e1563] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/42_Final_2021_US_SanDiegoState.pdf
+              - listitem [ref=e1564]:
+                - link " 2021年度 留学報告書 (2) " [ref=e1565] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/12_Final_2021_US_SanDiego.pdf
+              - listitem [ref=e1566]:
+                - link " 2021年度 留学近況報告書 (1) " [ref=e1567] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/39_Middle_2021_US_SanDiego.pdf
+              - listitem [ref=e1568]:
+                - link " 2021年度 留学近況報告書 (2) " [ref=e1569] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Middle_2021_US_SanDiego.pdf
+              - listitem [ref=e1570]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1571] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SanDiego_63.pdf
+              - listitem [ref=e1572]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1573] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_SanDiego_64.pdf
+              - listitem [ref=e1574]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1575] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_SanDiegoState_63.pdf
+              - listitem [ref=e1576]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1577] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_SanDiegoState_64.pdf
+          - generic [ref=e1578]:
+            - heading "セントラル・オクラホマ大学" [level=5] [ref=e1581]
+            - list [ref=e1583]:
+              - listitem [ref=e1584]:
+                - link " 2023年度 留学報告書 " [ref=e1585] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Final_2023_US_CentralOklahoma.pdf
+              - listitem [ref=e1586]:
+                - link " 2023年度 留学近況報告書 " [ref=e1587] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/41_Middle_2023_US_CentralOklahoma.pdf
+              - listitem [ref=e1588]:
+                - link " 2022年度 留学報告書 (1) " [ref=e1589] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Final_2022_US_CentralOklahoma.pdf
+              - listitem [ref=e1590]:
+                - link " 2022年度 留学報告書 (2) " [ref=e1591] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Final_2022_US_CentralOklahoma.pdf
+              - listitem [ref=e1592]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e1593] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/36_Middle_2022_US_CentralOklahoma.pdf
+              - listitem [ref=e1594]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e1595] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/37_Middle_2022_US_CentralOklahoma.pdf
+              - listitem [ref=e1596]:
+                - link " 2019年度 留学報告書 (1) " [ref=e1597] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CentralOklahoma_66.pdf
+              - listitem [ref=e1598]:
+                - link " 2019年度 留学報告書 (2) " [ref=e1599] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CentralOklahoma_67.pdf
+              - listitem [ref=e1600]:
+                - link " 2019年度 留学報告書 (3) " [ref=e1601] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CentralOklahoma_68.pdf
+              - listitem [ref=e1602]:
+                - link " 2019年度 留学報告書 (4) " [ref=e1603] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_CentralOklahoma_69.pdf
+              - listitem [ref=e1604]:
+                - link " 2019年度 留学近況報告書 (1) " [ref=e1605] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CentralOklahoma_66.pdf
+              - listitem [ref=e1606]:
+                - link " 2019年度 留学近況報告書 (2) " [ref=e1607] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CentralOklahoma_67.pdf
+              - listitem [ref=e1608]:
+                - link " 2019年度 留学近況報告書 (3) " [ref=e1609] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CentralOklahoma_68.pdf
+              - listitem [ref=e1610]:
+                - link " 2019年度 留学近況報告書 (4) " [ref=e1611] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_CentralOklahoma_69.pdf
+          - generic [ref=e1612]:
+            - heading "ハワイ大学ヒロ校" [level=5] [ref=e1615]
+            - list [ref=e1617]:
+              - listitem [ref=e1618]:
+                - link " 2024年度 留学報告書 " [ref=e1619] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/53_Final_2024_US_Hawaii_Hilo.pdf
+              - listitem [ref=e1620]:
+                - link " 2024年度 留学近況報告書 " [ref=e1621] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/53_Middle_2024_US_Hawaii_Hilo.pdf
+          - generic [ref=e1622]:
+            - heading "ミドル・テネシー州立大学" [level=5] [ref=e1625]
+            - list [ref=e1627]:
+              - listitem [ref=e1628]:
+                - link " 2025年度 留学報告書 国際日本学部 " [ref=e1629] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/58_Final_2025_US_MiddleTennessee.pdf
+              - listitem [ref=e1630]:
+                - link " 2025年度 留学近況報告書 国際日本学部 " [ref=e1631] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/58_Middle_2025_US_MiddleTennessee.pdf
+              - listitem [ref=e1632]:
+                - link " 2024年度 留学報告書 " [ref=e1633] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/54_Final_2024_US_MiddleTennessee.pdf
+              - listitem [ref=e1634]:
+                - link " 2024年度 留学近況報告書 " [ref=e1635] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/54_Middle_2024_US_MiddleTennessee.pdf
+              - listitem [ref=e1636]:
+                - link " 2023年度 留学報告書 " [ref=e1637] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Final_2023_US_MiddleTennesseeState.pdf
+              - listitem [ref=e1638]:
+                - link " 2023年度 留学近況報告書 " [ref=e1639] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/44_Middle_2023_US_MiddleTennesseeState.pdf
+          - generic [ref=e1640]:
+            - heading "ヤングスタウン州立大学" [level=5] [ref=e1643]
+            - list [ref=e1645]:
+              - listitem [ref=e1646]:
+                - link " 2023年度 留学報告書 " [ref=e1647] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/49_Final_2023_US_YoungstownState.pdf
+              - listitem [ref=e1648]:
+                - link " 2023年度 留学近況報告書 " [ref=e1649] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/49_Middle_2023_US_YoungstownState.pdf
+              - listitem [ref=e1650]:
+                - link " 2019年度 留学報告書 " [ref=e1651] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_US_youngstown_87.pdf
+              - listitem [ref=e1652]:
+                - link " 2019年度 留学近況報告書 " [ref=e1653] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_US_youngstown_87.pdf
+        - generic [ref=e1654]:
+          - heading "カナダ" [level=3] [ref=e1657]
+          - generic [ref=e1662]:
+            - heading "ヨーク大学" [level=5] [ref=e1665]
+            - list [ref=e1667]:
+              - listitem [ref=e1668]:
+                - link " 2025年度 留学報告書 (1) 政治経済学部 " [ref=e1669] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/64_Final_2025_CA_York.pdf
+              - listitem [ref=e1670]:
+                - link " 2025年度 留学報告書 (2) 国際日本学部 " [ref=e1671] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/65_Final_2025_CA_York.pdf
+              - listitem [ref=e1672]:
+                - link " 2025年度 留学近況報告書 (1) 政治経済学部 " [ref=e1673] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/64_Middle_2025_CA_York.pdf
+              - listitem [ref=e1674]:
+                - link " 2025年度 留学近況報告書 (2) 国際日本学部 " [ref=e1675] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/65_Middle_2025_CA_York.pdf
+              - listitem [ref=e1676]:
+                - link " 2024年度 留学報告書 (1) " [ref=e1677] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/60_Final_2024_CA_York.pdf
+              - listitem [ref=e1678]:
+                - link " 2024年度 留学報告書 (2) " [ref=e1679] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/62_Final_2024_CA_York.pdf
+              - listitem [ref=e1680]:
+                - link " 2024年度 留学報告書 (3) " [ref=e1681] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/61_Final_2024_CA_York.pdf
+              - listitem [ref=e1682]:
+                - link " 2024年度 留学近況報告書 (1) " [ref=e1683] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/60_Middle_2024_CA_York.pdf
+              - listitem [ref=e1684]:
+                - link " 2024年度 留学近況報告書 (2) " [ref=e1685] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/61_Middle_2024_CA_York.pdf
+              - listitem [ref=e1686]:
+                - link " 2024年度 留学近況報告書 (3) " [ref=e1687] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/62_Middle_2024_CA_York.pdf
+              - listitem [ref=e1688]:
+                - link " 2023年度 留学報告書 (1) " [ref=e1689] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/50_Final_2023_CA_York.pdf
+              - listitem [ref=e1690]:
+                - link " 2023年度 留学報告書 (2) " [ref=e1691] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/51_Final_2023_CA_York.pdf
+              - listitem [ref=e1692]:
+                - link " 2023年度 留学近況報告書 (1) " [ref=e1693] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/50_Middle_2023_CA_York.pdf
+              - listitem [ref=e1694]:
+                - link " 2023年度 留学近況報告書 (2) " [ref=e1695] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/51_Middle_2023_CA_York.pdf
+              - listitem [ref=e1696]:
+                - link " 2022年度 留学報告書 (1) " [ref=e1697] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Final_2022_CA_York.pdf
+              - listitem [ref=e1698]:
+                - link " 2022年度 留学報告書 (2) " [ref=e1699] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Final_2022_CA_York.pdf
+              - listitem [ref=e1700]:
+                - link " 2022年度 留学近況報告書 (1) " [ref=e1701] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/46_Middle_2022_CA_York.pdf
+              - listitem [ref=e1702]:
+                - link " 2022年度 留学近況報告書 (2) " [ref=e1703] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/47_Middle_2022_CA_York.pdf
+              - listitem [ref=e1704]:
+                - link " 2021年度 留学報告書 " [ref=e1705] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/17_Final_2021_CA_YorkUniversity.pdf
+              - listitem [ref=e1706]:
+                - link " 2019年度 留学報告書 " [ref=e1707] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2019_CA_York_52.pdf
+              - listitem [ref=e1708]:
+                - link " 2019年度 留学近況報告書 " [ref=e1709] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2019_CA_York_52.pdf
+              - listitem [ref=e1710]:
+                - link " 2018年度 留学報告書 " [ref=e1711] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Final_2018_CA_York_16.pdf
+              - listitem [ref=e1712]:
+                - link " 2018年度 留学近況報告書 " [ref=e1713] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Middle_2018_CA_York_16_.pdf
+              - listitem [ref=e1714]:
+                - link " 2017年度 留学報告書 " [ref=e1715] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_CA_York_46.pdf
+              - listitem [ref=e1716]:
+                - link " 2017年度 留学近況報告書 " [ref=e1717] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_York.pdf
+              - listitem [ref=e1718]:
+                - link " 2015年度 留学近況報告書 " [ref=e1719] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_York.pdf
+              - listitem [ref=e1720]:
+                - link " 2014年度 留学報告書 " [ref=e1721] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_York_1.pdf
+              - listitem [ref=e1722]:
+                - link " 2014年度 留学近況報告書 (1) " [ref=e1723] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_York_1.pdf
+              - listitem [ref=e1724]:
+                - link " 2014年度 留学近況報告書 (2) " [ref=e1725] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_York_2.pdf
+              - listitem [ref=e1726]:
+                - link " 2013年度 留学報告書 (1) " [ref=e1727] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_York_1.pdf
+              - listitem [ref=e1728]:
+                - link " 2013年度 留学報告書 (2) " [ref=e1729] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_York_2.pdf
+              - listitem [ref=e1730]:
+                - link " 2013年度 留学近況報告書 (1) " [ref=e1731] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_York_1.pdf
+              - listitem [ref=e1732]:
+                - link " 2013年度 留学近況報告書 (2) " [ref=e1733] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_York_2.pdf
+              - listitem [ref=e1734]:
+                - link " 2012年度 留学報告書 " [ref=e1735] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_York.pdf
+              - listitem [ref=e1736]:
+                - link " 2012年度 留学近況報告書 " [ref=e1737] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_York.pdf
+              - listitem [ref=e1738]:
+                - link " 2011年度 留学報告書 " [ref=e1739] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Final_York.pdf
+              - listitem [ref=e1740]:
+                - link " 2011年度 留学近況報告書 " [ref=e1741] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2011_Mid_York.pdf
+          - generic [ref=e1742]:
+            - heading "アルバータ大学" [level=5] [ref=e1745]
+            - list [ref=e1747]:
+              - listitem [ref=e1748]:
+                - link " 2024年度 留学報告書 " [ref=e1749] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/63_Final_2024_CA_Alberta.pdf
+              - listitem [ref=e1750]:
+                - link " 2024年度 留学近況報告書 " [ref=e1751] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/63_Middle_2024_CA_Alberta.pdf
+              - listitem [ref=e1752]:
+                - link " 2017年度 留学報告書 " [ref=e1753] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/final_2017_CA_Alberta_33.pdf
+              - listitem [ref=e1754]:
+                - link " 2017年度 留学近況報告書 " [ref=e1755] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2017_Alberta.pdf
+              - listitem [ref=e1756]:
+                - link " 2016年度 留学近況報告書 " [ref=e1757] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Alberta.pdf
+              - listitem [ref=e1758]:
+                - link " 2016年度 留学近況報告書 (2) " [ref=e1759] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/Mid_2016_Alberta_2.pdf
+              - listitem [ref=e1760]:
+                - link " 2015年度 留学報告書 " [ref=e1761] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_final_Alberta.pdf
+              - listitem [ref=e1762]:
+                - link " 2015年度 留学近況報告書 " [ref=e1763] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2015_Mid_Alberta.pdf
+              - listitem [ref=e1764]:
+                - link " 2014年度 留学報告書 " [ref=e1765] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Final_Alberta.pdf
+              - listitem [ref=e1766]:
+                - link " 2014年度 留学近況報告書 " [ref=e1767] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Alberta.pdf
+              - listitem [ref=e1768]:
+                - link " 2013年度 留学報告書 (1) " [ref=e1769] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Alberta_1.pdf
+              - listitem [ref=e1770]:
+                - link " 2013年度 留学報告書 (2) " [ref=e1771] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Alberta_2.pdf
+              - listitem [ref=e1772]:
+                - link " 2013年度 留学報告書 (3) " [ref=e1773] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Final_Alberta_3.pdf
+              - listitem [ref=e1774]:
+                - link " 2013年度 留学近況報告書 (1) " [ref=e1775] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Alberta_1.pdf
+              - listitem [ref=e1776]:
+                - link " 2013年度 留学近況報告書 (2) " [ref=e1777] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2013_Mid_Alberta_2.pdf
+              - listitem [ref=e1778]:
+                - link " 2012年度 留学報告書 " [ref=e1779] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Alberta.pdf
+              - listitem [ref=e1780]:
+                - link " 2012年度 留学近況報告書 " [ref=e1781] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Alberta.pdf
+              - listitem [ref=e1782]:
+                - link " 2010年度 留学報告書 " [ref=e1783] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2010_Final_Alberta.pdf
+          - generic [ref=e1784]:
+            - heading "モントリオール大学" [level=5] [ref=e1787]
+            - list [ref=e1789]:
+              - listitem [ref=e1790]:
+                - link " 2014年度 留学近況報告書 " [ref=e1791] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2014_Mid_Montreal.pdf
+              - listitem [ref=e1792]:
+                - link " 2012年度 留学報告書 " [ref=e1793] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Final_Montreal.pdf
+              - listitem [ref=e1794]:
+                - link " 2012年度 留学近況報告書 " [ref=e1795] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2012_Mid_Montreal.pdf
+              - listitem [ref=e1796]:
+                - link " 2010年度 留学報告書 (1) " [ref=e1797] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2010_Final_Montreal_1.pdf
+              - listitem [ref=e1798]:
+                - link " 2010年度 留学報告書 (2) " [ref=e1799] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/2010_Final_Montreal_2.pdf
+          - generic [ref=e1800]:
+            - heading "ユーコン大学" [level=5] [ref=e1803]
+            - list [ref=e1805]:
+              - listitem [ref=e1806]:
+                - link " 2024年度 留学報告書 " [ref=e1807] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/64_Final_2024_CA_Yukon.pdf
+              - listitem [ref=e1808]:
+                - link " 2024年度 留学近況報告書 " [ref=e1809] [cursor=pointer]:
+                  - /url: /cip/report/6t5h7p00000gfpad-att/64_Middle_2024_CA_Yukon.pdf
+        - generic [ref=e1810]: ※ 本報告書に記載されている内容は個人の見解であり、明治大学の公式見解を反映するものではありません。
+      - generic [ref=e1814]:
+        - generic:  
+        - link " 海外留学・学内国際交流を希望する方へ" [ref=e1816] [cursor=pointer]:
+          - /url: /cip/from/index.html
+        - generic [ref=e1817]:
+          - navigation [ref=e1818]:
+            - list [ref=e1819]:
+              - listitem [ref=e1820]:
+                - generic [ref=e1821]:
+                  - term [ref=e1822]:
+                    - generic [ref=e1823]: 海外留学を希望する方
+                    - button "" [ref=e1824] [cursor=pointer]
+                  - text:      
+              - listitem [ref=e1825]:
+                - generic [ref=e1826]:
+                  - term [ref=e1827]:
+                    - generic [ref=e1828]: 学内国際交流を希望する方
+                    - button "" [ref=e1829] [cursor=pointer]
+                  - text:      
+              - listitem [ref=e1830]:
+                - link " FAQ（よくある質問と回答）" [ref=e1831] [cursor=pointer]:
+                  - /url: /cip/qfki0t00000endzi.html
+          - navigation [ref=e1832]:
+            - generic [ref=e1833]:
+              - term [ref=e1834]: ニュース
+              - definition [ref=e1835]:
+                - list [ref=e1836]:
+                  - listitem [ref=e1837]:
+                    - link " ニュース一覧" [ref=e1838] [cursor=pointer]:
+                      - /url: /cip/from/information/news2026.html
+          - navigation:
+            - generic:
+              - definition:
+                - list
+          - navigation:
+            - generic:
+              - definition:
+                - list
+          - generic [ref=e1841]:
+            - link [ref=e1843] [cursor=pointer]:
+              - /url: /cip/qfki0t00000if7a8.html
+            - link [ref=e1847] [cursor=pointer]:
+              - /url: /cip/financial/topugrant.html
+            - link [ref=e1851] [cursor=pointer]:
+              - /url: /cip/preparation/eng_programmes/index.html
+            - link [ref=e1855] [cursor=pointer]:
+              - /url: /cip/preparation/counseling/gakusei_advisor.html
+            - link [ref=e1859] [cursor=pointer]:
+              - /url: /cip/japaneseedu/japanese-volunteer.html
+            - link [ref=e1863] [cursor=pointer]:
+              - /url: /qfki0t000004xzci.html
+    - paragraph:
+      - link "" [ref=e1866] [cursor=pointer]:
+        - /url: "#pageTop"
+    - contentinfo [ref=e1867]:
+      - generic [ref=e1868]:
+        - list [ref=e1869]:
+          - listitem [ref=e1870]:
+            - link "Concept：前へ" [ref=e1871] [cursor=pointer]:
+              - /url: /koho/goforward.html
+          - listitem [ref=e1872]:
+            - link "お問い合わせ" [ref=e1873] [cursor=pointer]:
+              - /url: /koho/information/inquiry/index.html
+          - listitem [ref=e1874]:
+            - link "情報公開" [ref=e1875] [cursor=pointer]:
+              - /url: /koho/disclosures/index.html
+          - listitem [ref=e1876]:
+            - link "採用情報" [ref=e1877] [cursor=pointer]:
+              - /url: /koho/careers/index.html
+          - listitem [ref=e1878]:
+            - link "情報サービス" [ref=e1879] [cursor=pointer]:
+              - /url: /it/index.html
+          - listitem [ref=e1880]:
+            - link "プライバシーポリシー" [ref=e1881] [cursor=pointer]:
+              - /url: /bunsho/personal_inf/kojin_1.html
+          - listitem [ref=e1882]:
+            - link "このサイトについて" [ref=e1883] [cursor=pointer]:
+              - /url: /koho/termsofuse/index.html
+          - listitem [ref=e1884]:
+            - link "サイトマップ" [ref=e1885] [cursor=pointer]:
+              - /url: /koho/sitemap/index.html
+          - listitem [ref=e1886]:
+            - link "SNSアカウント一覧" [ref=e1887] [cursor=pointer]:
+              - /url: /koho/social_media/index.html
+          - listitem [ref=e1888]:
+            - link "Meiji.netニュースレター" [ref=e1889] [cursor=pointer]:
+              - /url: https://www.meiji.net/
+        - paragraph [ref=e1890]: © Meiji University,All rights reserved.
