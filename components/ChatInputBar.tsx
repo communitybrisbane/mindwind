@@ -54,9 +54,11 @@ export default function ChatInputBar({
       style.padding = "12px";
       const contentHeight = el.scrollHeight - 24;
       style.padding = "";
+      // 文章量に応じて伸ばす（スクロールさせない）。画面の6割を超えたときだけ安全のため内部スクロール
       const fullHeight = contentHeight + 12 + 52;
-      style.height = `${Math.min(fullHeight, 220)}px`;
-      style.overflowY = fullHeight > 220 ? "auto" : "hidden";
+      const maxHeight = Math.floor(window.innerHeight * 0.6);
+      style.height = `${Math.min(fullHeight, maxHeight)}px`;
+      style.overflowY = fullHeight > maxHeight ? "auto" : "hidden";
     } else {
       style.padding = "";
       style.height = `${SINGLE_LINE_HEIGHT}px`;

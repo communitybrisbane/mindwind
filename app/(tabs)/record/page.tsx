@@ -94,8 +94,19 @@ export default function RecordPage() {
       .catch(() => {});
   }, [user]);
 
-  const savedCount = messages.filter((m) => m.kind === "card").length;
-  const limitReached = savedCount >= DAILY_LIMIT;
+  // 保存済みのやり取りはタイトルだけのチップに畳み、進行中のメッセージだけをチャットに出す
+  const savedRecords = messages.filter((m) => m.kind === "card");
+  let lastCardIndex = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].kind === "card") {
+      lastCardIndex = i;
+      break;
+    }
+  }
+  const currentMessages = messages.slice(lastCardIndex + 1);
+  const [expandedRecord, setExpandedRecord] = useState<number | null>(null);
+
+  const limitReached = savedRecords.length >= DAILY_LIMIT;
 
   async function sendDiary(text: string) {
     if (!user) return;
@@ -243,9 +254,40 @@ export default function RecordPage() {
       )}
 
       {/* チャットエリア */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
-        {messages.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">
+        {/* 保存済み記録（畳んだチップ。タップで展開） */}
+        {savedRecords.length > 0 && (
+          <div className="flex flex-none flex-col gap-2 pt-3">
+            {savedRecords.map((record, i) => (
+              <div key={i}>
+                <button
+                  type="button"
+                  aria-expanded={expandedRecord === i}
+                  onClick={() => setExpandedRecord(expandedRecord === i ? null : i)}
+                  className="flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]"
+                >
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none text-accent" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M4 12l6 6L20 6" />
+                  </svg>
+                  <span className="flex-1 truncate text-sm font-medium text-ink">
+                    {record.kind === "card" ? record.shaped.title : ""}
+                  </span>
+                  <svg viewBox="0 0 24 24" className={`h-4 w-4 flex-none text-ink-tertiary transition-transform ${expandedRecord === i ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                {expandedRecord === i && record.kind === "card" && (
+                  <div className="mt-2">
+                    <ShapedCard value={record.shaped} readOnly />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {currentMessages.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
             <BlocksIcon className="h-16 w-16 text-accent" strokeWidth={1.2} />
             <p className="mt-5 text-lg font-semibold text-ink">今日のことを話してみよう</p>
             <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
@@ -256,10 +298,8 @@ export default function RecordPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4 py-3">
-            {messages.map((msg, i) =>
-              msg.kind === "card" ? (
-                <ShapedCard key={i} value={msg.shaped} readOnly />
-              ) : msg.role === "user" ? (
+            {currentMessages.map((msg, i) =>
+              msg.kind === "card" ? null : msg.role === "user" ? (
                 <div
                   key={i}
                   className="ml-auto max-w-[80%] whitespace-pre-wrap rounded-xl rounded-br-[4px] bg-accent px-4 py-3 font-serif text-[15px] leading-relaxed text-white"
@@ -275,7 +315,7 @@ export default function RecordPage() {
                     <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] border border-ceramic bg-warm px-4 py-3 text-[15px] leading-relaxed text-ink">
                       {msg.text}
                     </div>
-                    {phase === 2 && i === messages.length - 1 && (
+                    {phase === 2 && i === currentMessages.length - 1 && (
                       <button
                         type="button"
                         onClick={skipDeepDive}
