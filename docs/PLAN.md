@@ -31,7 +31,7 @@
 - [x] 9. 音声入力コンポーネント（Web Speech API・`onend` 自動再開ループ・追記方式・非対応時マイク非表示。独立コンポーネント化）
 - [x] 10. 深掘り API Route（Haiku 4.5・メンタープロンプト共通部＋深掘り追記・`{{profile}}` 注入）＋質問バブル表示とスキップ
 - [x] 11. 成形 API Route（Sonnet 5・Structured Outputs で6項目＋タイトル）＋チャット内編集カード
-- [ ] 12. 保存処理（6項目連結→OpenAI embedding→thoughts 保存→トースト→`/home` 遷移）
+- [x] 12. 保存処理（6項目連結→OpenAI embedding→thoughts 保存→トースト→`/home` 遷移）
 - [ ] 13. 記録ライフサイクル（recordChat の保存・復元、保存済みカードの読み取り専用化、上限3件/日、Asia/Tokyo 日付リセット）※日付境界ロジックは `lib/logic/` にテスト付きで
 
 ## Phase 4：ホーム

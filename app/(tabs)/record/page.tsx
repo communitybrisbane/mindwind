@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
+import { requestToast } from "@/components/Toast";
 import ShapedCard from "@/components/ShapedCard";
 import { BlocksIcon, SparklesIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
@@ -22,13 +24,16 @@ const phaseSubtitles: Record<Phase, string> = {
 const hints = ["何があった？", "どう考えた？", "どう動いた？", "なぜそうした？", "今どんな気持ち？"];
 
 export default function RecordPage() {
+  const router = useRouter();
   const { user } = useUser();
   const [phase, setPhase] = useState<Phase>(1);
   const [messages, setMessages] = useState<Message[]>([]);
   const [diaryText, setDiaryText] = useState("");
   const [deepDiveQuestion, setDeepDiveQuestion] = useState("");
+  const [deepDiveAnswer, setDeepDiveAnswer] = useState("");
   const [shaped, setShaped] = useState<ShapedRecord | null>(null);
   const [sending, setSending] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +84,7 @@ export default function RecordPage() {
 
   async function startShaping(answer: string) {
     if (!user) return;
+    setDeepDiveAnswer(answer);
     setPhase(3);
     setError("");
     setSending(true);
@@ -107,8 +113,33 @@ export default function RecordPage() {
     }
   }
 
-  function saveRecord() {
-    // 保存処理（embedding→thoughts 保存→/home 遷移）はタスク12で接続する
+  async function saveRecord() {
+    if (!user || !shaped || saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const res = await authedFetch(user, "/api/thoughts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shaped,
+          rawText: diaryText,
+          deepDiveQuestion: deepDiveAnswer ? deepDiveQuestion : "",
+          deepDiveAnswer,
+        }),
+      });
+      if (res.status === 409) {
+        setError("今日の記録は上限（3件）に達しました");
+        return;
+      }
+      if (!res.ok) throw new Error(`thoughts ${res.status}`);
+      requestToast("記録しました");
+      router.push("/home");
+    } catch {
+      setError("保存できませんでした。少し待ってからもう一度試してください。");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleSend(text: string) {
@@ -193,7 +224,8 @@ export default function RecordPage() {
               <ShapedCard
                 value={shaped}
                 onChange={setShaped}
-                onSave={saveRecord}
+                onSave={() => void saveRecord()}
+                saving={saving}
               />
             )}
           </div>
