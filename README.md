@@ -1,4 +1,4 @@
-# Brain Bot - あなたが自分のメンター
+# MindWind - あなたが自分のメンター
 
 調子がいい時、結果が出ている時、そのマインドと行動を記録しておく。調子が悪い時、結果が出ていない時、その記録を見て再現する。つまり、**あなたが自分のメンターになる。**
 
@@ -66,7 +66,7 @@
 
 ```bash
 git clone <repository>
-cd brain_bot
+cd mindwind
 cp .env.example .env.local
 npm install
 npm run dev

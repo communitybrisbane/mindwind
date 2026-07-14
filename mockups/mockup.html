@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MindWind - UI Mockups</title>
+<style>
+  :root {
+    --color-primary: #006241;
+    --color-accent: #00754A;
+    --color-dark: #1E3932;
+    --color-light: #d4e9e2;
+    --color-warm: #f2f0eb;
+    --color-ceramic: #edebe9;
+    --color-white: #ffffff;
+    --text-primary: rgba(0,0,0,0.87);
+    --text-secondary: rgba(0,0,0,0.58);
+    --text-tertiary: rgba(0,0,0,0.38);
+    --color-error: #c82014;
+    --shadow-card: 0 0 0.5px rgba(0,0,0,0.14), 0 1px 1px rgba(0,0,0,0.24);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 10px; }
+  body {
+    font-family: Inter, Manrope, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    background: #d9d7d2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4rem;
+    justify-content: center;
+    padding: 4rem;
+  }
+  /* ---------- Phone frame ---------- */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--color-warm);
+    box-shadow: 0 0 6px rgba(0,0,0,0.24), 0 8px 12px rgba(0,0,0,0.14);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: none;
+  }
+  .screen-label {
+    width: 390px; text-align: center; font-size: 1.4rem; color: rgba(0,0,0,0.55);
+    margin-top: -2.8rem; margin-bottom: 1rem;
+  }
+  .frame-wrap { display: flex; flex-direction: column; gap: 1rem; }
+
+  /* ---------- Brand mark (spiral) ---------- */
+  .spiral { fill: none; stroke: currentColor; stroke-width: 72; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Header / Tab bar ---------- */
+  .header {
+    height: 48px; flex: none;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    font-size: 16px; font-weight: 600; color: var(--color-accent);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    z-index: 5;
+  }
+  .header .mark { width: 22px; height: 22px; color: var(--color-accent); }
+  .content { flex: 1; overflow: hidden; padding: 1.6rem; }
+  .tabbar {
+    height: 56px; flex: none;
+    background: var(--color-white);
+    border-top: 1px solid var(--color-ceramic);
+    display: flex;
+  }
+  .tab {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    color: var(--text-tertiary);
+  }
+  .tab.active { color: var(--color-accent); }
+  .tab svg { width: 24px; height: 24px; stroke-width: 1.8; }
+  svg.line { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Buttons ---------- */
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    width: 100%; padding: 12px 24px;
+    background: var(--color-accent); color: #fff;
+    border: 1px solid var(--color-accent); border-radius: 12px;
+    font-size: 16px; font-weight: 600; font-family: inherit; letter-spacing: -0.01em;
+  }
+  .btn-primary svg { width: 24px; height: 24px; stroke-width: 2; }
+  .btn-secondary {
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    width: 100%; padding: 12px 24px;
+    background: #fff; color: var(--color-accent);
+    border: 1px solid var(--color-accent); border-radius: 12px;
+    font-size: 16px; font-weight: 600; font-family: inherit; letter-spacing: -0.01em;
+  }
+  .btn-secondary svg { width: 24px; height: 24px; stroke-width: 2; }
+  .btn-invert {
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    width: 100%; padding: 12px 24px;
+    background: #fff; color: var(--color-accent);
+    border: 1px solid #fff; border-radius: 12px;
+    font-size: 16px; font-weight: 600; font-family: inherit; letter-spacing: -0.01em;
+  }
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--color-white); border-radius: 12px;
+    box-shadow: var(--shadow-card); padding: 1.6rem;
+  }
+
+  /* ================= Start ================= */
+  .start-screen { background: var(--color-accent); }
+  .start { justify-content: space-between; padding: 6.4rem 2.4rem 4.8rem; display: flex; flex-direction: column; height: 100%; }
+  .start-hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+  .start-hero .mark { width: 150px; height: 150px; color: #fff; }
+  .start-title { font-size: 3.2rem; font-weight: 600; color: #fff; }
+  .start-tagline { font-size: 1.6rem; color: rgba(255,255,255,0.78); }
+  .start-bottom { display: flex; flex-direction: column; gap: 1.2rem; align-items: center; }
+  .start-sub { font-size: 1.3rem; color: rgba(255,255,255,0.65); }
+  .start-legal { font-size: 1.2rem; color: rgba(255,255,255,0.65); text-align: center; line-height: 1.6; }
+  .start-legal a { color: rgba(255,255,255,0.9); text-decoration: underline; }
+
+  /* ================= Onboarding ================= */
+  .ob { padding: 3.2rem 2.4rem; display: flex; flex-direction: column; height: 100%; }
+  .ob-title { font-size: 24px; font-weight: 600; color: var(--color-primary); }
+  .ob-sub { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0.8rem 0 2.8rem; }
+  .ob-field { margin-bottom: 2.2rem; }
+  .ob-field .lb { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 0.8rem; }
+  .ob-field .lb small { font-weight: 400; color: var(--text-tertiary); margin-left: 0.6rem; }
+  .ob-input {
+    width: 100%; background: #fff; border: 1px solid #d6dbde; border-radius: 4px;
+    padding: 12px; font-size: 16px; color: var(--text-primary);
+  }
+  .ob-input .ph { color: var(--text-tertiary); }
+  .chips { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .chip {
+    font-size: 14px; font-weight: 600; color: var(--text-secondary);
+    background: #fff; border: 1px solid var(--color-ceramic); border-radius: 999px;
+    padding: 0.9rem 1.6rem;
+  }
+  .chip.on { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+  .ob-skip { text-align: center; font-size: 13px; color: var(--text-secondary); text-decoration: underline; margin-top: 1.4rem; }
+
+  /* ================= Home ================= */
+  .hero {
+    position: relative; overflow: hidden;
+    background: var(--color-accent); border-radius: 12px;
+    padding: 2rem 1.6rem; margin: 0.4rem 0 1.6rem;
+    color: #fff;
+  }
+  .hero-set {
+    position: absolute; top: 1.2rem; right: 1.2rem; z-index: 2;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(255,255,255,0.16);
+    display: flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .hero-set svg { width: 16px; height: 16px; }
+  .hero .watermark {
+    position: absolute; right: -50px; top: -30px;
+    width: 220px; height: 220px; color: rgba(255,255,255,0.14);
+  }
+  .hero h1 { font-size: 2.4rem; font-weight: 600; position: relative; }
+  .hero p { font-size: 1.4rem; color: rgba(255,255,255,0.75); margin-top: 0.2rem; position: relative; }
+  .hero .streak-row {
+    display: flex; align-items: center; gap: 0.8rem; margin-top: 1.6rem; position: relative;
+  }
+  .hero .streak-row svg { width: 20px; height: 20px; color: #fff; stroke-width: 2; }
+  .hero .streak-row b { font-size: 24px; font-weight: 700; }
+  .hero .streak-row span { font-size: 15px; color: rgba(255,255,255,0.85); }
+  .cal { margin-bottom: 1.6rem; }
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+  .cal-head h2 { font-size: 16px; font-weight: 600; }
+  .cal-head svg { width: 16px; height: 16px; color: var(--text-secondary); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 0.6rem; justify-items: center; }
+  .cal-grid .wd { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .cal-grid .d {
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; color: var(--text-secondary); border-radius: 50%;
+  }
+  .cal-grid .d.rec { background: var(--color-accent); color: #fff; }
+  .cal-grid .d.today { border: 1px solid var(--color-accent); color: var(--color-accent); font-weight: 600; }
+  .thoughts h2 { font-size: 16px; font-weight: 600; margin-bottom: 0.8rem; }
+  .thought { padding: 1.2rem 0; border-bottom: 1px solid var(--color-ceramic); }
+  .thought:last-child { border-bottom: none; padding-bottom: 0.4rem; }
+  .thought-row { display: flex; align-items: center; gap: 1rem; min-height: 2.4rem; }
+  .thought-date { font-size: 13px; color: var(--text-secondary); flex: none; }
+  .thought-title { font-size: 16px; font-weight: 500; flex: 1; }
+  .thought-row svg { width: 16px; height: 16px; color: var(--text-secondary); flex: none; }
+  .thought.open .thought-row svg { transform: rotate(180deg); }
+  .thought-body { padding-top: 1.2rem; }
+  .th-field { margin-bottom: 1.4rem; }
+  .th-field:last-child { margin-bottom: 0; }
+  .th-field .lb { font-size: 13px; font-weight: 600; color: var(--color-accent); margin-bottom: 0.4rem; }
+  .th-field .vl { font-size: 15px; line-height: 1.5; color: var(--text-primary); }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
+  .tag {
+    font-size: 12px; background: var(--color-light); color: var(--color-primary);
+    border-radius: 4px; padding: 0.3rem 0.8rem;
+  }
+
+  /* ================= Record（日記の雰囲気） ================= */
+  .diary .textarea { font-family: "Iowan Old Style", Georgia, serif; }
+  .diary-date { font-size: 22px; font-weight: 600; color: var(--color-primary); }
+  .diary-sub { font-size: 13px; color: var(--text-secondary); margin: 0.2rem 0 1.6rem; }
+  .diary .bubble-ai .bb { background: var(--color-warm); box-shadow: none; border: 1px solid var(--color-ceramic); }
+  .diary .bubble-user { font-family: "Iowan Old Style", Georgia, serif; }
+  .diary .chat .bubble-ai { margin-bottom: 1.2rem; }
+
+  .steps { display: flex; gap: 0.6rem; margin: 0.4rem 0 1.4rem; }
+  .steps i { flex: 1; height: 4px; border-radius: 2px; background: var(--color-ceramic); }
+  .steps i.on { background: var(--color-accent); }
+  .steps-labels { display: flex; gap: 0.6rem; margin-bottom: 1.6rem; }
+  .steps-labels span { flex: 1; text-align: center; font-size: 11px; color: var(--text-tertiary); }
+  .steps-labels span.on { color: var(--color-accent); font-weight: 600; }
+  .rec-h { font-size: 20px; font-weight: 600; margin-bottom: 1.6rem; }
+  .mode { display: flex; background: #fff; border: 1px solid var(--color-ceramic); border-radius: 8px; padding: 0.4rem; gap: 0.4rem; margin-bottom: 1.6rem; }
+  .mode span { flex: 1; text-align: center; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+  .mode .on { background: var(--color-accent); color: #fff; }
+  .textarea {
+    width: 100%; min-height: 120px; background: #fff; border: 1px solid #d6dbde;
+    border-radius: 4px; padding: 12px; font-size: 16px; line-height: 1.5; color: var(--text-primary);
+  }
+  .textarea .ph { color: var(--text-tertiary); }
+  .rec-cta { margin-top: 2.4rem; }
+  .hints { margin-top: 1.2rem; }
+  .hints-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.6rem; }
+  .hints .tags { margin-top: 0; }
+  .cls-card { background: var(--color-white); border-radius: 12px; padding: 1.4rem; box-shadow: var(--shadow-card); }
+  .cls-field { margin-bottom: 1rem; }
+  .cls-field:last-child { margin-bottom: 0; }
+  .cls-field .lb { font-size: 13px; font-weight: 600; color: var(--color-accent); margin-bottom: 0.8rem; }
+  .cls-field .vl {
+    font-size: 15px; line-height: 1.5;
+    background: #fff; border: 1px solid #d6dbde; border-radius: 4px; padding: 6px 10px;
+  }
+  .cls-hint { font-size: 13px; color: var(--text-secondary); margin: -1.2rem 0 1.6rem; }
+  .bubble-ai {
+    display: flex; gap: 0.8rem; align-items: flex-start; margin-bottom: 2.4rem;
+  }
+  .ai-avatar {
+    width: 32px; height: 32px; flex: none; border-radius: 50%;
+    background: var(--color-accent); display: flex; align-items: center; justify-content: center;
+  }
+  .ai-avatar svg { width: 20px; height: 20px; color: #fff; }
+  .bubble-ai .bb {
+    background: var(--color-white); box-shadow: var(--shadow-card); border-radius: 12px 12px 12px 4px;
+    padding: 1.2rem 1.4rem; font-size: 15px; line-height: 1.5;
+  }
+  .answer-box { position: relative; }
+  .answer-box .send {
+    position: absolute; right: 1rem; bottom: 1rem; width: 32px; height: 32px;
+    border-radius: 50%; background: var(--color-accent); display: flex; align-items: center; justify-content: center;
+  }
+  .answer-box .send svg { width: 16px; height: 16px; color: #fff; stroke-width: 2; }
+
+  /* ================= Search ================= */
+  .chat { display: flex; flex-direction: column; gap: 0.8rem; }
+  .bubble-user {
+    align-self: flex-end; max-width: 78%;
+    background: var(--color-accent); color: #fff;
+    border-radius: 12px 12px 4px 12px; padding: 1.2rem 1.4rem;
+    font-size: 15px; line-height: 1.5;
+  }
+  .advice { line-height: 1.6 !important; }
+  /* 相談モードのユーザー吹き出しはダークグリーン（記録モードとの区別） */
+  #search .bubble-user, #search-empty .bubble-user, #search-history .bubble-user, #search-detail .bubble-user { background: var(--color-dark); }
+  .refs { margin-top: 1.6rem; }
+  .refs h3 { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.4rem; }
+  .ref { display: flex; gap: 1rem; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--color-ceramic); }
+  .ref:last-child { border-bottom: none; }
+  .ref .dt { font-size: 13px; color: var(--text-secondary); flex: none; }
+  .ref .tx { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .query { margin-top: auto; padding-top: 1.6rem; }
+  .micL { left: 1rem; right: auto; }
+  /* 下部固定の入力バー：初期1行はアイコン間に文字。複数行時は本文全幅＋下段にアイコン行 */
+  .inputbar .textarea { min-height: 48px; padding: 13px 48px; }
+  .inputbar.grown .textarea { padding: 13px 12px 52px; }
+  .ref-chip {
+    align-self: flex-start; margin-left: 4rem; display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 12px; color: var(--text-secondary);
+    background: #fff; border: 1px solid var(--color-ceramic); border-radius: 999px; padding: 0.4rem 1rem;
+  }
+  .ref-chip svg { width: 13px; height: 13px; }
+  .newchat {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 13px; font-weight: 600; color: var(--color-accent);
+    background: #fff; border: 1px solid var(--color-accent); border-radius: 999px; padding: 0.5rem 1.2rem;
+  }
+  .newchat svg { width: 14px; height: 14px; }
+  .ref-list {
+    margin-left: 4rem; background: #fff; border-radius: 12px;
+    box-shadow: var(--shadow-card); padding: 0.2rem 1.2rem;
+  }
+  .sheet-dim { position: absolute; inset: 0; background: rgba(0,0,0,0.4); z-index: 10; }
+  .sheet {
+    position: absolute; left: 1.6rem; right: 1.6rem; top: 50%; transform: translateY(-50%); z-index: 11;
+    background: #fff; border-radius: 16px; padding: 2rem 1.6rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.24);
+  }
+  .drawer {
+    position: absolute; top: 0; bottom: 0; left: 0; width: 78%; z-index: 11;
+    background: #fff; padding: 2rem 1.6rem;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+    display: flex; flex-direction: column;
+  }
+  .drawer-new {
+    display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+    font-size: 15px; font-weight: 600; color: var(--color-accent);
+    border: 1px solid var(--color-accent); border-radius: 999px;
+    padding: 1rem 1.2rem; margin-bottom: 2rem;
+  }
+  .drawer-new svg { width: 16px; height: 16px; }
+  .drawer-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.6rem; }
+  .drawer-item { padding: 1.1rem 1rem; border-radius: 8px; display: flex; align-items: center; gap: 1rem; }
+  .drawer-item .di-main { flex: 1; min-width: 0; }
+  .drawer-item .di-del { width: 16px; height: 16px; color: var(--text-tertiary); flex: none; }
+  .drawer-item.active { background: var(--color-light); }
+  .drawer-item .t { font-size: 14px; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .drawer-item.active .t { color: var(--color-primary); font-weight: 600; }
+  .drawer-item .d { font-size: 12px; color: var(--text-tertiary); margin-top: 0.3rem; }
+  .sheet-close {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--color-warm); color: var(--text-secondary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sheet-close svg { width: 14px; height: 14px; }
+  .sheet-date { font-size: 16px; font-weight: 600; margin-bottom: 1.2rem; padding-right: 3.2rem; }
+</style>
+</head>
+<body>
+
+<!-- Brand spiral symbol -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="spiral" viewBox="0 0 1024 1024">
+    <path class="spiral" d="M 302 572
+             a 55 55 0 0 1 110 0
+             a 95 95 0 0 1 -190 0
+             C 222 390 442 360 602 440
+             C 682 480 742 512 802 512"/>
+  </symbol>
+  <!-- Tight-cropped variant for small icons (path bounds + stroke) -->
+  <symbol id="spiral-tab" viewBox="186 362 652 341">
+    <path class="spiral" style="stroke-width:50" d="M 302 572
+             a 55 55 0 0 1 110 0
+             a 95 95 0 0 1 -190 0
+             C 222 390 442 360 602 440
+             C 682 480 742 512 802 512"/>
+  </symbol>
+</svg>
+
+<!-- ============ 1. Start ============ -->
+<div class="frame-wrap">
+<div class="phone start-screen" id="start">
+  <div class="content start">
+    <div class="start-hero">
+      <svg class="mark"><use href="#spiral"/></svg>
+      <div class="start-title">MindWind</div>
+    </div>
+    <div class="start-bottom">
+      <button class="btn-invert">
+        <span style="width:20px;height:20px;border-radius:50%;background:#00754A;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">G</span>
+        Google ではじめる
+      </button>
+      <div class="start-legal"><a href="#">利用規約</a>・<a href="#">プライバシーポリシー</a>に同意して続行</div>
+    </div>
+  </div>
+</div>
+<div class="screen-label">1. スタート（/）</div>
+</div>
+
+<!-- ============ 1b. Onboarding (profile) ============ -->
+<div class="frame-wrap">
+<div class="phone" id="onboarding">
+  <div class="header"><svg class="mark"><use href="#spiral"/></svg>MindWind</div>
+  <div class="content ob">
+    <div class="ob-title">はじめまして</div>
+    <div class="ob-sub">あなたに合った答えを返すために、<br>少しだけ教えてください</div>
+    <div class="ob-field">
+      <div class="lb">呼び名</div>
+      <div class="ob-input"><span class="ph">例：ゆう</span></div>
+    </div>
+    <div class="ob-field">
+      <div class="lb">いましていること<small>仕事や学業など</small></div>
+      <div class="ob-input"><span class="ph">例：営業／大学生</span></div>
+    </div>
+    <div class="ob-field">
+      <div class="lb">いまのステージ</div>
+      <div class="chips">
+        <span class="chip">学生</span><span class="chip on">社会人1年目</span><span class="chip">2年目</span><span class="chip">3年目以上</span>
+      </div>
+    </div>
+    <div class="ob-field">
+      <div class="lb">いまの目標・課題<small>任意・あとからでOK</small></div>
+      <div class="ob-input"><span class="ph">例：仕事に早く慣れたい</span></div>
+    </div>
+    <div style="margin-top:auto">
+      <button class="btn-primary" aria-label="はじめる"><svg style="width:30px;height:30px"><use href="#spiral-tab"/></svg></button>
+      <div class="ob-skip">あとで入力する</div>
+    </div>
+  </div>
+</div>
+<div class="screen-label">1b. プロフィール登録（初回ログイン後・スキップ可）</div>
+</div>
+
+<!-- ============ 1c. Profile edit mode ============ -->
+<div class="frame-wrap">
+<div class="phone" id="profile-edit">
+  <div class="header"><svg class="mark"><use href="#spiral"/></svg>MindWind</div>
+  <div class="content ob">
+    <div class="ob-title">プロフィール</div>
+    <div class="ob-sub">いつでも変更できます</div>
+    <div class="ob-field">
+      <div class="lb">呼び名</div>
+      <div class="ob-input">ゆう</div>
+    </div>
+    <div class="ob-field">
+      <div class="lb">いましていること<small>仕事や学業など</small></div>
+      <div class="ob-input">法人営業</div>
+    </div>
+    <div class="ob-field">
+      <div class="lb">いまのステージ</div>
+      <div class="chips">
+        <span class="chip">学生</span><span class="chip on">社会人1年目</span><span class="chip">2年目</span><span class="chip">3年目以上</span>
+      </div>
+    </div>
+    <div class="ob-field">
+      <div class="lb">いまの目標・課題<small>任意</small></div>
+      <div class="ob-input">仕事に早く慣れたい</div>
+    </div>
+    <div style="margin-top:auto">
+      <button class="btn-primary" aria-label="保存する"><svg style="width:30px;height:30px"><use href="#spiral-tab"/></svg></button>
+      <div style="border-top:1px solid var(--color-ceramic);margin:2rem 0 1.6rem"></div>
+      <div style="text-align:center;font-size:14px;color:var(--text-secondary)">ログアウト</div>
+      <div style="text-align:center;font-size:14px;color:var(--color-error);margin-top:1.6rem">アカウントを削除</div>
+    </div>
+  </div>
+</div>
+<div class="screen-label">1c. プロフィール編集（設定を兼ねる・ログアウト/アカウント削除）</div>
+</div>
+
+<!-- ============ 2. Home ============ -->
+<div class="frame-wrap">
+<div class="phone" id="home">
+  <div class="header"><svg class="mark"><use href="#spiral"/></svg>MindWind</div>
+  <div class="content">
+    <div class="hero">
+      <div class="hero-set" aria-label="プロフィールを編集"><svg class="line" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
+      <svg class="watermark"><use href="#spiral"/></svg>
+      <h1>こんにちは</h1>
+      <p>7月14日（火）</p>
+      <div class="streak-row">
+        <svg class="line" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        <b>12</b><span>日連続で記録中</span>
+      </div>
+    </div>
+    <div class="card cal">
+      <div class="cal-head">
+        <svg class="line" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        <h2>2026年7月</h2>
+        <svg class="line" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="cal-grid">
+        <span class="wd">日</span><span class="wd">月</span><span class="wd">火</span><span class="wd">水</span><span class="wd">木</span><span class="wd">金</span><span class="wd">土</span>
+        <span class="d"></span><span class="d"></span><span class="d"></span><span class="d">1</span><span class="d">2</span><span class="d rec">3</span><span class="d rec">4</span>
+        <span class="d">5</span><span class="d rec">6</span><span class="d rec">7</span><span class="d rec">8</span><span class="d rec">9</span><span class="d rec">10</span><span class="d rec">11</span>
+        <span class="d rec">12</span><span class="d rec">13</span><span class="d today">14</span><span class="d">15</span><span class="d">16</span><span class="d">17</span><span class="d">18</span>
+        <span class="d">19</span><span class="d">20</span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d">24</span><span class="d">25</span>
+        <span class="d">26</span><span class="d">27</span><span class="d">28</span><span class="d">29</span><span class="d">30</span><span class="d">31</span><span class="d"></span>
+      </div>
+    </div>
+    <div class="card thoughts">
+      <h2>最近の記録</h2>
+      <div class="thought open">
+        <div class="thought-row">
+          <span class="thought-date">7/13</span>
+          <span class="thought-title">プロジェクトをまとめられた</span>
+          <svg class="line" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+        <div class="thought-body">
+          <div class="th-field"><div class="lb">出来事</div><div class="vl">複雑なプロジェクトを上手くまとめられた</div></div>
+          <div class="th-field"><div class="lb">思考</div><div class="vl">焦らず、全員の意見を聞いてから判断することが大事</div></div>
+          <div class="th-field"><div class="lb">行動</div><div class="vl">まずメンバーと1対1で話して気持ちを聞き、その後全体会議で意見をまとめた</div></div>
+          <div class="th-field"><div class="lb">理由</div><div class="vl">焦らないため、相手を理解するため</div></div>
+          <div class="th-field"><div class="lb">感情</div><div class="vl">心に余裕があった。前日までに資料を作り終えていて時間に追われず、先週うまくいったことで気持ちも落ち着いていた</div></div>
+          <div class="th-field"><div class="lb">価値観（AIの気づき）</div><div class="vl">相手を尊重する、全員の合意を重視</div></div>
+          <div style="display:flex;justify-content:flex-end;margin-top:1.2rem">
+            <svg class="line" style="width:16px;height:16px;color:var(--text-tertiary)" viewBox="0 0 24 24" aria-label="この記録を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="thought">
+        <div class="thought-row">
+          <span class="thought-date">7/12</span>
+          <span class="thought-title">新しいタスクを引き受けるか迷った</span>
+          <svg class="line" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab active">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+</div>
+<div class="screen-label">2. ダッシュボード（/home・記録展開時）</div>
+</div>
+
+<!-- ============ 2b. Home (collapsed) ============ -->
+<div class="frame-wrap">
+<div class="phone" id="home-collapsed">
+  <div class="header"><svg class="mark"><use href="#spiral"/></svg>MindWind</div>
+  <div class="content">
+    <div class="hero">
+      <div class="hero-set" aria-label="プロフィールを編集"><svg class="line" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
+      <svg class="watermark"><use href="#spiral"/></svg>
+      <h1>こんにちは</h1>
+      <p>7月14日（火）</p>
+      <div class="streak-row">
+        <svg class="line" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        <b>12</b><span>日連続で記録中</span>
+      </div>
+    </div>
+    <div class="card cal">
+      <div class="cal-head">
+        <svg class="line" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        <h2>2026年7月</h2>
+        <svg class="line" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="cal-grid">
+        <span class="wd">日</span><span class="wd">月</span><span class="wd">火</span><span class="wd">水</span><span class="wd">木</span><span class="wd">金</span><span class="wd">土</span>
+        <span class="d"></span><span class="d"></span><span class="d"></span><span class="d">1</span><span class="d">2</span><span class="d rec">3</span><span class="d rec">4</span>
+        <span class="d">5</span><span class="d rec">6</span><span class="d rec">7</span><span class="d rec">8</span><span class="d rec">9</span><span class="d rec">10</span><span class="d rec">11</span>
+        <span class="d rec">12</span><span class="d rec">13</span><span class="d today">14</span><span class="d">15</span><span class="d">16</span><span class="d">17</span><span class="d">18</span>
+        <span class="d">19</span><span class="d">20</span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d">24</span><span class="d">25</span>
+        <span class="d">26</span><span class="d">27</span><span class="d">28</span><span class="d">29</span><span class="d">30</span><span class="d">31</span><span class="d"></span>
+      </div>
+    </div>
+    <div class="card thoughts">
+      <h2>最近の記録</h2>
+      <div class="thought">
+        <div class="thought-row">
+          <span class="thought-date">7/13</span>
+          <span class="thought-title">プロジェクトをまとめられた</span>
+          <svg class="line" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="thought">
+        <div class="thought-row">
+          <span class="thought-date">7/12</span>
+          <span class="thought-title">新しいタスクを引き受けるか迷った</span>
+          <svg class="line" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="thought">
+        <div class="thought-row">
+          <span class="thought-date">7/11</span>
+          <span class="thought-title">報告のタイミングを逃して焦った</span>
+          <svg class="line" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab active">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+</div>
+<div class="screen-label">2b. ダッシュボード（/home・すべて閉じた状態）</div>
+</div>
+
+<!-- ============ 2c. Home (empty / first visit) ============ -->
+<div class="frame-wrap">
+<div class="phone" id="home-empty">
+  <div class="header"><svg class="mark"><use href="#spiral"/></svg>MindWind</div>
+  <div class="content">
+    <div class="hero">
+      <div class="hero-set" aria-label="プロフィールを編集"><svg class="line" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></div>
+      <svg class="watermark"><use href="#spiral"/></svg>
+      <h1>こんにちは、ゆうさん</h1>
+      <p>7月14日（火）</p>
+      <div class="streak-row">
+        <svg class="line" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        <span>今日から記録を始めよう</span>
+      </div>
+    </div>
+    <div class="card cal">
+      <div class="cal-head">
+        <svg class="line" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        <h2>2026年7月</h2>
+        <svg class="line" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </div>
+      <div class="cal-grid">
+        <span class="wd">日</span><span class="wd">月</span><span class="wd">火</span><span class="wd">水</span><span class="wd">木</span><span class="wd">金</span><span class="wd">土</span>
+        <span class="d"></span><span class="d"></span><span class="d"></span><span class="d">1</span><span class="d">2</span><span class="d">3</span><span class="d">4</span>
+        <span class="d">5</span><span class="d">6</span><span class="d">7</span><span class="d">8</span><span class="d">9</span><span class="d">10</span><span class="d">11</span>
+        <span class="d">12</span><span class="d">13</span><span class="d today">14</span><span class="d">15</span><span class="d">16</span><span class="d">17</span><span class="d">18</span>
+        <span class="d">19</span><span class="d">20</span><span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d">24</span><span class="d">25</span>
+        <span class="d">26</span><span class="d">27</span><span class="d">28</span><span class="d">29</span><span class="d">30</span><span class="d">31</span><span class="d"></span>
+      </div>
+    </div>
+    <div class="card thoughts">
+      <h2>最近の記録</h2>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1.2rem;padding:2.4rem 0 1.6rem">
+        <div style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.6">まだ記録がありません。<br>今日のことを話してみよう</div>
+        <button class="btn-primary" style="width:auto;padding:10px 32px" aria-label="記録する"><svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab active"><svg><use href="#spiral-tab"/></svg></div>
+    <div class="tab"><svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg></div>
+    <div class="tab"><svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg></div>
+  </div>
+</div>
+<div class="screen-label">2c. ダッシュボード（初期状態・記録0件）</div>
+</div>
+
+<!-- ============ 3. Record Phase 1 ============ -->
+<div class="frame-wrap">
+<div class="phone diary" id="record1">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="steps"><i class="on"></i><i></i><i></i></div>
+    <div class="diary-date">7月14日（火）</div>
+    <div class="diary-sub">今日のこと</div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem">
+      <svg class="line" style="width:64px;height:64px;color:var(--color-accent);stroke-width:1.2" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary)">今日のことを話してみよう</div>
+      <div style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.6">うまくいった日も、そうでない日も。<br>記録が積み重なるほどパターンが見えてきます</div>
+    </div>
+    <div class="hints">
+      <div class="hints-title">書くヒント</div>
+      <div class="tags">
+        <span class="tag">何があった？</span><span class="tag">どう考えた？</span><span class="tag">どう動いた？</span><span class="tag">なぜそうした？</span><span class="tag">今どんな気持ち？</span>
+      </div>
+    </div>
+    <div class="answer-box inputbar" style="margin-top:1.2rem">
+      <div class="textarea"><span class="ph">今日のことを自由に...</span></div>
+      <div class="send micL"><svg class="line" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg></div>
+      <div class="send" aria-label="分類する"><svg class="line" viewBox="0 0 24 24"><path d="m12 3 1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9Z"/><path d="m18.5 15 .9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9Z"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab active">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+</div>
+<div class="screen-label">3. 記録・日記（/record Phase 1）</div>
+</div>
+
+<!-- ============ 4. Record Phase 2 ============ -->
+<div class="frame-wrap">
+<div class="phone diary" id="record3">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="steps"><i class="on"></i><i class="on"></i><i></i></div>
+    <div class="diary-date">7月14日（火）</div>
+    <div class="diary-sub">もう少しだけ</div>
+    <div class="chat">
+      <div class="bubble-user">複雑なプロジェクトを上手くまとめられた一日。まずメンバーと1対1で話して気持ちを聞き、その後全体会議で意見をまとめた。焦らず全員の意見を聞くことが大事だと実感。</div>
+      <div class="bubble-ai">
+        <div class="ai-avatar"><svg><use href="#spiral"/></svg></div>
+        <div class="bb">書いてくれてありがとう。心に余裕があったというのは、具体的にはどんな状態でしたか？時間に余裕があったのか、気持ちの余裕があったのか、それとも両方ですか？</div>
+      </div>
+    </div>
+    <div class="answer-box inputbar grown" style="margin-top:auto">
+      <div class="textarea">両方かも。前日までに資料を作り終えていたから時間に追われてなかったし、先週うまくいったことで気持ちも落ち着いていた。</div>
+      <div class="send micL"><svg class="line" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg></div>
+      <div class="send" aria-label="回答を送る"><svg class="line" viewBox="0 0 24 24"><path d="m12 3 1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9Z"/><path d="m18.5 15 .9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9Z"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab active">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+</div>
+<div class="screen-label">4. 記録・深掘り（/record Phase 2）</div>
+</div>
+
+<!-- ============ 5. Record Phase 3 ============ -->
+<div class="frame-wrap">
+<div class="phone diary" id="record2">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+    <div class="chat" style="flex:1;overflow:hidden;justify-content:flex-end">
+      <div class="bubble-ai">
+        <div class="ai-avatar"><svg><use href="#spiral"/></svg></div>
+        <div class="bb">今日の記録を整理したよ。違うところは直してね。</div>
+      </div>
+      <div class="cls-card">
+        <div class="cls-field"><div class="lb">出来事</div><div class="vl">複雑なプロジェクトを上手くまとめられた</div></div>
+        <div class="cls-field"><div class="lb">思考</div><div class="vl">焦らず、全員の意見を聞いてから判断することが大事</div></div>
+        <div class="cls-field"><div class="lb">行動</div><div class="vl">まずメンバーと1対1で話して気持ちを聞き、その後全体会議で意見をまとめた</div></div>
+        <div class="cls-field"><div class="lb">理由</div><div class="vl">焦らないため、相手を理解するため</div></div>
+        <div class="cls-field"><div class="lb">感情</div><div class="vl">心に余裕があった。前日までに資料を作り終えていて時間に追われず、先週うまくいったことで気持ちも落ち着いていた</div></div>
+        <div class="cls-field"><div class="lb">価値観（AIの気づき）</div><div class="vl">相手を尊重する、全員の合意を重視</div></div>
+      </div>
+      <button class="btn-primary" style="margin-top:0.4rem" aria-label="保存する"><svg class="line" viewBox="0 0 24 24"><path d="M17 3.2a2.75 2.75 0 1 1 3.8 3.8L7.6 20.2 2.6 21.4l1.2-5Z"/><path d="m15 5.2 3.8 3.8"/></svg></button>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab active">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+</div>
+<div class="screen-label">5. 記録・成形（/record Phase 3・チャット内カード・編集可）</div>
+</div>
+
+<!-- ============ 6a. Search: empty (new thread) ============ -->
+<div class="frame-wrap">
+<div class="phone" id="search-empty">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="rec-h" style="display:flex;align-items:center;justify-content:space-between"><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="相談履歴"><svg class="line" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg></span><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="新しい相談"><svg class="line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem">
+      <svg style="width:72px;height:72px;color:var(--color-accent)"><use href="#spiral-tab"/></svg>
+      <div style="font-size:18px;font-weight:600;color:var(--text-primary)">過去の自分に相談しよう</div>
+      <div style="font-size:14px;color:var(--text-secondary);text-align:center;line-height:1.6">あなたの記録をもとに、<br>過去のあなたが一緒に考えます</div>
+    </div>
+    <div class="query answer-box inputbar" style="padding-top:0">
+      <div class="textarea"><span class="ph">なんでも聞いてみよう</span></div>
+      <div class="send micL"><svg class="line" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg></div>
+      <div class="send"><svg class="line" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg><use href="#spiral-tab"/></svg></div>
+    <div class="tab"><svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg></div>
+    <div class="tab active"><svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg></div>
+  </div>
+</div>
+<div class="screen-label">6a. 相談・新規スレッド（まっさらな状態）</div>
+</div>
+
+<!-- ============ 6. Search ============ -->
+<div class="frame-wrap">
+<div class="phone" id="search">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="rec-h" style="display:flex;align-items:center;justify-content:space-between"><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="相談履歴"><svg class="line" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg></span><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="新しい相談"><svg class="line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></div>
+    <div class="chat" style="flex:1;overflow:hidden;justify-content:flex-end">
+      <div class="bubble-user">新しいプロジェクト、リーダーとして引き受けるべき？</div>
+      <div class="bubble-ai">
+        <div class="ai-avatar"><svg><use href="#spiral"/></svg></div>
+        <div class="bb advice">引き受けるべきだと思う。過去のあなたは、心に余裕がある状態で、まずメンバーと1対1で話してから全体をまとめるやり方で成功している。ただ、焦っている時のあなたは判断を誤りやすいから、始める前にスケジュールに余裕を作ることだけ意識してみて。</div>
+      </div>
+      <div class="ref-chip"><svg class="line" viewBox="0 0 24 24"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>参考にした記録 2件</div>
+      <div class="bubble-user">焦らないためには何を意識すればいい？</div>
+      <div class="bubble-ai">
+        <div class="ai-avatar"><svg><use href="#spiral"/></svg></div>
+        <div class="bb advice">あなたの場合は「前日までに準備を終わらせておく」が効いている。資料を作り終えていた日は時間に追われず、心に余裕があったと記録している。まず最初の1週間分の段取りを先に決めてしまうのが良さそう。<br><br>この気づきは、今日の記録にも残しておこう。次の相談でもっと活きるよ。</div>
+      </div>
+      <div class="ref-chip"><svg class="line" viewBox="0 0 24 24"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>参考にした記録 2件</div>
+      <div class="ref-list">
+        <div class="ref"><span class="dt">7/13</span><span class="tx">プロジェクトをまとめられた</span></div>
+        <div class="ref"><span class="dt">7/12</span><span class="tx">新しいタスクを引き受けるか迷った</span></div>
+      </div>
+    </div>
+    <div class="query answer-box inputbar">
+      <div class="textarea"><span class="ph">過去の自分に相談しよう</span></div>
+      <div class="send micL"><svg class="line" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg></div>
+      <div class="send"><svg class="line" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab active">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+</div>
+<div class="screen-label">6. 相談（/search）</div>
+</div>
+
+<!-- ============ 6c. Search: history drawer ============ -->
+<div class="frame-wrap">
+<div class="phone" id="search-history">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="rec-h" style="display:flex;align-items:center;justify-content:space-between"><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="相談履歴"><svg class="line" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg></span><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="新しい相談"><svg class="line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></div>
+    <div class="chat" style="flex:1;overflow:hidden;justify-content:flex-end">
+      <div class="bubble-user">焦らないためには何を意識すればいい？</div>
+      <div class="bubble-ai">
+        <div class="ai-avatar"><svg><use href="#spiral"/></svg></div>
+        <div class="bb advice">あなたの場合は「前日までに準備を終わらせておく」が効いている。まず最初の1週間分の段取りを先に決めてしまうのが良さそう。</div>
+      </div>
+    </div>
+    <div class="query answer-box inputbar">
+      <div class="textarea"><span class="ph">過去の自分に相談しよう</span></div>
+      <div class="send micL"><svg class="line" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg></div>
+      <div class="send"><svg class="line" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab"><svg><use href="#spiral-tab"/></svg></div>
+    <div class="tab"><svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg></div>
+    <div class="tab active"><svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg></div>
+  </div>
+  <div class="sheet-dim"></div>
+  <div class="drawer">
+    <div class="drawer-new"><svg class="line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>新しい相談</div>
+    <div class="drawer-title">相談履歴</div>
+    <div class="drawer-item active"><div class="di-main"><div class="t">新しいプロジェクト、リーダーとして引き受けるべき？</div><div class="d">今日</div></div><svg class="line di-del" viewBox="0 0 24 24" aria-label="この相談を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+    <div class="drawer-item"><div class="di-main"><div class="t">同期と比べて焦ってしまう</div><div class="d">7/12</div></div><svg class="line di-del" viewBox="0 0 24 24" aria-label="この相談を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+    <div class="drawer-item"><div class="di-main"><div class="t">上司への報告のタイミング</div><div class="d">7/9</div></div><svg class="line di-del" viewBox="0 0 24 24" aria-label="この相談を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+    <div class="drawer-item"><div class="di-main"><div class="t">ミスした後の切り替え方</div><div class="d">7/5</div></div><svg class="line di-del" viewBox="0 0 24 24" aria-label="この相談を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+    <div class="drawer-item"><div class="di-main"><div class="t">1on1で何を話すべき？</div><div class="d">7/1</div></div><svg class="line di-del" viewBox="0 0 24 24" aria-label="この相談を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+    <div class="drawer-item"><div class="di-main"><div class="t">配属先での立ち回り方</div><div class="d">6/28</div></div><svg class="line di-del" viewBox="0 0 24 24" aria-label="この相談を削除"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></div>
+  </div>
+</div>
+<div class="screen-label">6c. 相談・履歴ドロワー（左からスライドイン）</div>
+</div>
+
+<!-- ============ 6b. Search: reference detail (bottom sheet) ============ -->
+<div class="frame-wrap">
+<div class="phone" id="search-detail">
+  <div class="content" style="display:flex;flex-direction:column">
+    <div class="rec-h" style="display:flex;align-items:center;justify-content:space-between"><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="相談履歴"><svg class="line" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 1.8"/></svg></span><span class="newchat" style="padding:0.6rem 0.8rem" aria-label="新しい相談"><svg class="line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span></div>
+    <div class="chat" style="flex:1;overflow:hidden;justify-content:flex-end">
+      <div class="bubble-user">焦らないためには何を意識すればいい？</div>
+      <div class="bubble-ai">
+        <div class="ai-avatar"><svg><use href="#spiral"/></svg></div>
+        <div class="bb advice">あなたの場合は「前日までに準備を終わらせておく」が効いている。資料を作り終えていた日は時間に追われず、心に余裕があったと記録している。まず最初の1週間分の段取りを先に決めてしまうのが良さそう。</div>
+      </div>
+      <div class="ref-chip"><svg class="line" viewBox="0 0 24 24"><path d="m21.4 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>参考にした記録 2件</div>
+      <div class="ref-list">
+        <div class="ref"><span class="dt">7/13</span><span class="tx">プロジェクトをまとめられた</span></div>
+        <div class="ref"><span class="dt">7/12</span><span class="tx">新しいタスクを引き受けるか迷った</span></div>
+      </div>
+    </div>
+    <div class="query answer-box inputbar">
+      <div class="textarea"><span class="ph">過去の自分に相談しよう</span></div>
+      <div class="send micL"><svg class="line" viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg></div>
+      <div class="send"><svg class="line" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="tab">
+      <svg><use href="#spiral-tab"/></svg>
+    </div>
+    <div class="tab">
+      <svg class="line" viewBox="0 0 24 24"><rect x="3.5" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="15" width="5.4" height="5.4" rx="1"/><rect x="9.3" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="15" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="9.4" width="5.4" height="5.4" rx="1"/><rect x="15.1" y="3.8" width="5.4" height="5.4" rx="1"/></svg>
+    </div>
+    <div class="tab active">
+      <svg class="line" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><circle cx="8" cy="12" r="0.4" fill="currentColor"/><circle cx="12" cy="12" r="0.4" fill="currentColor"/><circle cx="16" cy="12" r="0.4" fill="currentColor"/></svg>
+    </div>
+  </div>
+  <div class="sheet-dim"></div>
+  <div class="sheet">
+    <div class="sheet-close"><svg class="line" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></div>
+    <div class="sheet-date">7/13 プロジェクトをまとめられた</div>
+    <div class="th-field"><div class="lb">出来事</div><div class="vl">複雑なプロジェクトを上手くまとめられた</div></div>
+    <div class="th-field"><div class="lb">思考</div><div class="vl">焦らず、全員の意見を聞いてから判断することが大事</div></div>
+    <div class="th-field"><div class="lb">行動</div><div class="vl">まずメンバーと1対1で話して気持ちを聞き、その後全体会議で意見をまとめた</div></div>
+    <div class="th-field"><div class="lb">理由</div><div class="vl">焦らないため、相手を理解するため</div></div>
+    <div class="th-field"><div class="lb">感情</div><div class="vl">心に余裕があった。前日までに資料を作り終えていて時間に追われず、先週うまくいったことで気持ちも落ち着いていた</div></div>
+    <div class="th-field"><div class="lb">価値観（AIの気づき）</div><div class="vl">相手を尊重する、全員の合意を重視</div></div>
+  </div>
+</div>
+<div class="screen-label">6b. 相談・参考記録の詳細（中央モーダル）</div>
+</div>
+
+</body>
+</html>
