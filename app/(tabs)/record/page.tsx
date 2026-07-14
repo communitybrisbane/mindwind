@@ -105,6 +105,9 @@ export default function RecordPage() {
   }
   const currentMessages = messages.slice(lastCardIndex + 1);
   const [expandedRecord, setExpandedRecord] = useState<number | null>(null);
+  const [hasDraft, setHasDraft] = useState(false);
+  // 空状態の案内は「まだ何もない」ときだけ（入力を始めたら・今日すでに記録があるときは出さない）
+  const showEmptyState = currentMessages.length === 0 && savedRecords.length === 0 && !hasDraft;
 
   const limitReached = savedRecords.length >= DAILY_LIMIT;
 
@@ -287,15 +290,17 @@ export default function RecordPage() {
         )}
 
         {currentMessages.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-            <BlocksIcon className="h-16 w-16 text-accent" strokeWidth={1.2} />
-            <p className="mt-5 text-lg font-semibold text-ink">今日のことを話してみよう</p>
-            <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-              うまくいった日も、そうでない日も。
-              <br />
-              記録が積み重なるほどパターンが見えてきます
-            </p>
-          </div>
+          showEmptyState && (
+            <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+              <BlocksIcon className="h-16 w-16 text-accent" strokeWidth={1.2} />
+              <p className="mt-5 text-lg font-semibold text-ink">今日のことを話してみよう</p>
+              <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
+                うまくいった日も、そうでない日も。
+                <br />
+                記録が積み重なるほどパターンが見えてきます
+              </p>
+            </div>
+          )
         ) : (
           <div className="flex flex-col gap-4 py-3">
             {currentMessages.map((msg, i) =>
@@ -368,6 +373,7 @@ export default function RecordPage() {
           disabled={sending || phase === 3 || limitReached}
           placeholder={phase === 1 ? "今日のことを自由に..." : "答えを入力..."}
           onSend={handleSend}
+          onTypingChange={setHasDraft}
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}
           actionAriaLabel="送信する"
         />

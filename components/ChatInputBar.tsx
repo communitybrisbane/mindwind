@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import MicButton from "./MicButton";
 
 type Props = {
@@ -12,6 +12,8 @@ type Props = {
   actionAriaLabel: string;
   /** 左下にマイクボタンを表示（非対応ブラウザでは自動で消える） */
   mic?: boolean;
+  /** 下書きの有無が変わったとき（空状態の案内の出し分けなどに使う） */
+  onTypingChange?: (hasText: boolean) => void;
   /** 記録画面はセリフ体（日記帳の質感） */
   serif?: boolean;
 };
@@ -30,6 +32,7 @@ export default function ChatInputBar({
   actionIcon,
   actionAriaLabel,
   mic,
+  onTypingChange,
   serif,
 }: Props) {
   const [text, setText] = useState("");
@@ -39,6 +42,10 @@ export default function ChatInputBar({
   const [grown, setGrown] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
   const displayText = interim ? text + interim : text;
+
+  useEffect(() => {
+    onTypingChange?.(displayText.trim().length > 0);
+  }, [displayText, onTypingChange]);
 
   // 高さは描画後に実測して決める。1行↔複数行の判定は常に「1行モードのパディング」を
   // 一時適用して測る（表示中のレイアウトに依存させると境目の文字数で判定が反転し続け、
