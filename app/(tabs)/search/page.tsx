@@ -2,14 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
+import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import { SendIcon, SpiralIcon } from "@/components/icons";
+import { authedFetch, useUser } from "@/lib/db/useUser";
 
-type Message = { role: "user" | "assistant"; text: string };
+type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
 
 const iconButtonClass =
   "flex h-8 w-8 items-center justify-center rounded-full border border-input-border bg-white text-accent";
 
 export default function SearchPage() {
+  const { user } = useUser();
   const [messages, setMessages] = useState<Message[]>([]);
   const [thinking, setThinking] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -18,9 +21,82 @@ export default function SearchPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
 
-  function send(text: string) {
+  /** 最後の assistant メッセージを更新するヘルパー（ストリーミング反映用） */
+  function updateLastAssistant(update: (msg: Message) => Message) {
+    setMessages((m) => {
+      const last = m[m.length - 1];
+      if (!last || last.role !== "assistant") return m;
+      return [...m.slice(0, -1), update(last)];
+    });
+  }
+
+  async function send(text: string) {
+    if (!user || thinking) return;
+    const history = messages.map((m) => ({ role: m.role, content: m.text }));
     setMessages((m) => [...m, { role: "user", text }]);
-    // 相談 API（Opus・RAG）の接続はタスク19で行う
+    setThinking(true);
+    try {
+      const res = await authedFetch(user, "/api/consult", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, history }),
+      });
+      if (res.status === 409) {
+        const { count } = await res.json();
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            text: `まずは3日分、記録してみましょう（いま${count}件）。記録がたまるほど、過去のあなたが力になれるよ。`,
+          },
+        ]);
+        return;
+      }
+      if (!res.ok || !res.body) throw new Error(`consult ${res.status}`);
+
+      // ndjson ストリームを読みながら AI バブルへ逐次反映する
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let refs: RefThought[] = [];
+      let started = false;
+      let failed = false;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const data = JSON.parse(line);
+          if (data.type === "refs") refs = data.refs;
+          else if (data.type === "delta") {
+            if (!started) {
+              started = true;
+              setThinking(false);
+              setMessages((m) => [...m, { role: "assistant", text: "" }]);
+            }
+            updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
+          } else if (data.type === "done") {
+            updateLastAssistant((msg) => ({ ...msg, refs }));
+          } else if (data.type === "error") {
+            failed = true;
+          }
+        }
+      }
+      if (failed && !started) throw new Error("consult stream error");
+    } catch {
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          text: "ごめん、うまく応答できなかった。少し待ってからもう一度聞いてみて。",
+        },
+      ]);
+    } finally {
+      setThinking(false);
+    }
   }
 
   return (
@@ -67,8 +143,11 @@ export default function SearchPage() {
                   <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-accent">
                     <SpiralIcon className="h-3 w-5 text-white" />
                   </span>
-                  <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] bg-white px-4 py-3 text-[15px] leading-[1.6] text-ink shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
-                    {msg.text}
+                  <div>
+                    <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] bg-white px-4 py-3 text-[15px] leading-[1.6] text-ink shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+                      {msg.text}
+                    </div>
+                    {msg.refs && <RefThoughts refs={msg.refs} />}
                   </div>
                 </div>
               )
