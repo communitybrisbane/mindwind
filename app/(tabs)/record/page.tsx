@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import { requestToast } from "@/components/Toast";
 import ShapedCard from "@/components/ShapedCard";
-import { BlocksIcon, SparklesIcon } from "@/components/icons";
+import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
@@ -267,20 +267,24 @@ export default function RecordPage() {
                   {msg.text}
                 </div>
               ) : (
-                <div key={i} className="mr-auto max-w-[85%]">
-                  <SparklesIcon className="mb-1 h-4 w-4 text-accent" />
-                  <div className="whitespace-pre-wrap rounded-xl rounded-bl-[4px] border border-ceramic bg-warm px-4 py-3 text-[15px] leading-relaxed text-ink">
-                    {msg.text}
+                <div key={i} className="flex max-w-[92%] items-start gap-2">
+                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-primary">
+                    <SpiralIcon className="h-3 w-5 text-white" />
+                  </span>
+                  <div>
+                    <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] border border-ceramic bg-warm px-4 py-3 text-[15px] leading-relaxed text-ink">
+                      {msg.text}
+                    </div>
+                    {phase === 2 && i === messages.length - 1 && (
+                      <button
+                        type="button"
+                        onClick={skipDeepDive}
+                        className="mt-2 text-[13px] text-ink-secondary underline"
+                      >
+                        スキップ
+                      </button>
+                    )}
                   </div>
-                  {phase === 2 && i === messages.length - 1 && (
-                    <button
-                      type="button"
-                      onClick={skipDeepDive}
-                      className="mt-2 text-[13px] text-ink-secondary underline"
-                    >
-                      スキップ
-                    </button>
-                  )}
                 </div>
               )
             )}

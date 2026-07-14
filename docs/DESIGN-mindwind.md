@@ -445,8 +445,8 @@ MindWind はモバイルファーストの Web アプリとして、PC でもス
 - **Phase 1 で送信した日記がユーザーの吹き出し**（Green Accent・セリフ体）として画面に残り、AI の深掘り質問が**その返信**としてすぐ下に表示される（会話の文脈が一目で分かる）
 - 質問は**1回だけ**。冒頭に「書いてくれてありがとう」のような短い受け止めを添える
 - AI の質問:
-  - 左寄せバブル: `#f2f0eb` background, radius `12px 12px 12px 4px`
-  - 小さな AI アイコン（16px, Green Accent）をバブルの左上に
+  - 左寄せバブル: `#f2f0eb` background, radius `4px 12px 12px 12px`
+  - バブルの左に AI アバター（32px 丸形・House Green 塗り・白のスパイラル SVG。モック 04/05 準拠）
   - Question text: 15px, weight 400, line-height 1.5
 - ユーザーの回答: Phase 1 と同じ下部固定の入力バーから送信（音声可）。Placeholder: "答えを入力..."
 - **スキップ**: 質問バブルの下に "スキップ" テキストリンク（13px, `rgba(0,0,0,0.58)`, underline）。タップで回答せず分類へ進む
