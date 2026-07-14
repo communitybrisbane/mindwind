@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import AutoGrowTextarea from "./AutoGrowTextarea";
 import { PencilIcon } from "./icons";
 import { SHAPED_FIELDS, type ShapedRecord } from "@/lib/db/types";
 
@@ -31,6 +31,7 @@ export default function ShapedCard({ value, onChange, onSave, saving, readOnly }
                 value={value[key]}
                 readOnly={readOnly}
                 onChange={(text) => onChange?.({ ...value, [key]: text })}
+                className="mt-2 rounded border border-[#d6dbde] bg-white px-2.5 py-2 text-[15px] leading-relaxed text-ink focus:border-accent focus:outline-none read-only:border-transparent read-only:px-0"
               />
             </label>
           ))}
@@ -52,32 +53,3 @@ export default function ShapedCard({ value, onChange, onSave, saving, readOnly }
   );
 }
 
-function AutoGrowTextarea({
-  value,
-  onChange,
-  readOnly,
-}: {
-  value: string;
-  onChange: (text: string) => void;
-  readOnly?: boolean;
-}) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = "0px";
-    el.style.height = `${el.scrollHeight}px`;
-  }, [value]);
-
-  return (
-    <textarea
-      ref={ref}
-      rows={1}
-      value={value}
-      readOnly={readOnly}
-      onChange={(e) => onChange(e.target.value)}
-      className="mt-2 block w-full resize-none overflow-hidden rounded border border-[#d6dbde] bg-white px-2.5 py-2 text-[15px] leading-relaxed text-ink focus:border-accent focus:outline-none read-only:border-transparent read-only:px-0"
-    />
-  );
-}

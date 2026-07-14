@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import AutoGrowTextarea from "@/components/AutoGrowTextarea";
 import Header from "@/components/Header";
 import { SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
@@ -98,10 +99,9 @@ function OnboardingForm() {
               いましていること{" "}
               <span className="text-xs font-normal text-ink-tertiary">仕事や学業など</span>
             </span>
-            <input
-              type="text"
+            <AutoGrowTextarea
               value={profile.activity}
-              onChange={(e) => set("activity", e.target.value)}
+              onChange={(text) => set("activity", text)}
               placeholder="例：営業／大学生"
               className={`mt-2 ${inputClass}`}
             />
@@ -136,10 +136,9 @@ function OnboardingForm() {
               いまの目標・課題{" "}
               <span className="text-xs font-normal text-ink-tertiary">任意・あとからでOK</span>
             </span>
-            <input
-              type="text"
+            <AutoGrowTextarea
               value={profile.goal}
-              onChange={(e) => set("goal", e.target.value)}
+              onChange={(text) => set("goal", text)}
               placeholder="例：仕事に早く慣れたい"
               className={`mt-2 ${inputClass}`}
             />
