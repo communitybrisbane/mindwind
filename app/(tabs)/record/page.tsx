@@ -10,7 +10,42 @@ import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
 
-type Message = { role: "user" | "ai"; text: string };
+type Message =
+  | { role: "user" | "ai"; kind: "text"; text: string }
+  | { role: "ai"; kind: "card"; shaped: ShapedRecord; thoughtId: string };
+
+// recordChat（Firestore）の保存形式
+type StoredMessage = {
+  role: "user" | "ai";
+  type: "text" | "card";
+  content: string;
+  thoughtId?: string;
+};
+
+function toStored(messages: Message[]): StoredMessage[] {
+  return messages.map((m) =>
+    m.kind === "card"
+      ? { role: "ai", type: "card", content: JSON.stringify(m.shaped), thoughtId: m.thoughtId }
+      : { role: m.role, type: "text", content: m.text }
+  );
+}
+
+function fromStored(stored: StoredMessage[]): Message[] {
+  return stored.flatMap((m): Message[] => {
+    if (m.type === "card") {
+      try {
+        return [
+          { role: "ai", kind: "card", shaped: JSON.parse(m.content), thoughtId: m.thoughtId ?? "" },
+        ];
+      } catch {
+        return [];
+      }
+    }
+    return [{ role: m.role, kind: "text", text: m.content }];
+  });
+}
+
+const DAILY_LIMIT = 3;
 
 // 記録フェーズ：1=日記 2=深掘り 3=成形
 type Phase = 1 | 2 | 3;
@@ -48,9 +83,23 @@ export default function RecordPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, shaped]);
 
+  // 当日の記録チャットを復元（日付が変わっていればサーバーが null を返し空状態から始まる）
+  useEffect(() => {
+    if (!user) return;
+    authedFetch(user, "/api/record-chat")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.recordChat?.messages) setMessages(fromStored(data.recordChat.messages));
+      })
+      .catch(() => {});
+  }, [user]);
+
+  const savedCount = messages.filter((m) => m.kind === "card").length;
+  const limitReached = savedCount >= DAILY_LIMIT;
+
   async function sendDiary(text: string) {
     if (!user) return;
-    setMessages((m) => [...m, { role: "user", text }]);
+    setMessages((m) => [...m, { role: "user", kind: "text", text }]);
     setDiaryText(text);
     setError("");
     setSending(true);
@@ -63,7 +112,7 @@ export default function RecordPage() {
       if (!res.ok) throw new Error(`deepdive ${res.status}`);
       const { question } = await res.json();
       setDeepDiveQuestion(question);
-      setMessages((m) => [...m, { role: "ai", text: question }]);
+      setMessages((m) => [...m, { role: "ai", kind: "text", text: question }]);
       setPhase(2);
     } catch {
       setError("質問を用意できませんでした。少し待ってからもう一度送ってみてください。");
@@ -74,7 +123,7 @@ export default function RecordPage() {
   }
 
   function sendAnswer(text: string) {
-    setMessages((m) => [...m, { role: "user", text }]);
+    setMessages((m) => [...m, { role: "user", kind: "text", text }]);
     void startShaping(text);
   }
 
@@ -102,7 +151,7 @@ export default function RecordPage() {
       const data = (await res.json()) as { shaped: ShapedRecord };
       setMessages((m) => [
         ...m,
-        { role: "ai", text: "今日の記録を整理したよ。違うところは直してね。" },
+        { role: "ai", kind: "text", text: "今日の記録を整理したよ。違うところは直してね。" },
       ]);
       setShaped(data.shaped);
     } catch {
@@ -133,6 +182,19 @@ export default function RecordPage() {
         return;
       }
       if (!res.ok) throw new Error(`thoughts ${res.status}`);
+      const { id } = await res.json();
+
+      // 保存済みカードを含む当日チャットを recordChat に保存（翌日以降は破棄される）
+      const savedMessages: Message[] = [
+        ...messages,
+        { role: "ai", kind: "card", shaped, thoughtId: id },
+      ];
+      await authedFetch(user, "/api/record-chat", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: toStored(savedMessages) }),
+      }).catch(() => {});
+
       requestToast("記録しました");
       router.push("/home");
     } catch {
@@ -195,7 +257,9 @@ export default function RecordPage() {
         ) : (
           <div className="flex flex-col gap-4 py-3">
             {messages.map((msg, i) =>
-              msg.role === "user" ? (
+              msg.kind === "card" ? (
+                <ShapedCard key={i} value={msg.shaped} readOnly />
+              ) : msg.role === "user" ? (
                 <div
                   key={i}
                   className="ml-auto max-w-[80%] whitespace-pre-wrap rounded-xl rounded-br-[4px] bg-accent px-4 py-3 font-serif text-[15px] leading-relaxed text-white"
@@ -234,7 +298,12 @@ export default function RecordPage() {
 
       {/* 書くヒント＋入力バー（下部固定） */}
       <div className="flex-none px-4 pb-3">
-        {phase === 1 && (
+        {limitReached && (
+          <p className="pb-2 text-[13px] text-ink-secondary">
+            今日の記録は上限（3件）に達しました
+          </p>
+        )}
+        {phase === 1 && !limitReached && (
           <div className="pb-2.5">
             <p className="text-[13px] font-semibold text-ink-secondary">書くヒント</p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -252,7 +321,7 @@ export default function RecordPage() {
         <ChatInputBar
           serif
           mic
-          disabled={sending || phase === 3}
+          disabled={sending || phase === 3 || limitReached}
           placeholder={phase === 1 ? "今日のことを自由に..." : "答えを入力..."}
           onSend={handleSend}
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}

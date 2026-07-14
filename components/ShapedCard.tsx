@@ -6,8 +6,8 @@ import { SHAPED_FIELDS, type ShapedRecord } from "@/lib/db/types";
 
 type Props = {
   value: ShapedRecord;
-  onChange: (value: ShapedRecord) => void;
-  onSave: () => void;
+  onChange?: (value: ShapedRecord) => void;
+  onSave?: () => void;
   saving?: boolean;
   /** 保存済み（読み取り専用＋バッジ表示） */
   readOnly?: boolean;
@@ -30,7 +30,7 @@ export default function ShapedCard({ value, onChange, onSave, saving, readOnly }
               <AutoGrowTextarea
                 value={value[key]}
                 readOnly={readOnly}
-                onChange={(text) => onChange({ ...value, [key]: text })}
+                onChange={(text) => onChange?.({ ...value, [key]: text })}
               />
             </label>
           ))}
