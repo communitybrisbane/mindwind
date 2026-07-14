@@ -113,6 +113,19 @@ export default function RecordPage() {
 
   async function sendDiary(text: string) {
     if (!user) return;
+    // 超短文は AI を呼ばずにやさしく促す（「疲れた。しんどい。」程度の短い日記は通す）
+    if (text.trim().length < 10) {
+      setMessages((m) => [
+        ...m,
+        { role: "user", kind: "text", text },
+        {
+          role: "ai",
+          kind: "text",
+          text: "もう少しだけ聞かせて。一言でも、何があったかだけでも大丈夫だよ。",
+        },
+      ]);
+      return;
+    }
     setMessages((m) => [...m, { role: "user", kind: "text", text }]);
     setDiaryText(text);
     setError("");

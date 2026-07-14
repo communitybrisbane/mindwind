@@ -11,7 +11,10 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => null);
   const diary = typeof body?.diary === "string" ? body.diary.trim() : "";
-  if (!diary) return NextResponse.json({ error: "diary is required" }, { status: 400 });
+  // 超短文はクライアントで促す設計（ここは直接叩かれたときのコスト防御）
+  if (diary.length < 10) {
+    return NextResponse.json({ error: "diary too short" }, { status: 400 });
+  }
 
   const userSnap = await adminDb.doc(`users/${uid}`).get();
   const system = buildSystemPrompt("deepdive", userSnap.get("profile") ?? null);
