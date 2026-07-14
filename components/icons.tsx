@@ -38,6 +38,24 @@ export function BlocksIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/** 相談の送信：紙飛行機 */
+export function SendIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      {...props}
+    >
+      <path d="M21 3 10.5 13.5M21 3l-7 19-3.5-8.5L2 10Z" />
+    </svg>
+  );
+}
+
 /** 記録として保存：鉛筆 */
 export function PencilIcon(props: SVGProps<SVGSVGElement>) {
   return (
