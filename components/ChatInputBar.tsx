@@ -38,7 +38,6 @@ export default function ChatInputBar({
   const [text, setText] = useState("");
   // 音声認識の途中経過（確定前）。表示上はテキスト末尾に足して見せる
   const [interim, setInterim] = useState("");
-  const [recording, setRecording] = useState(false);
   const [grown, setGrown] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
   const displayText = interim ? text + interim : text;
@@ -102,7 +101,6 @@ export default function ChatInputBar({
               disabled={disabled}
               onFinal={(t) => setText((prev) => prev + t)}
               onInterim={setInterim}
-              onRecordingChange={setRecording}
             />
           </div>
         )}
@@ -116,11 +114,6 @@ export default function ChatInputBar({
           {actionIcon}
         </button>
       </div>
-      {recording && (
-        <p className="pt-1.5 text-[13px] text-ink-secondary">
-          音声はブラウザの音声認識サービスに送信されます
-        </p>
-      )}
     </div>
   );
 }
