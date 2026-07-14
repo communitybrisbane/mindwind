@@ -40,21 +40,30 @@ export default function ChatInputBar({
   const ref = useRef<HTMLTextAreaElement>(null);
   const displayText = interim ? text + interim : text;
 
-  // 高さは描画後に実測して決める（grown 切替でパディングと幅が変わり行数も変わるため、
-  // grown を依存に含めて切替後にもう一度計測し直す）
+  // 高さは描画後に実測して決める。1行↔複数行の判定は常に「1行モードのパディング」を
+  // 一時適用して測る（表示中のレイアウトに依存させると境目の文字数で判定が反転し続け、
+  // 無限ループになるため。判定条件を固定して同じ入力なら必ず同じ結果にする）
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    el.style.height = "0px";
-    const cs = getComputedStyle(el);
-    const contentHeight =
-      el.scrollHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    const isGrown = contentHeight > 30; // 1行 = 24px
+    const style = el.style;
+    style.height = "0px";
+    style.padding = "12px 48px";
+    const isGrown = el.scrollHeight - 24 > 30 || displayText.includes("\n");
+    if (isGrown) {
+      style.padding = "12px";
+      const contentHeight = el.scrollHeight - 24;
+      style.padding = "";
+      const fullHeight = contentHeight + 12 + 52;
+      style.height = `${Math.min(fullHeight, 220)}px`;
+      style.overflowY = fullHeight > 220 ? "auto" : "hidden";
+    } else {
+      style.padding = "";
+      style.height = `${SINGLE_LINE_HEIGHT}px`;
+      style.overflowY = "hidden";
+    }
     setGrown(isGrown);
-    el.style.height = isGrown
-      ? `${Math.min(contentHeight + 12 + 52, 220)}px`
-      : `${SINGLE_LINE_HEIGHT}px`;
-  }, [displayText, grown]);
+  }, [displayText]);
 
   function send() {
     const value = text.trim();
