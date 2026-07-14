@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Calendar from "@/components/Calendar";
 import Header from "@/components/Header";
+import RecentThoughts from "@/components/RecentThoughts";
 import Toast from "@/components/Toast";
 import { SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
@@ -39,6 +40,19 @@ export default function HomePage() {
 
   const streak = thoughts ? calcStreak(thoughts.map((t) => t.date), now) : 0;
   const hasRecords = (thoughts?.length ?? 0) > 0;
+
+  // 削除するとカレンダーの点灯・ストリークも state 経由で自動再計算される
+  async function deleteThought(id: string) {
+    if (!user) return;
+    if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。")) return;
+    try {
+      const res = await authedFetch(user, `/api/thoughts/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`delete ${res.status}`);
+      setThoughts((t) => t?.filter((thought) => thought.id !== id) ?? t);
+    } catch {
+      window.alert("削除できませんでした。少し待ってからもう一度試してください。");
+    }
+  }
 
   return (
     <>
@@ -84,12 +98,11 @@ export default function HomePage() {
         </section>
 
         {thoughts && now && (
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col gap-4 pb-4">
             <Calendar recordedDates={new Set(thoughts.map((t) => t.date))} todayKey={now} />
+            <RecentThoughts thoughts={thoughts} onDelete={(id) => void deleteThought(id)} />
           </div>
         )}
-
-        {/* 最近の記録（タスク16）で実装 */}
       </main>
     </>
   );
