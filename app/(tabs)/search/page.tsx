@@ -1,25 +1,101 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import { SendIcon, SpiralIcon } from "@/components/icons";
-import { authedFetch, useUser } from "@/lib/db/useUser";
+import { authedFetch, useUser, type AppUser } from "@/lib/db/useUser";
 
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
+type ChatSummary = { id: string; title: string; updatedAt: string | null };
 
 const iconButtonClass =
   "flex h-8 w-8 items-center justify-center rounded-full border border-input-border bg-white text-accent";
 
+function formatUpdatedAt(iso: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
 export default function SearchPage() {
+  const router = useRouter();
   const { user } = useUser();
+  const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [chats, setChats] = useState<ChatSummary[]>([]);
   const [thinking, setThinking] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [newDialogOpen, setNewDialogOpen] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
+
+  // 最新スレッドを復元（画面を離れて戻ってきても表示される）
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const list = await fetchChats(user);
+        setChats(list);
+        if (list.length > 0) await openChat(user, list[0].id);
+      } catch {}
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  async function fetchChats(u: AppUser): Promise<ChatSummary[]> {
+    const res = await authedFetch(u, "/api/chats");
+    if (!res.ok) return [];
+    return (await res.json()).chats;
+  }
+
+  async function openChat(u: AppUser, id: string) {
+    const res = await authedFetch(u, `/api/chats/${id}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    setChatId(id);
+    setMessages(
+      data.messages.map((m: { role: Message["role"]; content: string; refs: RefThought[] }) => ({
+        role: m.role,
+        text: m.content,
+        refs: m.refs?.length ? m.refs : undefined,
+      }))
+    );
+  }
+
+  function startNewChat() {
+    setChatId(null);
+    setMessages([]);
+    setNewDialogOpen(false);
+    setDrawerOpen(false);
+  }
+
+  /** ＋ボタン：気づきを記録に残すか確認してから新しいスレッドへ */
+  function handleNewChat() {
+    if (messages.length === 0) return;
+    setNewDialogOpen(true);
+  }
+
+  async function deleteChat(id: string) {
+    if (!user) return;
+    if (!window.confirm("この相談履歴を削除しますか？ 削除すると元に戻せません。")) return;
+    try {
+      const res = await authedFetch(user, `/api/chats/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`delete ${res.status}`);
+      setChats((c) => c.filter((chat) => chat.id !== id));
+      if (chatId === id) {
+        setChatId(null);
+        setMessages([]);
+      }
+    } catch {
+      window.alert("削除できませんでした。少し待ってからもう一度試してください。");
+    }
+  }
 
   /** 最後の assistant メッセージを更新するヘルパー（ストリーミング反映用） */
   function updateLastAssistant(update: (msg: Message) => Message) {
@@ -32,15 +108,19 @@ export default function SearchPage() {
 
   async function send(text: string) {
     if (!user || thinking) return;
-    const history = messages.map((m) => ({ role: m.role, content: m.text }));
     setMessages((m) => [...m, { role: "user", text }]);
     setThinking(true);
     try {
       const res = await authedFetch(user, "/api/consult", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history }),
+        body: JSON.stringify({ message: text, chatId }),
       });
+      if (res.status === 429) {
+        setLimitReached(true);
+        setMessages((m) => m.slice(0, -1));
+        return;
+      }
       if (res.status === 409) {
         const { count } = await res.json();
         setMessages((m) => [
@@ -70,7 +150,8 @@ export default function SearchPage() {
         for (const line of lines) {
           if (!line.trim()) continue;
           const data = JSON.parse(line);
-          if (data.type === "refs") refs = data.refs;
+          if (data.type === "meta") setChatId(data.chatId);
+          else if (data.type === "refs") refs = data.refs;
           else if (data.type === "delta") {
             if (!started) {
               started = true;
@@ -79,7 +160,7 @@ export default function SearchPage() {
             }
             updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
           } else if (data.type === "done") {
-            updateLastAssistant((msg) => ({ ...msg, refs }));
+            updateLastAssistant((msg) => ({ ...msg, refs: refs.length ? refs : undefined }));
           } else if (data.type === "error") {
             failed = true;
           }
@@ -103,13 +184,21 @@ export default function SearchPage() {
     <main className="flex min-h-0 flex-1 flex-col">
       {/* ヘッダーアイコン行（見出しテキストなし） */}
       <div className="flex flex-none items-center justify-between px-4 pt-3">
-        <button type="button" aria-label="相談履歴" className={iconButtonClass}>
+        <button
+          type="button"
+          aria-label="相談履歴"
+          className={iconButtonClass}
+          onClick={async () => {
+            setDrawerOpen(true);
+            if (user) setChats(await fetchChats(user));
+          }}
+        >
           <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <circle cx="12" cy="12" r="9" />
             <path d="M12 7v5l3 2" />
           </svg>
         </button>
-        <button type="button" aria-label="新しい相談" className={iconButtonClass}>
+        <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={handleNewChat}>
           <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M12 5v14M5 12h14" />
           </svg>
@@ -174,15 +263,115 @@ export default function SearchPage() {
 
       {/* 入力バー（下部固定） */}
       <div className="flex-none px-4 pb-3">
+        {limitReached && (
+          <p className="pb-2 text-[13px] text-ink-secondary">今日の相談はここまで。また明日話そう</p>
+        )}
         <ChatInputBar
           mic
-          disabled={thinking}
+          disabled={thinking || limitReached}
           placeholder={messages.length === 0 ? "なんでも聞いてみよう" : "過去の自分に相談しよう"}
           onSend={send}
           actionIcon={<SendIcon className="h-[18px] w-[18px]" />}
           actionAriaLabel="送信する"
         />
       </div>
+
+      {/* 相談履歴ドロワー（左からスライドイン） */}
+      {drawerOpen && (
+        <div
+          className="fixed inset-0 z-30 flex justify-center bg-black/40"
+          onClick={() => setDrawerOpen(false)}
+        >
+          {/* アプリシェル幅に合わせてドロワーを左端に出す */}
+          <div className="flex h-full w-full max-w-[430px] justify-start">
+          <div
+            className="flex h-full w-[78%] max-w-[335px] flex-col bg-warm p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => (messages.length > 0 ? (setDrawerOpen(false), setNewDialogOpen(true)) : startNewChat())}
+              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-primary text-sm font-semibold text-white"
+            >
+              ＋ 新しい相談
+            </button>
+            <h2 className="mt-5 text-[13px] font-semibold text-ink-secondary">相談履歴</h2>
+            <ul className="mt-2 flex-1 overflow-y-auto">
+              {chats.length === 0 && (
+                <li className="py-3 text-sm text-ink-secondary">まだ相談履歴がありません</li>
+              )}
+              {chats.map((chat) => (
+                <li key={chat.id} className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (user) void openChat(user, chat.id);
+                      setDrawerOpen(false);
+                    }}
+                    className={`flex min-h-11 flex-1 items-center gap-2 rounded-lg px-2.5 text-left ${
+                      chat.id === chatId ? "bg-leaf" : ""
+                    }`}
+                  >
+                    <span className="flex-1 truncate text-sm text-ink">{chat.title}</span>
+                    <span className="flex-none text-xs text-ink-tertiary">
+                      {formatUpdatedAt(chat.updatedAt)}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="この相談履歴を削除"
+                    onClick={() => void deleteChat(chat.id)}
+                    className="flex h-8 w-8 flex-none items-center justify-center text-ink-tertiary"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          </div>
+        </div>
+      )}
+
+      {/* 新しい相談の確認ダイアログ（記録への誘導） */}
+      {newDialogOpen && (
+        <div
+          className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-6"
+          onClick={() => setNewDialogOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-label="新しい相談"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-[350px] rounded-2xl bg-white p-5"
+          >
+            <p className="text-[15px] font-semibold text-ink">
+              この相談の気づきを記録に残しますか？
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-secondary">
+              相談の内容は AI の学習には蓄積されません。大事な気づきは記録しておくと、次の相談で活きます。
+            </p>
+            <div className="mt-5 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => router.push("/record")}
+                className="h-11 rounded-xl bg-primary text-sm font-semibold text-white"
+              >
+                記録する
+              </button>
+              <button
+                type="button"
+                onClick={startNewChat}
+                className="h-11 rounded-xl border border-input-border bg-white text-sm font-semibold text-ink"
+              >
+                そのまま新しい相談
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

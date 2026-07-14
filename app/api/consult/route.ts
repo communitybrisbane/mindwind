@@ -1,16 +1,18 @@
+import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODELS } from "@/lib/ai/anthropic";
 import { buildSystemPrompt } from "@/lib/ai/mentorPrompt";
 import { MIN_THOUGHTS_FOR_CONSULT, searchRelevantThoughts, type RagThought } from "@/lib/ai/rag";
 import { adminDb, verifyUser } from "@/lib/db/admin";
 import { SHAPED_FIELDS } from "@/lib/db/types";
+import { tokyoDateKey } from "@/lib/logic/date";
 
 export const maxDuration = 300;
 
 // Claude に渡すスレッド履歴の上限（超過分は古い順に外す。画面には全件表示される）
 const MAX_HISTORY = 20;
-
-type HistoryMessage = { role: "user" | "assistant"; content: string };
+// 1日の相談上限（メッセージ数）
+const DAILY_LIMIT = 30;
 
 function formatRagBlock(thoughts: RagThought[]): string {
   const entries = thoughts.map((t, i) => {
@@ -29,14 +31,28 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const message = typeof body?.message === "string" ? body.message.trim() : "";
   if (!message) return NextResponse.json({ error: "message is required" }, { status: 400 });
-  const history: HistoryMessage[] = Array.isArray(body?.history)
-    ? body.history
-        .filter(
-          (m: HistoryMessage) =>
-            (m.role === "user" || m.role === "assistant") && typeof m.content === "string"
-        )
-        .slice(-MAX_HISTORY)
-    : [];
+  const chatId = typeof body?.chatId === "string" ? body.chatId : null;
+
+  const userDoc = adminDb.doc(`users/${uid}`);
+  const userSnap = await userDoc.get();
+
+  // 1日30メッセージの上限（Asia/Tokyo 日付でリセット）
+  const today = tokyoDateKey(new Date());
+  const consultCount = userSnap.get("consultCount");
+  const usedToday: number = consultCount?.date === today ? consultCount.count : 0;
+  if (usedToday >= DAILY_LIMIT) {
+    return NextResponse.json({ error: "daily_limit" }, { status: 429 });
+  }
+
+  // スレッド履歴はサーバー側で読み込む（スレッド間でコンテキストを混ぜない）
+  let chatRef = chatId ? userDoc.collection("chats").doc(chatId) : null;
+  let history: { role: "user" | "assistant"; content: string }[] = [];
+  if (chatRef) {
+    const snap = await chatRef.collection("messages").orderBy("createdAt", "asc").get();
+    history = snap.docs
+      .map((d) => ({ role: d.get("role"), content: d.get("content") }))
+      .slice(-MAX_HISTORY);
+  }
 
   // 追い質問で主語が省略される場合に備え、直前のユーザー発言で検索クエリを補完する
   const lastUserMessage = [...history].reverse().find((m) => m.role === "user");
@@ -48,7 +64,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "not_enough_records", count }, { status: 409 });
   }
 
-  const userSnap = await adminDb.doc(`users/${uid}`).get();
   const system = buildSystemPrompt("consult", userSnap.get("profile") ?? null);
 
   // 固定プレフィックス（人格＋profile＋スレッド履歴）をキャッシュし、
@@ -67,6 +82,7 @@ export async function POST(req: NextRequest) {
     { role: "user" as const, content: `${formatRagBlock(results)}\n\n【相談】\n${message}` },
   ];
 
+  // 参考記録は表示用スナップショットとして保存する（元記録が消えても履歴の表示が壊れない）
   const refs = results.map((t) => ({
     id: t.id,
     date: t.date,
@@ -85,7 +101,18 @@ export async function POST(req: NextRequest) {
       const push = (data: object) =>
         controller.enqueue(encoder.encode(JSON.stringify(data) + "\n"));
       try {
+        // スレッドがなければ作成（タイトルは最初の質問から）
+        if (!chatRef) {
+          chatRef = userDoc.collection("chats").doc();
+          await chatRef.set({
+            title: message.slice(0, 25),
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+        }
+        push({ type: "meta", chatId: chatRef.id });
         push({ type: "refs", refs });
+
         const claudeStream = anthropic.messages.stream({
           model: MODELS.consult,
           max_tokens: 4000,
@@ -95,7 +122,19 @@ export async function POST(req: NextRequest) {
           messages,
         });
         claudeStream.on("text", (delta) => push({ type: "delta", text: delta }));
-        await claudeStream.finalMessage();
+        const final = await claudeStream.finalMessage();
+        const answer = final.content
+          .filter((block) => block.type === "text")
+          .map((block) => block.text)
+          .join("");
+
+        // 履歴保存（画面を離れても復元できるように）＋上限カウント
+        const messagesCol = chatRef.collection("messages");
+        await messagesCol.add({ role: "user", content: message, createdAt: FieldValue.serverTimestamp() });
+        await messagesCol.add({ role: "assistant", content: answer, refs, createdAt: FieldValue.serverTimestamp() });
+        await chatRef.update({ updatedAt: FieldValue.serverTimestamp() });
+        await userDoc.set({ consultCount: { date: today, count: usedToday + 1 } }, { merge: true });
+
         push({ type: "done" });
       } catch (e) {
         console.error("consult failed:", e);
