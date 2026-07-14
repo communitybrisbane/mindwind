@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
@@ -20,14 +19,12 @@ function formatUpdatedAt(iso: string | null): string {
 }
 
 export default function SearchPage() {
-  const router = useRouter();
   const { user } = useUser();
   const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [thinking, setThinking] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -71,14 +68,7 @@ export default function SearchPage() {
   function startNewChat() {
     setChatId(null);
     setMessages([]);
-    setNewDialogOpen(false);
     setDrawerOpen(false);
-  }
-
-  /** ＋ボタン：気づきを記録に残すか確認してから新しいスレッドへ */
-  function handleNewChat() {
-    if (messages.length === 0) return;
-    setNewDialogOpen(true);
   }
 
   async function deleteChat(id: string) {
@@ -198,7 +188,7 @@ export default function SearchPage() {
             <path d="M12 7v5l3 2" />
           </svg>
         </button>
-        <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={handleNewChat}>
+        <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={startNewChat}>
           <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
             <path d="M12 5v14M5 12h14" />
           </svg>
@@ -290,7 +280,7 @@ export default function SearchPage() {
           >
             <button
               type="button"
-              onClick={() => (messages.length > 0 ? (setDrawerOpen(false), setNewDialogOpen(true)) : startNewChat())}
+              onClick={startNewChat}
               className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-primary text-sm font-semibold text-white"
             >
               ＋ 新しい相談
@@ -335,43 +325,6 @@ export default function SearchPage() {
         </div>
       )}
 
-      {/* 新しい相談の確認ダイアログ（記録への誘導） */}
-      {newDialogOpen && (
-        <div
-          className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-6"
-          onClick={() => setNewDialogOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-label="新しい相談"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-[350px] rounded-2xl bg-white p-5"
-          >
-            <p className="text-[15px] font-semibold text-ink">
-              この相談の気づきを記録に残しますか？
-            </p>
-            <p className="mt-2 text-[13px] leading-relaxed text-ink-secondary">
-              相談の内容は AI の学習には蓄積されません。大事な気づきは記録しておくと、次の相談で活きます。
-            </p>
-            <div className="mt-5 flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => router.push("/record")}
-                className="h-11 rounded-xl bg-primary text-sm font-semibold text-white"
-              >
-                記録する
-              </button>
-              <button
-                type="button"
-                onClick={startNewChat}
-                className="h-11 rounded-xl border border-input-border bg-white text-sm font-semibold text-ink"
-              >
-                そのまま新しい相談
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
