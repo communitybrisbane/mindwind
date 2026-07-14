@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import MicButton from "./MicButton";
 
 type Props = {
   placeholder: string;
@@ -9,8 +10,8 @@ type Props = {
   /** 右下のアクションボタンの中身（✨ など） */
   actionIcon: ReactNode;
   actionAriaLabel: string;
-  /** 左下スロット（マイクボタン。なければ左パディングだけ確保） */
-  leftSlot?: ReactNode;
+  /** 左下にマイクボタンを表示（非対応ブラウザでは自動で消える） */
+  mic?: boolean;
   /** 記録画面はセリフ体（日記帳の質感） */
   serif?: boolean;
 };
@@ -28,12 +29,16 @@ export default function ChatInputBar({
   disabled,
   actionIcon,
   actionAriaLabel,
-  leftSlot,
+  mic,
   serif,
 }: Props) {
   const [text, setText] = useState("");
+  // 音声認識の途中経過（確定前）。表示上はテキスト末尾に足して見せる
+  const [interim, setInterim] = useState("");
+  const [recording, setRecording] = useState(false);
   const [grown, setGrown] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const displayText = interim ? text + interim : text;
 
   // 高さは描画後に実測して決める（grown 切替でパディングと幅が変わり行数も変わるため、
   // grown を依存に含めて切替後にもう一度計測し直す）
@@ -49,7 +54,7 @@ export default function ChatInputBar({
     el.style.height = isGrown
       ? `${Math.min(contentHeight + 12 + 52, 220)}px`
       : `${SINGLE_LINE_HEIGHT}px`;
-  }, [text, grown]);
+  }, [displayText, grown]);
 
   function send() {
     const value = text.trim();
@@ -63,7 +68,7 @@ export default function ChatInputBar({
       <textarea
         ref={ref}
         rows={1}
-        value={text}
+        value={displayText}
         disabled={disabled}
         placeholder={placeholder}
         onChange={(e) => setText(e.target.value)}
@@ -71,7 +76,16 @@ export default function ChatInputBar({
           serif ? "font-serif" : ""
         } ${grown ? "px-3 pb-[52px] pt-3" : "h-12 px-12 py-3"}`}
       />
-      <div className="absolute bottom-2 left-2">{leftSlot}</div>
+      {mic && (
+        <div className="absolute bottom-2 left-2">
+          <MicButton
+            disabled={disabled}
+            onFinal={(t) => setText((prev) => prev + t)}
+            onInterim={setInterim}
+            onRecordingChange={setRecording}
+          />
+        </div>
+      )}
       <button
         type="button"
         aria-label={actionAriaLabel}
@@ -81,6 +95,11 @@ export default function ChatInputBar({
       >
         {actionIcon}
       </button>
+      {recording && (
+        <p className="pt-1.5 text-[13px] text-ink-secondary">
+          音声はブラウザの音声認識サービスに送信されます
+        </p>
+      )}
     </div>
   );
 }

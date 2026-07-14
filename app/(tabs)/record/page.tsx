@@ -112,6 +112,7 @@ export default function RecordPage() {
         )}
         <ChatInputBar
           serif
+          mic
           placeholder={phase === 1 ? "今日のことを自由に..." : "答えを入力..."}
           onSend={sendDiary}
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}
