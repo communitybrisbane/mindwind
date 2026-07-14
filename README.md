@@ -101,7 +101,8 @@ Firebase（クライアント + Admin SDK）、Claude API、OpenAI API の認証
 - **技術設計・実装詳細**（モデル選定・データモデル・フロー） → [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 - **UI/UX デザイン仕様** → [`docs/DESIGN-mindwind.md`](docs/DESIGN-mindwind.md)
 - **開発者向け情報**（セットアップ・エラー処理・スコープ） → [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
-- **AI メンターの人格・プロンプト設計**（DeNA メンタリング参照） → [`docs/mentor-prompt.md`](docs/mentor-prompt.md)
+- **AI メンターの人格・プロンプト（本番）** → [`docs/mentor-prompt.md`](docs/mentor-prompt.md)
+- **DeNA メンター制度の下調べ** → [`docs/dena-research.md`](docs/dena-research.md)
 - **UI モック** → [`mockups/`](mockups/)
 
 ---

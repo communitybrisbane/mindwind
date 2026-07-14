@@ -6,7 +6,7 @@
 
 - `docs/ARCHITECTURE.md` — 技術設計の正。モデル選定（深掘り=Haiku 4.5／成形=Sonnet 5＋Structured Outputs／相談=Opus 4.8）、データモデル、フロー、レート制限
 - `docs/DESIGN-mindwind.md` — UI/UX 仕様の正。基準フレーム 390×844
-- `docs/mentor-prompt.md` — AI メンターの人格・プロンプト
+- `docs/mentor-prompt.md` — AI メンターの人格・プロンプト実文（本番）。背景調査は `docs/dena-research.md`
 - `mockups/mockup.html` — 全13画面のモック（画面変更時はここを更新してスクリーンショットを撮り直す）
 
 ## AI 呼び出しの鉄則
