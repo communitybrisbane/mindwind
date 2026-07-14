@@ -14,7 +14,7 @@
 
 - [x] 1. Next.js（App Router・TypeScript・Tailwind）を初期化し、Vitest / ESLint を設定
 - [x] 2. デザイントークンを Tailwind に定義（カラーパレット・フォント・spacing。DESIGN §2〜4）＋ アプリシェル（max-width 430px 中央寄せ・基準 390×844）
-- [ ] 3. 全ルートの雛形ページとタブバーを作成（`/` `/onboarding` `/home` `/record` `/search` `/terms` `/privacy`。タブアイコン＝スパイラル/ブロック/吹き出し）
+- [x] 3. 全ルートの雛形ページとタブバーを作成（`/` `/onboarding` `/home` `/record` `/search` `/terms` `/privacy`。タブアイコン＝スパイラル/ブロック/吹き出し）
 - [ ] 4. Firebase 初期化（クライアント SDK / Admin SDK・env 読み込み・`lib/db/` の土台）
 
 ## Phase 2：認証・プロフィール
