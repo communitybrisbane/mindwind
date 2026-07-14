@@ -6,7 +6,7 @@
 
 - `docs/ARCHITECTURE.md` — 技術設計の正。モデル選定（深掘り=Haiku 4.5／成形=Sonnet 5＋Structured Outputs／相談=Opus 4.8）、データモデル、フロー、レート制限
 - `docs/DESIGN-mindwind.md` — UI/UX 仕様の正。基準フレーム 390×844
-- `docs/mentor-prompt.md` — AI メンターの人格・プロンプト実文（本番）。背景調査は `docs/dena-research.md`
+- `docs/mentor-prompt.md` — AI メンターの人格・プロンプト実文（本番）。背景調査はローカルの `docs/dena-research.md`（コミット対象外）
 - `mockups/mockup.html` — 全13画面のモック（画面変更時はここを更新してスクリーンショットを撮り直す）
 
 ## AI 呼び出しの鉄則
@@ -15,6 +15,42 @@
 - `{{profile}}` のみユーザーごとに差し込む（未入力項目は文に含めない。全未設定ならセクションごと省略）
 - プロンプトは prompt caching の固定プレフィックス。可変部分（RAG 記録・新しい質問）は必ず messages の末尾に置く
 - 文面を変更したいときはコードではなく `docs/mentor-prompt.md` を先に更新する（ドキュメントが正）
+
+## 開発コマンド
+
+```bash
+npm run dev      # 開発サーバー（localhost:3000）
+npm run build    # 本番ビルド
+npm run test     # Vitest（ロジックのユニットテスト）
+npm run lint     # ESLint
+```
+
+※プロジェクト未作成の間は上記は予定値。セットアップ時に実際のコマンドへ更新すること。
+
+## ディレクトリ構成（この方針から外れない）
+
+```
+app/          # Next.js App Router（ページ: / onboarding home record search terms privacy、API Routes: app/api/）
+components/   # UI コンポーネント（画面横断: チャットバブル・入力バー・タブバー・モーダルなど）
+lib/          # ロジック（テスト対象）
+  ├── ai/     # Claude/OpenAI 呼び出し（プロンプト組み立て・Structured Outputs スキーマ）
+  ├── db/     # Firestore アクセス（thoughts / chats / profile / recordChat）
+  └── logic/  # 純粋ロジック（コサイン類似度・ストリーク計算・Asia/Tokyo 日付境界）
+```
+
+## テストとセキュリティ
+
+- テストは `lib/` のロジックのみ Vitest で書く。UI の細部はテストで縛らない（DEVELOPMENT.md 準拠）
+- API キー（Anthropic / OpenAI / Firebase Admin）はサーバー側のみ。クライアントに露出させない。`.env.local` はコミットしない
+
+## モック更新の手順
+
+画面の変更は必ずモックにも反映する：
+
+1. `mockups/mockup.html` を編集（全13画面が1ファイルに入っている。フレームは 390×844）
+2. `cd mockups && python3 -m http.server 8931` でローカル配信
+3. Playwright MCP で `http://localhost:8931/mockup.html` を開き、該当フレーム（`#record1` など）を `browser_take_screenshot`（type: png, scale: device）で撮影
+4. 撮った PNG を `mockups/` の既存ファイル名に上書き（例：`03-record-input.png`）し、サーバーを停止
 
 ## 主要な設計判断（変更時はユーザーに確認）
 
