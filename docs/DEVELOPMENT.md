@@ -162,4 +162,4 @@ ID トークンが無効/期限切れの時：
 ---
 
 技術設計の詳細は `docs/ARCHITECTURE.md` を参照。
-Claude プロンプト設計の詳細は `docs/mentor-reference.md` を参照。
+Claude プロンプト設計の詳細は `docs/mentor-prompt.md` を参照。
