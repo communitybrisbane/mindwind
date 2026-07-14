@@ -82,8 +82,10 @@ export default function ChatInputBar({
   }
 
   return (
-    <div className="relative">
-      <textarea
+    <div>
+      {/* ボタンはテキストエリアだけを包むこの div に固定する（注記の分だけずれないように） */}
+      <div className="relative">
+        <textarea
         ref={ref}
         rows={1}
         value={displayText}
@@ -94,25 +96,26 @@ export default function ChatInputBar({
           serif ? "font-serif" : ""
         } ${grown ? "px-3 pb-[52px] pt-3" : "h-12 px-12 py-3"}`}
       />
-      {mic && (
-        <div className="absolute bottom-2 left-2">
-          <MicButton
-            disabled={disabled}
-            onFinal={(t) => setText((prev) => prev + t)}
-            onInterim={setInterim}
-            onRecordingChange={setRecording}
-          />
-        </div>
-      )}
-      <button
-        type="button"
-        aria-label={actionAriaLabel}
-        onClick={send}
-        disabled={disabled}
-        className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white disabled:bg-ink-tertiary"
-      >
-        {actionIcon}
-      </button>
+        {mic && (
+          <div className="absolute bottom-2 left-2">
+            <MicButton
+              disabled={disabled}
+              onFinal={(t) => setText((prev) => prev + t)}
+              onInterim={setInterim}
+              onRecordingChange={setRecording}
+            />
+          </div>
+        )}
+        <button
+          type="button"
+          aria-label={actionAriaLabel}
+          onClick={send}
+          disabled={disabled}
+          className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white disabled:bg-ink-tertiary"
+        >
+          {actionIcon}
+        </button>
+      </div>
       {recording && (
         <p className="pt-1.5 text-[13px] text-ink-secondary">
           音声はブラウザの音声認識サービスに送信されます
