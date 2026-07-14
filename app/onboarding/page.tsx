@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
@@ -18,7 +18,17 @@ const inputClass =
   "w-full rounded-xl border border-input-border bg-white px-4 py-3 text-[15px] text-ink placeholder:text-ink-tertiary focus:border-accent focus:outline-none";
 
 export default function OnboardingPage() {
+  return (
+    <Suspense>
+      <OnboardingForm />
+    </Suspense>
+  );
+}
+
+function OnboardingForm() {
   const router = useRouter();
+  // 編集モード（ホームの歯車から ?edit=1 で開く。設定画面を兼ねる）
+  const isEdit = useSearchParams().get("edit") === "1";
   const { user, loading } = useUser();
   const [profile, setProfile] = useState<Profile>(emptyProfile);
   const [saving, setSaving] = useState(false);
@@ -56,11 +66,19 @@ export default function OnboardingPage() {
     <>
       <Header />
       <main className="flex-1 overflow-y-auto px-6 pb-8 pt-7">
-        <h1 className="text-2xl font-semibold text-primary">はじめまして</h1>
+        <h1 className="text-2xl font-semibold text-primary">
+          {isEdit ? "プロフィール" : "はじめまして"}
+        </h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
-          あなたに合った答えを返すために、
-          <br />
-          少しだけ教えてください
+          {isEdit ? (
+            "いつでも変更できます"
+          ) : (
+            <>
+              あなたに合った答えを返すために、
+              <br />
+              少しだけ教えてください
+            </>
+          )}
         </p>
 
         <div className="mt-7 flex flex-col gap-[22px]">
@@ -131,20 +149,23 @@ export default function OnboardingPage() {
         <div className="mt-12">
           <button
             type="button"
-            aria-label="はじめる"
+            aria-label={isEdit ? "保存する" : "はじめる"}
             onClick={save}
             disabled={loading || saving}
             className="flex h-14 w-full items-center justify-center rounded-2xl bg-primary text-white disabled:opacity-60"
           >
             <SpiralIcon className="h-5 w-9" />
           </button>
-          <button
-            type="button"
-            onClick={() => router.push("/home")}
-            className="mx-auto mt-4 block text-[13px] text-ink-secondary underline"
-          >
-            あとで入力する
-          </button>
+          {!isEdit && (
+            <button
+              type="button"
+              onClick={() => router.push("/home")}
+              className="mx-auto mt-4 block text-[13px] text-ink-secondary underline"
+            >
+              あとで入力する
+            </button>
+          )}
+          {/* 編集モードのアカウント管理（ログアウト・削除）は Phase 6 で追加 */}
         </div>
       </main>
     </>
