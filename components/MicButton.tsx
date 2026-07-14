@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { MicIcon } from "./icons";
 
 // Web Speech API は TS の dom 型定義に含まれないため最小限を自前定義。
@@ -41,18 +41,23 @@ type Props = {
 
 /** 音声入力ボタン（32px 丸形）。ブラウザ非対応時は何も描画しない */
 export default function MicButton({ onFinal, onInterim, onRecordingChange, disabled }: Props) {
-  const [supported, setSupported] = useState(false);
+  // SSR では false、クライアントで対応可否を判定（非対応ならボタン自体を出さない）
+  const supported = useSyncExternalStore(
+    () => () => {},
+    () => !!getRecognitionCtor(),
+    () => false
+  );
   const [recording, setRecording] = useState(false);
   const recognitionRef = useRef<Recognition | null>(null);
   const recordingRef = useRef(false);
 
-  useEffect(() => {
-    setSupported(!!getRecognitionCtor());
-    return () => {
+  useEffect(
+    () => () => {
       recordingRef.current = false;
       recognitionRef.current?.stop();
-    };
-  }, []);
+    },
+    []
+  );
 
   function setRec(value: boolean) {
     recordingRef.current = value;

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import { BlocksIcon, SparklesIcon } from "@/components/icons";
+import { authedFetch, useUser } from "@/lib/db/useUser";
 import { formatDateHeading } from "@/lib/logic/date";
 
 type Message = { role: "user" | "ai"; text: string };
@@ -19,8 +20,13 @@ const phaseSubtitles: Record<Phase, string> = {
 const hints = ["何があった？", "どう考えた？", "どう動いた？", "なぜそうした？", "今どんな気持ち？"];
 
 export default function RecordPage() {
+  const { user } = useUser();
   const [phase, setPhase] = useState<Phase>(1);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [diaryText, setDiaryText] = useState("");
+  const [deepDiveAnswer, setDeepDiveAnswer] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 日付はクライアントで確定（サーバーとのハイドレーション差異を避ける）
@@ -34,10 +40,48 @@ export default function RecordPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  function sendDiary(text: string) {
+  async function sendDiary(text: string) {
+    if (!user) return;
     setMessages((m) => [...m, { role: "user", text }]);
-    // 深掘り質問（Haiku）の呼び出しはタスク10で接続する
-    setPhase(2);
+    setDiaryText(text);
+    setError("");
+    setSending(true);
+    try {
+      const res = await authedFetch(user, "/api/deepdive", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ diary: text }),
+      });
+      if (!res.ok) throw new Error(`deepdive ${res.status}`);
+      const { question } = await res.json();
+      setMessages((m) => [...m, { role: "ai", text: question }]);
+      setPhase(2);
+    } catch {
+      setError("質問を用意できませんでした。少し待ってからもう一度送ってみてください。");
+      setMessages((m) => m.slice(0, -1));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  function sendAnswer(text: string) {
+    setMessages((m) => [...m, { role: "user", text }]);
+    setDeepDiveAnswer(text);
+    startShaping();
+  }
+
+  function skipDeepDive() {
+    startShaping();
+  }
+
+  function startShaping() {
+    // 成形（Sonnet・Structured Outputs）の呼び出しはタスク11で接続する
+    setPhase(3);
+  }
+
+  function handleSend(text: string) {
+    if (phase === 1) void sendDiary(text);
+    else if (phase === 2) sendAnswer(text);
   }
 
   return (
@@ -57,6 +101,21 @@ export default function RecordPage() {
         <h1 className="text-[22px] font-semibold text-primary">{dateHeading || " "}</h1>
         <p className="mt-1 text-[13px] text-ink-secondary">{phaseSubtitles[phase]}</p>
       </div>
+
+      {/* エラー表示 */}
+      {error && (
+        <div className="mx-4 mb-1 flex flex-none items-start justify-between gap-2 rounded-lg border border-error bg-error/5 px-3 py-2.5">
+          <p className="text-sm text-error">{error}</p>
+          <button
+            type="button"
+            aria-label="閉じる"
+            onClick={() => setError("")}
+            className="text-sm font-semibold text-error"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {/* チャットエリア */}
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4">
@@ -81,11 +140,20 @@ export default function RecordPage() {
                   {msg.text}
                 </div>
               ) : (
-                <div
-                  key={i}
-                  className="mr-auto max-w-[85%] whitespace-pre-wrap rounded-xl rounded-bl-[4px] border border-ceramic bg-warm px-4 py-3 text-[15px] leading-relaxed text-ink"
-                >
-                  {msg.text}
+                <div key={i} className="mr-auto max-w-[85%]">
+                  <SparklesIcon className="mb-1 h-4 w-4 text-accent" />
+                  <div className="whitespace-pre-wrap rounded-xl rounded-bl-[4px] border border-ceramic bg-warm px-4 py-3 text-[15px] leading-relaxed text-ink">
+                    {msg.text}
+                  </div>
+                  {phase === 2 && i === messages.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={skipDeepDive}
+                      className="mt-2 text-[13px] text-ink-secondary underline"
+                    >
+                      スキップ
+                    </button>
+                  )}
                 </div>
               )
             )}
@@ -113,11 +181,13 @@ export default function RecordPage() {
         <ChatInputBar
           serif
           mic
+          disabled={sending || phase === 3}
           placeholder={phase === 1 ? "今日のことを自由に..." : "答えを入力..."}
-          onSend={sendDiary}
+          onSend={handleSend}
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}
           actionAriaLabel="送信する"
         />
+        {sending && <p className="pt-1.5 text-[13px] text-ink-secondary">分析中...</p>}
       </div>
     </main>
   );
