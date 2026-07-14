@@ -1,8 +1,35 @@
-node_modules
-.next
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env
 .env
 .env.local
 .env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# misc
 .DS_Store
+*.pem
+npm-debug.log*
 .playwright-mcp/
+
+# local-only docs
 docs/dena-research.md

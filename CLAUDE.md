@@ -8,6 +8,7 @@
 - `docs/DESIGN-mindwind.md` — UI/UX 仕様の正。基準フレーム 390×844
 - `docs/mentor-prompt.md` — AI メンターの人格・プロンプト実文（本番）。背景調査はローカルの `docs/dena-research.md`（コミット対象外）
 - `mockups/mockup.html` — 全13画面のモック（画面変更時はここを更新してスクリーンショットを撮り直す）
+- `docs/PLAN.md` — 実装計画（1タスク=1コミット。着手前に確認し、完了したらチェックを付ける）
 
 ## AI 呼び出しの鉄則
 
@@ -21,11 +22,9 @@
 ```bash
 npm run dev      # 開発サーバー（localhost:3000）
 npm run build    # 本番ビルド
-npm run test     # Vitest（ロジックのユニットテスト）
+npm run test     # Vitest（lib/ 配下の *.test.ts）
 npm run lint     # ESLint
 ```
-
-※プロジェクト未作成の間は上記は予定値。セットアップ時に実際のコマンドへ更新すること。
 
 ## ディレクトリ構成（この方針から外れない）
 
