@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import Calendar from "@/components/Calendar";
 import Header from "@/components/Header";
 import Toast from "@/components/Toast";
 import { SpiralIcon } from "@/components/icons";
@@ -82,7 +83,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* カレンダー（タスク15）・最近の記録（タスク16）で実装 */}
+        {thoughts && now && (
+          <div className="mt-4">
+            <Calendar recordedDates={new Set(thoughts.map((t) => t.date))} todayKey={now} />
+          </div>
+        )}
+
+        {/* 最近の記録（タスク16）で実装 */}
       </main>
     </>
   );
