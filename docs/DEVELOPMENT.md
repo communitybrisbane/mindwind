@@ -4,10 +4,10 @@
 
 ### 前提条件
 
-- Docker & Docker Compose
 - Node.js 18+
-- Firebase プロジェクト
-- Claude API キー
+- Firebase プロジェクト（Firestore + Authentication で Google ログインを有効化）
+- Anthropic API キー（Claude）
+- OpenAI API キー（Embeddings）
 
 ### インストール手順
 
@@ -16,11 +16,14 @@
 git clone <repository>
 cd brain_bot
 
+# 依存関係をインストール
+npm install
+
 # 環境変数を設定
 cp .env.example .env.local
 
-# Docker Compose で起動
-docker-compose up -d
+# 開発サーバーを起動
+npm run dev
 
 # ブラウザで開く
 open http://localhost:3000
@@ -29,7 +32,7 @@ open http://localhost:3000
 ### 環境変数の設定
 
 ```
-# Firebase
+# Firebase（クライアント）
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
@@ -37,15 +40,40 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
+# Firebase Admin SDK（サーバー・API Routes 用）
+FIREBASE_CLIENT_EMAIL=your_service_account_email
+FIREBASE_PRIVATE_KEY=your_service_account_private_key
+
 # Claude API
-CLAUDE_API_KEY=your_claude_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
+# OpenAI API（Embeddings）
+OPENAI_API_KEY=your_openai_api_key
 ```
+
+### Firebase 側の設定
+
+1. Firebase Console で Authentication → Google プロバイダを有効化
+2. Firestore を作成し、セキュリティルールを設定：
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+3. サービスアカウントの秘密鍵を発行し、`FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` に設定
 
 ## エラーハンドリング（MVP）
 
 ### API エラー
 
-Claude API が応答しない/タイムアウト時：
+Claude / OpenAI API が応答しない/タイムアウト時：
 - ユーザーに「エラーが発生しました。もう一度試してください」と表示
 
 ### フォーマットエラー
@@ -63,25 +91,40 @@ Claude が出力フォーマットを守らない（JSONパース失敗）時：
 ユーザーが不完全な入力をした時：
 - それでも保存し、深掘り質問で不足情報を補完
 
+### 記録不足（コールドスタート）
+
+相談時に記録が3件未満の時：
+- 分析せず「まずは3日分記録してみましょう（現在◯件）」と案内
+
+### 認証エラー
+
+ID トークンが無効/期限切れの時：
+- `/` にリダイレクトし、再ログインを促す
+
+## プライバシー注記
+
+- 音声入力（Web Speech API）はブラウザによって音声データが外部サーバー（例：Chrome は Google）に送信される。アプリ内の音声入力 UI に一言注記を表示すること
+
 ## MVP スコープ
 
 ### 実装する機能
 
+- Google 認証（Firebase Authentication）
 - 記録（音声/テキスト入力）
-- AI 自動分類 + 深掘り質問
+- AI 自動分類 + 深掘り質問 + サマリー生成
 - 検索・相談・パターン分析
 - カレンダー表示（継続を可視化）
 - 連続日数表示（ストリーク）
 
 ### 実装しない機能
 
-- Google 認証（後で実装）
 - 複数言語対応
 - データエクスポート
 - グラフ化・可視化機能
 - ソーシャル機能
 - チーム機能
 - AI の学習カスタマイズ
+- 相談の会話履歴保存・マルチターン対話
 - 通知・リマインダー
 
 ## 開発フロー
@@ -90,13 +133,13 @@ Claude が出力フォーマットを守らない（JSONパース失敗）時：
 
 - 実装計画に従ってタスクを実行
 - 各タスク完了後にコミット
-- テストを先に書く（TDD）
 
 ### 2. テスト
 
-- ユニットテスト：個別機能のテスト
+- **Vitest** でロジック部のユニットテストを書く（コサイン類似度計算、ストリーク計算、日付境界処理など）
 - 統合テスト：AI とデータベースの連携テスト
 - 手動テスト：実際の使用フロー確認
+- UI の細部までテストで縛らない。「ロジックにはテストを書く」を基準とする
 
 ### 3. コミット戦略
 
@@ -108,9 +151,9 @@ Claude が出力フォーマットを守らない（JSONパース失敗）時：
 
 ### MVP 完成後
 
-- Google 認証の実装
 - 9時の振り返り通知
 - 定期レポート生成
+- 相談履歴の保存・マルチターン対話
 - AI の学習カスタマイズ
 - データエクスポート
 - グラフ化・可視化

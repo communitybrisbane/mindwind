@@ -49,9 +49,9 @@
 過去のあなたは：
 - 心に余裕がある時はうまくいく
 - 相手を尊重する判断が正確
-- このパターンの時は成功率100%
+- このパターンの時はうまくいっている
 
-→ 「始めるべき。過去のあなたも成功しています。」
+→ 「始めるべき。過去のあなたも同じような状況で成功しています。」
 ```
 
 ## メリット
@@ -68,13 +68,14 @@
 git clone <repository>
 cd brain_bot
 cp .env.example .env.local
-docker-compose up -d
+npm install
+npm run dev
 # localhost:3000 で開く
 ```
 
 ### 環境変数
 
-Firebase と Claude API の認証情報を `.env.local` に設定してください。
+Firebase（クライアント + Admin SDK）、Claude API、OpenAI API の認証情報を `.env.local` に設定してください。詳細は [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) を参照。
 
 ---
 
