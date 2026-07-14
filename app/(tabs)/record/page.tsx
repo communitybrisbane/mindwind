@@ -223,6 +223,33 @@ export default function RecordPage() {
     else if (phase === 2) sendAnswer(text);
   }
 
+  async function deleteRecord(thoughtId: string) {
+    if (!user || !thoughtId) return;
+    if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。")) return;
+    setError("");
+    try {
+      const res = await authedFetch(user, `/api/thoughts/${thoughtId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`delete ${res.status}`);
+      // 該当セッション（前カードの直後〜このカード）をローカルからも取り除く
+      setMessages((m) => {
+        const kept: Message[] = [];
+        let buffer: Message[] = [];
+        for (const message of m) {
+          buffer.push(message);
+          if (message.kind === "card") {
+            if (message.thoughtId !== thoughtId) kept.push(...buffer);
+            buffer = [];
+          }
+        }
+        kept.push(...buffer);
+        return kept;
+      });
+      setExpandedRecord(null);
+    } catch {
+      setError("削除できませんでした。少し待ってからもう一度試してください。");
+    }
+  }
+
   return (
     <main className="flex min-h-0 flex-1 flex-col">
       {/* ステップバー（ラベルなし・3本） */}
@@ -282,6 +309,13 @@ export default function RecordPage() {
                 {expandedRecord === i && record.kind === "card" && (
                   <div className="mt-2">
                     <ShapedCard value={record.shaped} readOnly />
+                    <button
+                      type="button"
+                      onClick={() => void deleteRecord(record.thoughtId)}
+                      className="mx-auto mt-2 block text-[13px] text-error underline"
+                    >
+                      この記録を削除する
+                    </button>
                   </div>
                 )}
               </div>
