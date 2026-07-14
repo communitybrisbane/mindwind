@@ -14,6 +14,24 @@ export function formatDateHeading(date: Date): string {
   return `${get("month")}月${get("day")}日（${get("weekday")}）`;
 }
 
+/** Asia/Tokyo での時刻（0〜23）。挨拶の出し分けに使う */
+export function tokyoHour(date: Date): number {
+  return Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: TOKYO,
+      hour: "numeric",
+      hourCycle: "h23",
+    }).format(date)
+  );
+}
+
+/** 時間帯に応じた挨拶 */
+export function greeting(hour: number): string {
+  if (hour >= 5 && hour < 11) return "おはようございます";
+  if (hour >= 11 && hour < 18) return "こんにちは";
+  return "おつかれさまです";
+}
+
 /** Asia/Tokyo での "YYYY-MM-DD"（日付境界の判定・保存キーに使う） */
 export function tokyoDateKey(date: Date): string {
   return new Intl.DateTimeFormat("en-CA", {

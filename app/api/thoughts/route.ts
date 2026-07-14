@@ -12,6 +12,24 @@ const DAILY_LIMIT = 3;
 
 const shapedKeys = ["title", "event", "thinking", "action", "reason", "emotion", "values"] as const;
 
+/** 記録一覧（新しい順・embedding は返さない）。ホームのストリーク/カレンダー/最近の記録で使う */
+export async function GET(req: NextRequest) {
+  const uid = await verifyUser(req.headers.get("authorization"));
+  if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const snap = await adminDb
+    .collection(`users/${uid}/thoughts`)
+    .orderBy("createdAt", "desc")
+    .limit(90)
+    .get();
+
+  const thoughts = snap.docs.map((doc) => {
+    const { embedding: _embedding, createdAt: _createdAt, ...rest } = doc.data();
+    return { id: doc.id, ...rest };
+  });
+  return NextResponse.json({ thoughts });
+}
+
 export async function POST(req: NextRequest) {
   const uid = await verifyUser(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
