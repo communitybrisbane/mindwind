@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
+import ShapedCard from "@/components/ShapedCard";
 import { BlocksIcon, SparklesIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
+import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
 
 type Message = { role: "user" | "ai"; text: string };
@@ -24,7 +26,8 @@ export default function RecordPage() {
   const [phase, setPhase] = useState<Phase>(1);
   const [messages, setMessages] = useState<Message[]>([]);
   const [diaryText, setDiaryText] = useState("");
-  const [deepDiveAnswer, setDeepDiveAnswer] = useState("");
+  const [deepDiveQuestion, setDeepDiveQuestion] = useState("");
+  const [shaped, setShaped] = useState<ShapedRecord | null>(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -38,7 +41,7 @@ export default function RecordPage() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+  }, [messages, shaped]);
 
   async function sendDiary(text: string) {
     if (!user) return;
@@ -54,6 +57,7 @@ export default function RecordPage() {
       });
       if (!res.ok) throw new Error(`deepdive ${res.status}`);
       const { question } = await res.json();
+      setDeepDiveQuestion(question);
       setMessages((m) => [...m, { role: "ai", text: question }]);
       setPhase(2);
     } catch {
@@ -66,17 +70,45 @@ export default function RecordPage() {
 
   function sendAnswer(text: string) {
     setMessages((m) => [...m, { role: "user", text }]);
-    setDeepDiveAnswer(text);
-    startShaping();
+    void startShaping(text);
   }
 
   function skipDeepDive() {
-    startShaping();
+    void startShaping("");
   }
 
-  function startShaping() {
-    // 成形（Sonnet・Structured Outputs）の呼び出しはタスク11で接続する
+  async function startShaping(answer: string) {
+    if (!user) return;
     setPhase(3);
+    setError("");
+    setSending(true);
+    try {
+      const res = await authedFetch(user, "/api/shape", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          diary: diaryText,
+          deepDiveQuestion: answer ? deepDiveQuestion : "",
+          deepDiveAnswer: answer,
+        }),
+      });
+      if (!res.ok) throw new Error(`shape ${res.status}`);
+      const data = (await res.json()) as { shaped: ShapedRecord };
+      setMessages((m) => [
+        ...m,
+        { role: "ai", text: "今日の記録を整理したよ。違うところは直してね。" },
+      ]);
+      setShaped(data.shaped);
+    } catch {
+      setError("記録を整理できませんでした。少し待ってからもう一度試してください。");
+      setPhase(2);
+    } finally {
+      setSending(false);
+    }
+  }
+
+  function saveRecord() {
+    // 保存処理（embedding→thoughts 保存→/home 遷移）はタスク12で接続する
   }
 
   function handleSend(text: string) {
@@ -156,6 +188,13 @@ export default function RecordPage() {
                   )}
                 </div>
               )
+            )}
+            {shaped && (
+              <ShapedCard
+                value={shaped}
+                onChange={setShaped}
+                onSave={saveRecord}
+              />
             )}
           </div>
         )}
