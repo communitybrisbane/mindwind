@@ -42,3 +42,17 @@ export async function authedFetch(user: AppUser, input: RequestInfo, init: Reque
   }
   return res;
 }
+
+/** JSON ボディ付きの認証リクエスト（POST/PUT の定型をまとめる） */
+export function authedJson(
+  user: AppUser,
+  method: "POST" | "PUT",
+  url: string,
+  body: unknown
+) {
+  return authedFetch(user, url, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}

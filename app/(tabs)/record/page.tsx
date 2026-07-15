@@ -7,7 +7,7 @@ import SavedRecordChips from "@/components/SavedRecordChips";
 import { requestToast } from "@/components/Toast";
 import ShapedCard from "@/components/ShapedCard";
 import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
-import { authedFetch, useUser } from "@/lib/db/useUser";
+import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
 import { MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
@@ -28,7 +28,13 @@ const phaseSubtitles: Record<Phase, string> = {
   3: "今日の記録",
 };
 
-const hints = ["何があった？", "どう考えた？", "どう動いた？", "なぜそうした？", "今どんな気持ち？"];
+const hints = [
+  "何があった？",
+  "どう考えた？",
+  "どう動いた？",
+  "なぜそうした？",
+  "今どんな気持ち？",
+];
 
 export default function RecordPage() {
   const router = useRouter();
@@ -48,11 +54,14 @@ export default function RecordPage() {
   const dateHeading = useSyncExternalStore(
     () => () => {},
     () => formatDateHeading(new Date()),
-    () => ""
+    () => "",
   );
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, shaped]);
 
   // 当日の記録チャットを復元（日付が変わっていればサーバーが null を返し空状態から始まる）
@@ -61,7 +70,8 @@ export default function RecordPage() {
     authedFetch(user, "/api/record-chat")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.recordChat?.messages) setMessages(fromStored(data.recordChat.messages));
+        if (data?.recordChat?.messages)
+          setMessages(fromStored(data.recordChat.messages));
       })
       .catch(() => {});
   }, [user]);
@@ -71,7 +81,8 @@ export default function RecordPage() {
   const currentMessages = currentSession(messages);
   const [hasDraft, setHasDraft] = useState(false);
   // 空状態の案内は「まだ何もない」ときだけ（入力を始めたら・今日すでに記録があるときは出さない）
-  const showEmptyState = currentMessages.length === 0 && savedRecords.length === 0 && !hasDraft;
+  const showEmptyState =
+    currentMessages.length === 0 && savedRecords.length === 0 && !hasDraft;
 
   const dailyLimit = recordLimitFor(user?.isGuest ?? false);
   const limitReached = savedRecords.length >= dailyLimit;
@@ -96,16 +107,18 @@ export default function RecordPage() {
     setError("");
     setSending(true);
     try {
-      const res = await authedFetch(user, "/api/deepdive", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ diary: text }),
+      const res = await authedJson(user, "POST", "/api/deepdive", {
+        diary: text,
       });
       if (res.status === 422) {
         // refusal 等の異常応答：AI バブルで言い換えをお願いする
         setMessages((m) => [
           ...m,
-          { role: "ai", kind: "text", text: "申し訳ない、もう一度詳しく説明してもらえますか？" },
+          {
+            role: "ai",
+            kind: "text",
+            text: "申し訳ない、もう一度詳しく説明してもらえますか？",
+          },
         ]);
         return;
       }
@@ -115,7 +128,9 @@ export default function RecordPage() {
       setMessages((m) => [...m, { role: "ai", kind: "text", text: question }]);
       setPhase(2);
     } catch {
-      setError("質問を用意できませんでした。少し待ってからもう一度送ってみてください。");
+      setError(
+        "質問を用意できませんでした。少し待ってからもう一度送ってみてください。",
+      );
       setMessages((m) => m.slice(0, -1));
     } finally {
       setSending(false);
@@ -138,19 +153,19 @@ export default function RecordPage() {
     setError("");
     setSending(true);
     try {
-      const res = await authedFetch(user, "/api/shape", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          diary: diaryText,
-          deepDiveQuestion: answer ? deepDiveQuestion : "",
-          deepDiveAnswer: answer,
-        }),
+      const res = await authedJson(user, "POST", "/api/shape", {
+        diary: diaryText,
+        deepDiveQuestion: answer ? deepDiveQuestion : "",
+        deepDiveAnswer: answer,
       });
       if (res.status === 422) {
         setMessages((m) => [
           ...m,
-          { role: "ai", kind: "text", text: "申し訳ない、もう一度詳しく説明してもらえますか？" },
+          {
+            role: "ai",
+            kind: "text",
+            text: "申し訳ない、もう一度詳しく説明してもらえますか？",
+          },
         ]);
         setPhase(2);
         return;
@@ -159,11 +174,17 @@ export default function RecordPage() {
       const data = (await res.json()) as { shaped: ShapedRecord };
       setMessages((m) => [
         ...m,
-        { role: "ai", kind: "text", text: "今日の記録を整理したよ。違うところは直してね。" },
+        {
+          role: "ai",
+          kind: "text",
+          text: "今日の記録を整理したよ。違うところは直してね。",
+        },
       ]);
       setShaped(data.shaped);
     } catch {
-      setError("記録を整理できませんでした。少し待ってからもう一度試してください。");
+      setError(
+        "記録を整理できませんでした。少し待ってからもう一度試してください。",
+      );
       setPhase(2);
     } finally {
       setSending(false);
@@ -175,15 +196,11 @@ export default function RecordPage() {
     setSaving(true);
     setError("");
     try {
-      const res = await authedFetch(user, "/api/thoughts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shaped,
-          rawText: diaryText,
-          deepDiveQuestion: deepDiveAnswer ? deepDiveQuestion : "",
-          deepDiveAnswer,
-        }),
+      const res = await authedJson(user, "POST", "/api/thoughts", {
+        shaped,
+        rawText: diaryText,
+        deepDiveQuestion: deepDiveAnswer ? deepDiveQuestion : "",
+        deepDiveAnswer,
       });
       if (res.status === 409) {
         setError(`今日の記録は上限（${dailyLimit}件）に達しました`);
@@ -198,10 +215,8 @@ export default function RecordPage() {
         ...messages.filter((m) => m.kind === "card"),
         { role: "ai", kind: "card", shaped, thoughtId: id },
       ];
-      await authedFetch(user, "/api/record-chat", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: toStored(savedMessages) }),
+      await authedJson(user, "PUT", "/api/record-chat", {
+        messages: toStored(savedMessages),
       }).catch(() => {});
 
       requestToast("記録しました");
@@ -220,10 +235,13 @@ export default function RecordPage() {
 
   async function deleteRecord(thoughtId: string) {
     if (!user || !thoughtId) return;
-    if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。")) return;
+    if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。"))
+      return;
     setError("");
     try {
-      const res = await authedFetch(user, `/api/thoughts/${thoughtId}`, { method: "DELETE" });
+      const res = await authedFetch(user, `/api/thoughts/${thoughtId}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error(`delete ${res.status}`);
       // 該当セッション（前カードの直後〜このカード）をローカルからも取り除く
       setMessages((m) => {
@@ -247,7 +265,10 @@ export default function RecordPage() {
   return (
     <main className="flex min-h-0 flex-1 flex-col">
       {/* ステップバー（ラベルなし・3本） */}
-      <div className="flex flex-none gap-1.5 px-4 pt-3" aria-label={`ステップ${phase}／3`}>
+      <div
+        className="flex flex-none gap-1.5 px-4 pt-3"
+        aria-label={`ステップ${phase}／3`}
+      >
         {([1, 2, 3] as const).map((step) => (
           <div
             key={step}
@@ -258,8 +279,12 @@ export default function RecordPage() {
 
       {/* 日付見出し（日記帳の質感） */}
       <div className="flex-none px-4 pb-2 pt-4">
-        <h1 className="text-[22px] font-semibold text-primary">{dateHeading || " "}</h1>
-        <p className="mt-1 text-[13px] text-ink-secondary">{phaseSubtitles[phase]}</p>
+        <h1 className="text-[22px] font-semibold text-primary">
+          {dateHeading || " "}
+        </h1>
+        <p className="mt-1 text-[13px] text-ink-secondary">
+          {phaseSubtitles[phase]}
+        </p>
       </div>
 
       {/* エラー表示 */}
@@ -278,15 +303,23 @@ export default function RecordPage() {
       )}
 
       {/* チャットエリア */}
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">
+      <div
+        ref={scrollRef}
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4"
+      >
         {/* 保存済み記録（畳んだチップ。タップで展開） */}
-        <SavedRecordChips records={savedRecords} onDelete={(id) => void deleteRecord(id)} />
+        <SavedRecordChips
+          records={savedRecords}
+          onDelete={(id) => void deleteRecord(id)}
+        />
 
         {currentMessages.length === 0 ? (
           showEmptyState && (
             <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
               <BlocksIcon className="h-16 w-16 text-accent" strokeWidth={1.2} />
-              <p className="mt-5 text-lg font-semibold text-ink">今日のことを話してみよう</p>
+              <p className="mt-5 text-lg font-semibold text-ink">
+                今日のことを話してみよう
+              </p>
               <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
                 うまくいった日も、そうでない日も。
                 <br />
@@ -324,7 +357,7 @@ export default function RecordPage() {
                     )}
                   </div>
                 </div>
-              )
+              ),
             )}
             {shaped && (
               <ShapedCard
@@ -347,7 +380,9 @@ export default function RecordPage() {
         )}
         {phase === 1 && !limitReached && (
           <div className="pb-2.5">
-            <p className="text-[13px] font-semibold text-ink-secondary">書くヒント</p>
+            <p className="text-[13px] font-semibold text-ink-secondary">
+              書くヒント
+            </p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {hints.map((hint) => (
                 <span
@@ -370,7 +405,9 @@ export default function RecordPage() {
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}
           actionAriaLabel="送信する"
         />
-        {sending && <p className="pt-1.5 text-[13px] text-ink-secondary">分析中...</p>}
+        {sending && (
+          <p className="pt-1.5 text-[13px] text-ink-secondary">分析中...</p>
+        )}
       </div>
     </main>
   );

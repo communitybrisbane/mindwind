@@ -5,7 +5,7 @@ import ChatHistoryDrawer, { type ChatSummary } from "@/components/ChatHistoryDra
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
-import { authedFetch, useUser, type AppUser } from "@/lib/db/useUser";
+import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
 import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 
@@ -97,11 +97,7 @@ export default function SearchPage() {
     setMessages((m) => [...m, { role: "user", text }]);
     setThinking(true);
     try {
-      const res = await authedFetch(user, "/api/consult", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, chatId }),
-      });
+      const res = await authedJson(user, "POST", "/api/consult", { message: text, chatId });
       if (res.status === 429) {
         setLimitReached(true);
         setMessages((m) => m.slice(0, -1));

@@ -8,7 +8,7 @@ import AutoGrowTextarea from "@/components/AutoGrowTextarea";
 import Header from "@/components/Header";
 import { auth, googleProvider } from "@/lib/db/firebase";
 import { SpiralIcon } from "@/components/icons";
-import { authedFetch, useUser } from "@/lib/db/useUser";
+import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import { emptyProfile, STAGES, type Profile, type Stage } from "@/lib/db/types";
 
 const stageLabels: Record<Stage, string> = {
@@ -113,11 +113,7 @@ function OnboardingForm() {
   /** スキップ：空のプロフィールを保存して「初回済み」にする（次回からオンボーディングに戻されない） */
   async function skip() {
     if (user) {
-      await authedFetch(user, "/api/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(emptyProfile),
-      }).catch(() => {});
+      await authedJson(user, "PUT", "/api/profile", emptyProfile).catch(() => {});
     }
     router.push("/home");
   }
@@ -126,11 +122,7 @@ function OnboardingForm() {
     if (!user || saving) return;
     setSaving(true);
     try {
-      await authedFetch(user, "/api/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
-      });
+      await authedJson(user, "PUT", "/api/profile", profile);
       router.push("/home");
     } finally {
       setSaving(false);
