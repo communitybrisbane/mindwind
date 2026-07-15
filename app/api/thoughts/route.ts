@@ -4,11 +4,10 @@ import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser } from "@/lib/db/admin";
 import type { ShapedRecord } from "@/lib/db/types";
 import { tokyoDateKey } from "@/lib/logic/date";
+import { recordLimitFor } from "@/lib/logic/limits";
 import { buildEmbeddingText } from "@/lib/logic/recordText";
 
 export const maxDuration = 30;
-
-const DAILY_LIMIT = 3;
 
 const shapedKeys = ["title", "event", "thinking", "action", "reason", "emotion", "values"] as const;
 
@@ -46,9 +45,9 @@ export async function POST(req: NextRequest) {
   const thoughts = adminDb.collection(`users/${uid}/thoughts`);
   const date = tokyoDateKey(new Date());
 
-  // 1日3件の上限（Asia/Tokyo 日付境界）
+  // 1日の記録上限（Asia/Tokyo 日付境界。上限値は lib/logic/limits.ts で一元管理）
   const todayCount = (await thoughts.where("date", "==", date).count().get()).data().count;
-  if (todayCount >= DAILY_LIMIT) {
+  if (todayCount >= recordLimitFor()) {
     return NextResponse.json({ error: "daily_limit" }, { status: 409 });
   }
 

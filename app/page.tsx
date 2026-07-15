@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { signInAnonymously, signInWithPopup } from "firebase/auth";
 import { SpiralIcon } from "@/components/icons";
 import { auth, googleProvider } from "@/lib/db/firebase";
 import { useUser } from "@/lib/db/useUser";
@@ -39,6 +39,20 @@ export default function StartPage() {
     }
   }
 
+  async function guestLogin() {
+    if (busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await signInAnonymously(auth);
+      router.push("/home");
+    } catch {
+      setError("ログインできませんでした。少し待ってからもう一度試してください。");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <main className="flex flex-1 flex-col justify-between bg-accent px-6 pb-12 pt-16">
       <div className="flex flex-1 flex-col items-center justify-center gap-5">
@@ -57,6 +71,14 @@ export default function StartPage() {
             G
           </span>
           {busy ? "ログイン中..." : "Google ではじめる"}
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void guestLogin()}
+          className="text-[13px] text-white/90 underline disabled:opacity-70"
+        >
+          ゲストで試す
         </button>
         <p className="text-xs text-white/65">
           <Link href="/terms" className="text-white/90 underline">

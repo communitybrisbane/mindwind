@@ -6,7 +6,9 @@ import { auth } from "./firebase";
 
 export type AppUser = {
   uid: string;
-  /** API Route に渡す ID トークン。開発用スタブでは null（サーバー側が dev uid に解決する） */
+  /** ゲスト（匿名認証）かどうか */
+  isGuest: boolean;
+  /** API Route に渡す ID トークン */
   getIdToken: () => Promise<string | null>;
 };
 
@@ -18,7 +20,9 @@ export function useUser(): { user: AppUser | null; loading: boolean } {
   useEffect(
     () =>
       onAuthStateChanged(auth, (u: User | null) => {
-        setUser(u ? { uid: u.uid, getIdToken: () => u.getIdToken() } : null);
+        setUser(
+          u ? { uid: u.uid, isGuest: u.isAnonymous, getIdToken: () => u.getIdToken() } : null
+        );
         setLoading(false);
       }),
     []

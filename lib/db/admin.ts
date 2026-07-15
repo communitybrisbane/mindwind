@@ -17,16 +17,24 @@ const app =
 export const adminAuth = getAuth(app);
 export const adminDb = getFirestore(app);
 
+export type AuthInfo = { uid: string; isGuest: boolean };
+
 /**
- * Authorization: Bearer <idToken> を検証して uid を返す。
+ * Authorization: Bearer <idToken> を検証して uid とゲスト判定を返す。
  * 無効なら null（呼び出し側で 401 を返すこと）。
+ * ゲスト判定はトークンの sign_in_provider を見るためクライアントから偽装できない。
  */
-export async function verifyUser(authHeader: string | null): Promise<string | null> {
+export async function verifyUserInfo(authHeader: string | null): Promise<AuthInfo | null> {
   if (!authHeader?.startsWith("Bearer ")) return null;
   try {
     const decoded = await adminAuth.verifyIdToken(authHeader.slice(7));
-    return decoded.uid;
+    return { uid: decoded.uid, isGuest: decoded.firebase.sign_in_provider === "anonymous" };
   } catch {
     return null;
   }
+}
+
+/** uid だけ必要な場合の簡易版 */
+export async function verifyUser(authHeader: string | null): Promise<string | null> {
+  return (await verifyUserInfo(authHeader))?.uid ?? null;
 }

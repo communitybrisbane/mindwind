@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { deleteUser, reauthenticateWithPopup, signOut } from "firebase/auth";
+import { deleteUser, linkWithPopup, reauthenticateWithPopup, signOut } from "firebase/auth";
 import AuthGuard from "@/components/AuthGuard";
 import AutoGrowTextarea from "@/components/AutoGrowTextarea";
 import Header from "@/components/Header";
@@ -54,8 +54,36 @@ function OnboardingForm() {
     setProfile((p) => ({ ...p, [key]: value }));
 
   async function logout() {
+    // ゲストはログアウトするとこの端末の記録に戻れない
+    if (
+      user?.isGuest &&
+      !window.confirm(
+        "ログアウトするとゲストの記録には戻れません。残したい場合は先に Google アカウントと連携してください。ログアウトしますか？"
+      )
+    )
+      return;
     await signOut(auth);
     router.replace("/");
+  }
+
+  /** ゲスト→Google 連携（uid はそのままなのでデータは全部引き継がれる） */
+  async function linkGoogle() {
+    const current = auth.currentUser;
+    if (!current) return;
+    try {
+      await linkWithPopup(current, googleProvider);
+      window.alert("Google アカウントと連携しました。記録はそのまま引き継がれます。");
+      window.location.reload();
+    } catch (e) {
+      const code = (e as { code?: string }).code ?? "";
+      if (code === "auth/credential-already-in-use") {
+        window.alert(
+          "この Google アカウントは既に MindWind で使われています。一度ログアウトして、その Google アカウントでログインし直してください（ゲストの記録は引き継げません）。"
+        );
+      } else if (code !== "auth/popup-closed-by-user" && code !== "auth/cancelled-popup-request") {
+        window.alert("連携できませんでした。少し待ってからもう一度試してください。");
+      }
+    }
   }
 
   async function deleteAccount() {
@@ -200,6 +228,18 @@ function OnboardingForm() {
           )}
           {isEdit && (
             <div className="mt-8 flex flex-col items-center gap-4 border-t border-ceramic pt-6">
+              {user?.isGuest && (
+                <button
+                  type="button"
+                  onClick={() => void linkGoogle()}
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-semibold text-white"
+                >
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[13px] font-bold text-primary">
+                    G
+                  </span>
+                  Google アカウントと連携してデータを残す
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => void logout()}

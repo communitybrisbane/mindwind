@@ -3,16 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODELS } from "@/lib/ai/anthropic";
 import { buildSystemPrompt } from "@/lib/ai/mentorPrompt";
 import { MIN_THOUGHTS_FOR_CONSULT, searchRelevantThoughts, type RagThought } from "@/lib/ai/rag";
-import { adminDb, verifyUser } from "@/lib/db/admin";
+import { adminDb, verifyUserInfo } from "@/lib/db/admin";
 import { SHAPED_FIELDS } from "@/lib/db/types";
 import { tokyoDateKey } from "@/lib/logic/date";
+import { consultLimitFor } from "@/lib/logic/limits";
 
 export const maxDuration = 300;
 
 // Claude に渡すスレッド履歴の上限（超過分は古い順に外す。画面には全件表示される）
 const MAX_HISTORY = 20;
-// 1日の相談上限（メッセージ数）
-const DAILY_LIMIT = 30;
 
 function formatRagBlock(thoughts: RagThought[]): string {
   const entries = thoughts.map((t, i) => {
@@ -25,8 +24,9 @@ function formatRagBlock(thoughts: RagThought[]): string {
 }
 
 export async function POST(req: NextRequest) {
-  const uid = await verifyUser(req.headers.get("authorization"));
-  if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const authInfo = await verifyUserInfo(req.headers.get("authorization"));
+  if (!authInfo) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { uid, isGuest } = authInfo;
 
   const body = await req.json().catch(() => null);
   const message = typeof body?.message === "string" ? body.message.trim() : "";
@@ -36,11 +36,11 @@ export async function POST(req: NextRequest) {
   const userDoc = adminDb.doc(`users/${uid}`);
   const userSnap = await userDoc.get();
 
-  // 1日30メッセージの上限（Asia/Tokyo 日付でリセット）
+  // 1日の相談上限（ゲストは会員の1/10。Asia/Tokyo 日付でリセット）
   const today = tokyoDateKey(new Date());
   const consultCount = userSnap.get("consultCount");
   const usedToday: number = consultCount?.date === today ? consultCount.count : 0;
-  if (usedToday >= DAILY_LIMIT) {
+  if (usedToday >= consultLimitFor(isGuest)) {
     return NextResponse.json({ error: "daily_limit" }, { status: 429 });
   }
 

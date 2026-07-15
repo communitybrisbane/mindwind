@@ -97,6 +97,17 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ゲスト利用中の注意バナー（タップで連携画面へ） */}
+        {user?.isGuest && (
+          <Link
+            href="/onboarding?edit=1"
+            className="mt-3 block rounded-lg bg-leaf px-3 py-2.5 text-[13px] leading-relaxed text-primary"
+          >
+            ゲスト利用中。データはこの端末だけに保存されます。
+            <span className="font-semibold underline">Google アカウントと連携して残す</span>
+          </Link>
+        )}
+
         {thoughts && now && (
           <div className="mt-4 flex flex-col gap-4 pb-4">
             <Calendar recordedDates={new Set(thoughts.map((t) => t.date))} todayKey={now} />
