@@ -15,7 +15,6 @@ import {
   currentSession,
   fromStored,
   savedCards,
-  toStored,
   type RecordMessage as Message,
 } from "@/lib/logic/recordChatMessages";
 
@@ -207,18 +206,7 @@ export default function RecordPage() {
         return;
       }
       if (!res.ok) throw new Error(`thoughts ${res.status}`);
-      const { id } = await res.json();
-
-      // recordChat には保存済みカードだけを残す（完了セッションの会話はもう表示されず、
-      // 原文と深掘りQ&Aは thoughts 側に保存済み。ドキュメントサイズを自然に抑える）
-      const savedMessages: Message[] = [
-        ...messages.filter((m) => m.kind === "card"),
-        { role: "ai", kind: "card", shaped, thoughtId: id },
-      ];
-      await authedJson(user, "PUT", "/api/record-chat", {
-        messages: toStored(savedMessages),
-      }).catch(() => {});
-
+      // recordChat（保存済みカードの追記）はサーバー側が同じリクエスト内で処理する
       requestToast("記録しました");
       router.push("/home");
     } catch {

@@ -56,34 +56,60 @@ export async function POST(req: NextRequest) {
   const deepDiveQuestion = text(body?.deepDiveQuestion, MAX_DIARY_LENGTH);
   const deepDiveAnswer = text(body?.deepDiveAnswer, MAX_DIARY_LENGTH);
 
-  const thoughts = adminDb.collection(`users/${uid}/thoughts`);
+  const userDoc = adminDb.doc(`users/${uid}`);
+  const thoughts = userDoc.collection("thoughts");
   const date = tokyoDateKey(new Date());
 
-  // 1日の記録上限（Asia/Tokyo 日付境界。上限値は lib/logic/limits.ts で一元管理）
-  const todayCount = (await thoughts.where("date", "==", date).count().get()).data().count;
-  if (todayCount >= recordLimitFor(isGuest)) {
-    return NextResponse.json({ error: "daily_limit" }, { status: 409 });
-  }
-
   try {
-    const embedding = await embedText(buildEmbeddingText(shaped));
-    const doc = await thoughts.add({
+    // 独立した処理は並列で走らせて待ち時間を圧縮する
+    // （上限超過時は embedding 1回ぶん無駄になるが $0.00001 なので許容）
+    const [countSnap, embedding, userSnap] = await Promise.all([
+      thoughts.where("date", "==", date).count().get(),
+      embedText(buildEmbeddingText(shaped)),
+      userDoc.get(),
+    ]);
+
+    // 1日の記録上限（Asia/Tokyo 日付境界。上限値は lib/logic/limits.ts で一元管理）
+    if (countSnap.data().count >= recordLimitFor(isGuest)) {
+      return NextResponse.json({ error: "daily_limit" }, { status: 409 });
+    }
+
+    // recordChat は保存済みカードのみ保持する設計。新しいカードをサーバー側で追記して
+    // クライアントの2本目のリクエストをなくす（日付が変わっていたら作り直し）
+    const docRef = thoughts.doc();
+    const existing = userSnap.get("recordChat");
+    const cards =
+      existing?.date === date
+        ? existing.messages.filter((m: { type: string }) => m.type === "card")
+        : [];
+    const recordChat = {
       date,
-      title: shaped.title,
-      event: shaped.event,
-      thinking: shaped.thinking,
-      action: shaped.action,
-      reason: shaped.reason,
-      emotion: shaped.emotion,
-      values: shaped.values,
-      rawText,
-      deepDiveQuestion,
-      deepDiveAnswer,
-      tags: [],
-      embedding,
-      createdAt: FieldValue.serverTimestamp(),
-    });
-    return NextResponse.json({ id: doc.id });
+      messages: [
+        ...cards,
+        { role: "ai", type: "card", content: JSON.stringify(shaped), thoughtId: docRef.id },
+      ],
+    };
+
+    await Promise.all([
+      docRef.set({
+        date,
+        title: shaped.title,
+        event: shaped.event,
+        thinking: shaped.thinking,
+        action: shaped.action,
+        reason: shaped.reason,
+        emotion: shaped.emotion,
+        values: shaped.values,
+        rawText,
+        deepDiveQuestion,
+        deepDiveAnswer,
+        tags: [],
+        embedding,
+        createdAt: FieldValue.serverTimestamp(),
+      }),
+      userDoc.set({ recordChat }, { merge: true }),
+    ]);
+    return NextResponse.json({ id: docRef.id });
   } catch (e) {
     console.error("save thought failed:", e);
     return NextResponse.json({ error: "save_failed" }, { status: 502 });
