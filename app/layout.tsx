@@ -3,6 +3,8 @@ import ThemeColor from "@/components/ThemeColor";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  // OGP 画像などの URL を絶対 URL にするための基準（LINE 等のプレビューに必要）
+  metadataBase: new URL("https://mindwind.days-count.com"),
   title: "MindWind",
   description: "あなたが自分のメンターになる。日記と相談で自分のパターンを見つけるアプリ。",
   // ホーム画面に追加した PWA の起動設定（iOS）
