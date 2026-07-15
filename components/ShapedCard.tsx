@@ -17,7 +17,7 @@ type Props = {
 export default function ShapedCard({ value, onChange, onSave, saving, readOnly }: Props) {
   return (
     <div>
-      <div className="rounded-xl bg-white p-4 shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+      <div className="rounded-xl bg-white p-4 shadow-card">
         {readOnly && (
           <span className="mb-3 inline-block rounded bg-leaf px-2 py-[3px] text-xs text-primary">
             保存済み

@@ -32,7 +32,7 @@ export default function RefThoughts({ refs }: { refs: RefThought[] }) {
       </button>
 
       {open && (
-        <ul className="mt-2 divide-y divide-ceramic rounded-xl bg-white px-3 shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+        <ul className="mt-2 divide-y divide-ceramic rounded-xl bg-white px-3 shadow-card">
           {refs.map((ref) => (
             <li key={ref.id}>
               <button

@@ -62,7 +62,7 @@ export default function HomePage() {
       <Toast />
       <main className="flex-1 overflow-y-auto p-4">
         {/* Hero カード */}
-        <section className="relative overflow-hidden rounded-xl bg-primary p-4 text-white shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+        <section className="relative overflow-hidden rounded-xl bg-primary p-4 text-white shadow-card">
           <SpiralIcon
             aria-hidden
             className="pointer-events-none absolute -right-6 top-6 h-24 w-44 text-white/10"

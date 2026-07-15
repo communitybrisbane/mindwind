@@ -224,7 +224,7 @@ export default function SearchPage() {
                     <SpiralIcon className="h-3 w-5 text-white" />
                   </span>
                   <div>
-                    <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] bg-white px-4 py-3 text-[15px] leading-[1.6] text-ink shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+                    <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] bg-white px-4 py-3 text-[15px] leading-[1.6] text-ink shadow-card">
                       {msg.text}
                     </div>
                     {msg.refs && <RefThoughts refs={msg.refs} />}
@@ -237,7 +237,7 @@ export default function SearchPage() {
                 <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-accent">
                   <SpiralIcon className="h-3 w-5 text-white" />
                 </span>
-                <div className="flex items-center gap-1 rounded-xl rounded-tl-[4px] bg-white px-4 py-4 shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+                <div className="flex items-center gap-1 rounded-xl rounded-tl-[4px] bg-white px-4 py-4 shadow-card">
                   {[0, 1, 2].map((n) => (
                     <span
                       key={n}

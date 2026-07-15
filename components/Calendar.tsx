@@ -17,7 +17,7 @@ export default function Calendar({ recordedDates, todayKey, onSelectDate }: Prop
   const [{ year, month }, setYearMonth] = useState(() => parseYearMonth(todayKey));
 
   return (
-    <section className="rounded-xl bg-white p-4 shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+    <section className="rounded-xl bg-white p-4 shadow-card">
       <div className="flex items-center justify-between">
         <button
           type="button"

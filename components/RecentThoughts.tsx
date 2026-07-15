@@ -25,7 +25,7 @@ export default function RecentThoughts({ thoughts, onDelete }: Props) {
   const items = thoughts.slice(0, MAX_ITEMS);
 
   return (
-    <section className="rounded-xl bg-white p-4 shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]">
+    <section className="rounded-xl bg-white p-4 shadow-card">
       <h2 className="text-base font-semibold text-ink">最近の記録</h2>
 
       {items.length === 0 ? (

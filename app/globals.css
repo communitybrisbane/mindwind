@@ -25,6 +25,10 @@
   /* Border */
   --color-input-border: #d6dbde;
 
+  /* Elevation */
+  --shadow-card: 0 0 0.5px rgba(0, 0, 0, 0.14), 0 1px 1px rgba(0, 0, 0, 0.24); /* カード標準 */
+  --shadow-shell: 0 0 6px rgba(0, 0, 0, 0.24), 0 8px 12px rgba(0, 0, 0, 0.14); /* アプリシェル */
+
   /* Typography */
   --font-sans: Inter, Manrope, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-serif: "Iowan Old Style", Georgia, serif; /* 日記本文用 Reading Serif */

@@ -325,7 +325,7 @@ export default function RecordPage() {
                   type="button"
                   aria-expanded={expandedRecord === i}
                   onClick={() => setExpandedRecord(expandedRecord === i ? null : i)}
-                  className="flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left shadow-[0_0_0.5px_rgba(0,0,0,0.14),0_1px_1px_rgba(0,0,0,0.24)]"
+                  className="flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left shadow-card"
                 >
                   <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none text-accent" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                     <path d="M4 12l6 6L20 6" />
