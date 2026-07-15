@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { SpiralIcon } from "./icons";
+import LoadingScreen from "./LoadingScreen";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { Profile } from "@/lib/db/types";
 
@@ -60,12 +60,6 @@ export default function AuthGuard({
     };
   }, [user, loading, allowWithoutProfile, pathname, router]);
 
-  if (!ready) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <SpiralIcon className="h-8 w-16 animate-pulse text-accent" />
-      </div>
-    );
-  }
+  if (!ready) return <LoadingScreen />;
   return <>{children}</>;
 }

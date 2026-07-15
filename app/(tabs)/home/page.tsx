@@ -105,6 +105,13 @@ export default function HomePage() {
           </Link>
         )}
 
+        {/* 記録データの読み込み中はスピナーを見せる（無言の空白にしない） */}
+        {!thoughts && (
+          <div className="flex justify-center py-16">
+            <SpiralIcon className="h-6 w-12 animate-pulse text-accent" />
+          </div>
+        )}
+
         {thoughts && now && (
           <div className="mt-4 flex flex-col gap-4 pb-4">
             <Calendar
