@@ -30,18 +30,7 @@ export default function SearchPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
 
-  // 最新スレッドを復元（画面を離れて戻ってきても表示される）
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      try {
-        const list = await fetchChats(user);
-        setChats(list);
-        if (list.length > 0) await openChat(user, list[0].id);
-      } catch {}
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  // タブを開いたときは常に新規相談から始める（過去のスレッドは履歴ドロワーから開く）
 
   async function fetchChats(u: AppUser): Promise<ChatSummary[]> {
     const res = await authedFetch(u, "/api/chats");
