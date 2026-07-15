@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import ChatHistoryDrawer, { type ChatSummary } from "@/components/ChatHistoryDrawer";
 import ChatInputBar from "@/components/ChatInputBar";
@@ -7,7 +8,12 @@ import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import ThinkingBubble from "@/components/ThinkingBubble";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
-import { MAX_CONSULT_MESSAGE, MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
+import {
+  consultLimitFor,
+  MAX_CONSULT_MESSAGE,
+  MEMBER_LIMITS,
+  MIN_THOUGHTS_FOR_CONSULT,
+} from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
@@ -220,9 +226,20 @@ export default function SearchPage() {
 
       {/* 入力バー（下部固定） */}
       <div className="flex-none px-4 pb-3">
-        {limitReached && (
-          <p className="pb-2 text-[13px] text-ink-secondary">今日の相談はここまで。また明日話そう</p>
-        )}
+        {limitReached &&
+          (user?.isGuest ? (
+            <p className="pb-2 text-[13px] text-ink-secondary">
+              ゲストの相談は1日{consultLimitFor(true)}通まで。
+              <Link href="/onboarding?edit=1" className="font-semibold text-accent underline">
+                Google アカウントと連携
+              </Link>
+              すると1日{MEMBER_LIMITS.consultPerDay}通になります
+            </p>
+          ) : (
+            <p className="pb-2 text-[13px] text-ink-secondary">
+              今日の相談はここまで。また明日話そう
+            </p>
+          ))}
         <ChatInputBar
           mic
           disabled={thinking || limitReached}

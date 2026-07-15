@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
@@ -11,7 +12,7 @@ import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
-import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
+import { MAX_DIARY_LENGTH, MEMBER_LIMITS, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
 import {
   currentSession,
   fromStored,
@@ -364,11 +365,20 @@ export default function RecordPage() {
 
       {/* 書くヒント＋入力バー（下部固定） */}
       <div className="flex-none px-4 pb-3">
-        {limitReached && (
-          <p className="pb-2 text-[13px] text-ink-secondary">
-            今日の記録は上限（{dailyLimit}件）に達しました
-          </p>
-        )}
+        {limitReached &&
+          (user?.isGuest ? (
+            <p className="pb-2 text-[13px] text-ink-secondary">
+              ゲストの記録は1日{dailyLimit}件まで。
+              <Link href="/onboarding?edit=1" className="font-semibold text-accent underline">
+                Google アカウントと連携
+              </Link>
+              すると1日{MEMBER_LIMITS.recordPerDay}件になります
+            </p>
+          ) : (
+            <p className="pb-2 text-[13px] text-ink-secondary">
+              今日の記録は上限（{dailyLimit}件）に達しました
+            </p>
+          ))}
         {phase === 1 && !limitReached && (
           <div className="pb-2.5">
             <p className="text-[13px] font-semibold text-ink-secondary">
