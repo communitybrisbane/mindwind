@@ -91,6 +91,13 @@ export default function ChatInputBar({
         disabled={disabled}
         placeholder={placeholder}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          // Enter は改行のまま。⌘/Ctrl + Enter で送信
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            send();
+          }
+        }}
         className={`block w-full resize-none overflow-hidden rounded-3xl border border-input-border bg-white text-base leading-6 text-ink placeholder:text-ink-tertiary focus:border-accent focus:outline-none disabled:bg-ceramic ${
           serif ? "font-serif" : ""
         } ${grown ? "px-3 pb-[52px] pt-3" : "h-12 px-12 py-3"}`}
