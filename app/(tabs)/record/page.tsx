@@ -136,6 +136,14 @@ export default function RecordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ diary: text }),
       });
+      if (res.status === 422) {
+        // refusal 等の異常応答：AI バブルで言い換えをお願いする
+        setMessages((m) => [
+          ...m,
+          { role: "ai", kind: "text", text: "申し訳ない、もう一度詳しく説明してもらえますか？" },
+        ]);
+        return;
+      }
       if (!res.ok) throw new Error(`deepdive ${res.status}`);
       const { question } = await res.json();
       setDeepDiveQuestion(question);
@@ -174,6 +182,14 @@ export default function RecordPage() {
           deepDiveAnswer: answer,
         }),
       });
+      if (res.status === 422) {
+        setMessages((m) => [
+          ...m,
+          { role: "ai", kind: "text", text: "申し訳ない、もう一度詳しく説明してもらえますか？" },
+        ]);
+        setPhase(2);
+        return;
+      }
       if (!res.ok) throw new Error(`shape ${res.status}`);
       const data = (await res.json()) as { shaped: ShapedRecord };
       setMessages((m) => [

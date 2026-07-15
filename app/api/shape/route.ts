@@ -51,6 +51,10 @@ export async function POST(req: NextRequest) {
       messages: [{ role: "user", content: userContent }],
     });
 
+    // refusal や max_tokens 到達などの異常応答は専用エラーで返す（DEVELOPMENT §エラーハンドリング）
+    if (response.stop_reason !== "end_turn") {
+      return NextResponse.json({ error: "incomplete_response" }, { status: 422 });
+    }
     const text = response.content
       .filter((block) => block.type === "text")
       .map((block) => block.text)

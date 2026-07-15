@@ -27,10 +27,14 @@ export function useUser(): { user: AppUser | null; loading: boolean } {
   return { user, loading };
 }
 
-/** Authorization ヘッダー付き fetch（トークンがない dev スタブ時はヘッダーなし） */
+/** Authorization ヘッダー付き fetch。401（認証切れ）はスタート画面へ戻す */
 export async function authedFetch(user: AppUser, input: RequestInfo, init: RequestInit = {}) {
   const token = await user.getIdToken();
   const headers = new Headers(init.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  return fetch(input, { ...init, headers });
+  const res = await fetch(input, { ...init, headers });
+  if (res.status === 401) {
+    window.location.href = "/";
+  }
+  return res;
 }
