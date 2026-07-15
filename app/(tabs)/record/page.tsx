@@ -3,49 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
+import SavedRecordChips from "@/components/SavedRecordChips";
 import { requestToast } from "@/components/Toast";
 import ShapedCard from "@/components/ShapedCard";
-import { BlocksIcon, CheckIcon, ChevronDownIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
+import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
 import { MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
-
-type Message =
-  | { role: "user" | "ai"; kind: "text"; text: string }
-  | { role: "ai"; kind: "card"; shaped: ShapedRecord; thoughtId: string };
-
-// recordChat（Firestore）の保存形式
-type StoredMessage = {
-  role: "user" | "ai";
-  type: "text" | "card";
-  content: string;
-  thoughtId?: string;
-};
-
-function toStored(messages: Message[]): StoredMessage[] {
-  return messages.map((m) =>
-    m.kind === "card"
-      ? { role: "ai", type: "card", content: JSON.stringify(m.shaped), thoughtId: m.thoughtId }
-      : { role: m.role, type: "text", content: m.text }
-  );
-}
-
-function fromStored(stored: StoredMessage[]): Message[] {
-  return stored.flatMap((m): Message[] => {
-    if (m.type === "card") {
-      try {
-        return [
-          { role: "ai", kind: "card", shaped: JSON.parse(m.content), thoughtId: m.thoughtId ?? "" },
-        ];
-      } catch {
-        return [];
-      }
-    }
-    return [{ role: m.role, kind: "text", text: m.content }];
-  });
-}
-
+import {
+  currentSession,
+  fromStored,
+  savedCards,
+  toStored,
+  type RecordMessage as Message,
+} from "@/lib/logic/recordChatMessages";
 
 // 記録フェーズ：1=日記 2=深掘り 3=成形
 type Phase = 1 | 2 | 3;
@@ -95,16 +67,8 @@ export default function RecordPage() {
   }, [user]);
 
   // 保存済みのやり取りはタイトルだけのチップに畳み、進行中のメッセージだけをチャットに出す
-  const savedRecords = messages.filter((m) => m.kind === "card");
-  let lastCardIndex = -1;
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].kind === "card") {
-      lastCardIndex = i;
-      break;
-    }
-  }
-  const currentMessages = messages.slice(lastCardIndex + 1);
-  const [expandedRecord, setExpandedRecord] = useState<number | null>(null);
+  const savedRecords = savedCards(messages);
+  const currentMessages = currentSession(messages);
   const [hasDraft, setHasDraft] = useState(false);
   // 空状態の案内は「まだ何もない」ときだけ（入力を始めたら・今日すでに記録があるときは出さない）
   const showEmptyState = currentMessages.length === 0 && savedRecords.length === 0 && !hasDraft;
@@ -275,7 +239,6 @@ export default function RecordPage() {
         kept.push(...buffer);
         return kept;
       });
-      setExpandedRecord(null);
     } catch {
       setError("削除できませんでした。少し待ってからもう一度試してください。");
     }
@@ -317,38 +280,7 @@ export default function RecordPage() {
       {/* チャットエリア */}
       <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">
         {/* 保存済み記録（畳んだチップ。タップで展開） */}
-        {savedRecords.length > 0 && (
-          <div className="flex flex-none flex-col gap-2 pt-3">
-            {savedRecords.map((record, i) => (
-              <div key={i}>
-                <button
-                  type="button"
-                  aria-expanded={expandedRecord === i}
-                  onClick={() => setExpandedRecord(expandedRecord === i ? null : i)}
-                  className="flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left shadow-card"
-                >
-                  <CheckIcon className="h-4 w-4 flex-none text-accent" />
-                  <span className="flex-1 truncate text-sm font-medium text-ink">
-                    {record.kind === "card" ? record.shaped.title : ""}
-                  </span>
-                  <ChevronDownIcon className={`h-4 w-4 flex-none text-ink-tertiary transition-transform ${expandedRecord === i ? "rotate-180" : ""}`} />
-                </button>
-                {expandedRecord === i && record.kind === "card" && (
-                  <div className="mt-2">
-                    <ShapedCard value={record.shaped} readOnly />
-                    <button
-                      type="button"
-                      onClick={() => void deleteRecord(record.thoughtId)}
-                      className="mx-auto mt-2 block text-[13px] text-error underline"
-                    >
-                      この記録を削除する
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        <SavedRecordChips records={savedRecords} onDelete={(id) => void deleteRecord(id)} />
 
         {currentMessages.length === 0 ? (
           showEmptyState && (
