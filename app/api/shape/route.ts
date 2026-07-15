@@ -45,30 +45,47 @@ export async function POST(req: NextRequest) {
     `【日記】\n${diary}` +
     (question && answer ? `\n\n【深掘り質問】\n${question}\n\n【深掘り回答】\n${answer}` : "");
 
-  try {
-    const response = await anthropic.messages.create({
-      model: MODELS.shaping,
-      max_tokens: 2000,
-      // 固定プレフィックス（人格＋profile）をキャッシュし、可変の日記は messages 末尾に置く
-      system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-      // effort: "low" で思考を抑えて高速化（分類タスクには十分。ARCHITECTURE の仕様通り）
-      output_config: { effort: "low", format: { type: "json_schema", schema: shapedSchema } },
-      messages: [{ role: "user", content: userContent }],
-    });
+  // ストリーミングで返す：クライアントは JSON の生成途中から項目をカードに埋めていく
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const push = (data: object) =>
+        controller.enqueue(encoder.encode(JSON.stringify(data) + "\n"));
+      try {
+        const claudeStream = anthropic.messages.stream({
+          model: MODELS.shaping,
+          max_tokens: 2000,
+          // 固定プレフィックス（人格＋profile）をキャッシュし、可変の日記は messages 末尾に置く
+          system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
+          // effort: "low" で思考を抑えて高速化（分類タスクには十分。ARCHITECTURE の仕様通り）
+          output_config: { effort: "low", format: { type: "json_schema", schema: shapedSchema } },
+          messages: [{ role: "user", content: userContent }],
+        });
+        claudeStream.on("text", (delta) => push({ type: "delta", text: delta }));
+        const final = await claudeStream.finalMessage();
 
-    // refusal や max_tokens 到達などの異常応答は専用エラーで返す（DEVELOPMENT §エラーハンドリング）
-    if (response.stop_reason !== "end_turn") {
-      return NextResponse.json({ error: "incomplete_response" }, { status: 422 });
-    }
-    const text = response.content
-      .filter((block) => block.type === "text")
-      .map((block) => block.text)
-      .join("");
-    const shaped = JSON.parse(text) as ShapedRecord;
+        // refusal や max_tokens 到達などの異常応答（DEVELOPMENT §エラーハンドリング）
+        if (final.stop_reason !== "end_turn") {
+          push({ type: "incomplete" });
+          return;
+        }
+        const text = final.content
+          .filter((block) => block.type === "text")
+          .map((block) => block.text)
+          .join("");
+        // 最終値はサーバーで完全な JSON をパースして送る（クライアントの部分パースは表示専用）
+        push({ type: "shaped", shaped: JSON.parse(text) as ShapedRecord });
+        push({ type: "done" });
+      } catch (e) {
+        console.error("shape failed:", e);
+        push({ type: "error" });
+      } finally {
+        controller.close();
+      }
+    },
+  });
 
-    return NextResponse.json({ shaped });
-  } catch (e) {
-    console.error("shape failed:", e);
-    return NextResponse.json({ error: "ai_unavailable" }, { status: 502 });
-  }
+  return new Response(stream, {
+    headers: { "Content-Type": "application/x-ndjson; charset=utf-8" },
+  });
 }

@@ -13,12 +13,35 @@ import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
 import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
+import { readNdjson } from "@/lib/logic/ndjson";
+import { parsePartialShaped } from "@/lib/logic/partialShaped";
 import {
   currentSession,
   fromStored,
   savedCards,
   type RecordMessage as Message,
 } from "@/lib/logic/recordChatMessages";
+import { SHAPED_FIELDS } from "@/lib/db/types";
+
+/** 成形ストリーミング中のプレビューカード（できた項目から順に表示・編集は完成後） */
+function StreamingShapedCard({ partial }: { partial: Partial<ShapedRecord> }) {
+  const fields = SHAPED_FIELDS.filter(({ key }) => partial[key] !== undefined);
+  if (fields.length === 0) return null;
+  return (
+    <div className="rounded-xl bg-white p-4 shadow-card">
+      <div className="flex flex-col gap-4">
+        {fields.map(({ key, label }) => (
+          <div key={key}>
+            <p className="text-[13px] font-semibold text-accent">{label}</p>
+            <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-ink">
+              {partial[key]}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // 記録フェーズ：1=日記 2=深掘り 3=成形
 type Phase = 1 | 2 | 3;
@@ -46,6 +69,8 @@ export default function RecordPage() {
   const [deepDiveQuestion, setDeepDiveQuestion] = useState("");
   const [deepDiveAnswer, setDeepDiveAnswer] = useState("");
   const [shaped, setShaped] = useState<ShapedRecord | null>(null);
+  // 成形ストリーミング中のプレビュー（最終値はサーバーがパースした shaped で置き換える）
+  const [streamingShaped, setStreamingShaped] = useState<Partial<ShapedRecord> | null>(null);
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -64,7 +89,7 @@ export default function RecordPage() {
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, shaped, sending]);
+  }, [messages, shaped, sending, streamingShaped]);
 
   // 当日の記録チャットを復元（日付が変わっていればサーバーが null を返し空状態から始まる）
   useEffect(() => {
@@ -154,36 +179,63 @@ export default function RecordPage() {
     setPhase(3);
     setError("");
     setSending(true);
+    setStreamingShaped(null);
     try {
       const res = await authedJson(user, "POST", "/api/shape", {
         diary: diaryText,
         deepDiveQuestion: answer ? deepDiveQuestion : "",
         deepDiveAnswer: answer,
       });
-      if (res.status === 422) {
+      if (!res.ok || !res.body) throw new Error(`shape ${res.status}`);
+
+      // JSON の生成をストリームで受け、項目ができたそばからカードに埋めていく
+      let jsonText = "";
+      let introAdded = false;
+      let finalShaped: ShapedRecord | null = null;
+      let incomplete = false;
+      let failed = false;
+      await readNdjson(res.body, (event) => {
+        const data = event as
+          | { type: "delta"; text: string }
+          | { type: "shaped"; shaped: ShapedRecord }
+          | { type: "incomplete" }
+          | { type: "done" }
+          | { type: "error" };
+        if (data.type === "delta") {
+          jsonText += data.text;
+          const partial = parsePartialShaped(jsonText);
+          if (!introAdded && Object.keys(partial).length > 0) {
+            introAdded = true;
+            setMessages((m) => [
+              ...m,
+              { role: "ai", kind: "text", text: "今日の記録を整理したよ。違うところは直してね。" },
+            ]);
+          }
+          setStreamingShaped(partial);
+        } else if (data.type === "shaped") {
+          finalShaped = data.shaped;
+        } else if (data.type === "incomplete") {
+          incomplete = true;
+        } else if (data.type === "error") {
+          failed = true;
+        }
+      });
+
+      if (incomplete) {
+        // refusal 等の異常応答：言い換えをお願いして深掘りに戻す
+        setStreamingShaped(null);
         setMessages((m) => [
           ...m,
-          {
-            role: "ai",
-            kind: "text",
-            text: "申し訳ない、もう一度詳しく説明してもらえますか？",
-          },
+          { role: "ai", kind: "text", text: "申し訳ない、もう一度詳しく説明してもらえますか？" },
         ]);
         setPhase(2);
         return;
       }
-      if (!res.ok) throw new Error(`shape ${res.status}`);
-      const data = (await res.json()) as { shaped: ShapedRecord };
-      setMessages((m) => [
-        ...m,
-        {
-          role: "ai",
-          kind: "text",
-          text: "今日の記録を整理したよ。違うところは直してね。",
-        },
-      ]);
-      setShaped(data.shaped);
+      if (failed || !finalShaped) throw new Error("shape stream error");
+      setShaped(finalShaped);
+      setStreamingShaped(null);
     } catch {
+      setStreamingShaped(null);
       setError(
         "記録を整理できませんでした。少し待ってからもう一度試してください。",
       );
@@ -350,6 +402,8 @@ export default function RecordPage() {
                 </div>
               ),
             )}
+            {/* 成形の生成途中：項目ができたそばから埋まっていくプレビュー */}
+            {streamingShaped && !shaped && <StreamingShapedCard partial={streamingShaped} />}
             {shaped && (
               <ShapedCard
                 value={shaped}
@@ -358,7 +412,7 @@ export default function RecordPage() {
                 saving={saving}
               />
             )}
-            {sending && <ThinkingBubble tone="record" />}
+            {sending && !streamingShaped && <ThinkingBubble tone="record" />}
           </div>
         )}
       </div>
