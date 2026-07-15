@@ -81,7 +81,11 @@ export async function POST(req: NextRequest) {
           }
         : { role: m.role, content: m.content }
     ),
-    { role: "user" as const, content: `${formatRagBlock(results)}\n\n【相談】\n${message}` },
+    {
+      role: "user" as const,
+      // 末尾のリマインダー：履歴に長い返答が並んでいても直近の指示が勝つ（画面・保存履歴には出ない）
+      content: `${formatRagBlock(results)}\n\n【相談】\n${message}\n\n（返答は200字以内で）`,
+    },
   ];
 
   // 参考記録は表示用スナップショットとして保存する（元記録が消えても履歴の表示が壊れない）
