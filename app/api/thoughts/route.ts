@@ -16,10 +16,11 @@ export async function GET(req: NextRequest) {
   const uid = await verifyUser(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
+  // ストリーク・カレンダーの正確性のため十分に大きく取る（1日30件×1年でも余裕）
   const snap = await adminDb
     .collection(`users/${uid}/thoughts`)
     .orderBy("createdAt", "desc")
-    .limit(90)
+    .limit(2000)
     .get();
 
   const thoughts = snap.docs.map((doc) => {
