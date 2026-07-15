@@ -2,9 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { deleteUser, reauthenticateWithPopup, signOut } from "firebase/auth";
 import AuthGuard from "@/components/AuthGuard";
 import AutoGrowTextarea from "@/components/AutoGrowTextarea";
 import Header from "@/components/Header";
+import { auth, googleProvider } from "@/lib/db/firebase";
 import { SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import { emptyProfile, STAGES, type Profile, type Stage } from "@/lib/db/types";
@@ -50,6 +52,35 @@ function OnboardingForm() {
 
   const set = <K extends keyof Profile>(key: K, value: Profile[K]) =>
     setProfile((p) => ({ ...p, [key]: value }));
+
+  async function logout() {
+    await signOut(auth);
+    router.replace("/");
+  }
+
+  async function deleteAccount() {
+    const current = auth.currentUser;
+    if (!user || !current) return;
+    if (
+      !window.confirm(
+        "アカウントを削除しますか？ すべての記録・相談履歴が完全に削除され、元に戻せません"
+      )
+    )
+      return;
+    try {
+      // 直近ログインが古いと deleteUser が requires-recent-login になるため先に再認証する
+      await reauthenticateWithPopup(current, googleProvider);
+      const res = await authedFetch(user, "/api/account", { method: "DELETE" });
+      if (!res.ok) throw new Error(`account ${res.status}`);
+      await deleteUser(current);
+      router.replace("/");
+    } catch (e) {
+      const code = (e as { code?: string }).code ?? "";
+      if (code !== "auth/popup-closed-by-user" && code !== "auth/cancelled-popup-request") {
+        window.alert("削除できませんでした。少し待ってからもう一度試してください。");
+      }
+    }
+  }
 
   async function save() {
     if (!user || saving) return;
@@ -167,7 +198,25 @@ function OnboardingForm() {
               あとで入力する
             </button>
           )}
-          {/* 編集モードのアカウント管理（ログアウト・削除）は Phase 6 で追加 */}
+          {isEdit && (
+            <div className="mt-8 flex flex-col items-center gap-4 border-t border-ceramic pt-6">
+              <button
+                type="button"
+                onClick={() => void logout()}
+                className="text-sm text-ink-secondary underline"
+              >
+                ログアウト
+              </button>
+              {/* 誤タップ防止のため保存ボタンから最も遠い最下部に置く */}
+              <button
+                type="button"
+                onClick={() => void deleteAccount()}
+                className="text-sm text-error underline"
+              >
+                アカウントを削除
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </>
