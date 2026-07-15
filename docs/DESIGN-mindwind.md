@@ -224,7 +224,7 @@ Rem-based semantic scale (1rem = 10px):
 - Background: `#ffffff`
 - Border-top: `1px solid #edebe9`
 - 3 tabs: ホーム / 記録 / 相談
-- Each tab: **SVG icon のみ（24px、ラベルなし）** — ホーム=スパイラル、記録=積み上がるブロック、相談=吹き出し
+- Each tab: **SVG icon のみ（24px、ラベルなし）** — ホーム=家、記録=積み上がるブロック、相談=スパイラル（アプリアイコン）
 - Active state: Starbucks Green icon
 - Inactive state: `rgba(0,0,0,0.38)` icon
 - Touch target: minimum `44px` height per tab
@@ -255,7 +255,7 @@ MindWind はモバイルファーストの Web アプリとして、PC でもス
 
 **ナビゲーション:**
 - 上部ヘッダー: 48px、`backdrop-blur`、ブランド名のみ
-- 下部タブバー: 56px、SVG アイコンのみ（ホーム=スパイラル/記録=ブロック/相談=吹き出し）
+- 下部タブバー: 56px、SVG アイコンのみ（ホーム=家/記録=ブロック/相談=スパイラル）
 - スタート画面（`/`）ではナビ非表示
 
 **ルーティング:**
