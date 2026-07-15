@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import SavedRecordChips from "@/components/SavedRecordChips";
+import ThinkingBubble from "@/components/ThinkingBubble";
 import { requestToast } from "@/components/Toast";
 import ShapedCard from "@/components/ShapedCard";
 import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
@@ -57,11 +58,12 @@ export default function RecordPage() {
   );
 
   useEffect(() => {
+    // sending も依存に入れて「考え中バブル」が出た瞬間に最下部へスクロール
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, shaped]);
+  }, [messages, shaped, sending]);
 
   // 当日の記録チャットを復元（日付が変わっていればサーバーが null を返し空状態から始まる）
   useEffect(() => {
@@ -355,6 +357,7 @@ export default function RecordPage() {
                 saving={saving}
               />
             )}
+            {sending && <ThinkingBubble tone="record" />}
           </div>
         )}
       </div>
@@ -394,9 +397,6 @@ export default function RecordPage() {
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}
           actionAriaLabel="送信する"
         />
-        {sending && (
-          <p className="pt-1.5 text-[13px] text-ink-secondary">分析中...</p>
-        )}
       </div>
     </main>
   );

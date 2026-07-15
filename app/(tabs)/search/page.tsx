@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ChatHistoryDrawer, { type ChatSummary } from "@/components/ChatHistoryDrawer";
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
+import ThinkingBubble from "@/components/ThinkingBubble";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
 import { MAX_CONSULT_MESSAGE, MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
@@ -212,22 +213,7 @@ export default function SearchPage() {
                 </div>
               )
             )}
-            {thinking && (
-              <div className="flex max-w-[92%] items-start gap-2">
-                <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-accent">
-                  <SpiralIcon className="h-3 w-5 text-white" />
-                </span>
-                <div className="flex items-center gap-1 rounded-xl rounded-tl-[4px] bg-white px-4 py-4 shadow-card">
-                  {[0, 1, 2].map((n) => (
-                    <span
-                      key={n}
-                      className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink-tertiary"
-                      style={{ animationDelay: `${n * 0.15}s` }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+            {thinking && <ThinkingBubble tone="consult" />}
           </div>
         )}
       </div>
