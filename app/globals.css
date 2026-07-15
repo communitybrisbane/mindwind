@@ -44,6 +44,15 @@ body {
   background: #d9d7d2; /* シェル外側（PC表示時） */
 }
 
+/* スマホ幅ではシェルが全面に広がるため、外側グレーをやめてページ地色に合わせる
+   （iOS のステータスバー裏に外側の色が映り込むのを防ぐ）。
+   --page-edge は ThemeColor がルートごとに設定する（スタート=緑、他=生成り） */
+@media (max-width: 480px) {
+  body {
+    background: var(--page-edge, var(--color-warm));
+  }
+}
+
 /* スクロールバーは表示しない（スマホアプリの見た目を優先。スクロール自体は普通に効く） */
 * {
   scrollbar-width: none; /* Firefox */
