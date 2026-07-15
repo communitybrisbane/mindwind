@@ -58,7 +58,7 @@
 
 - [x] 25. エラーハンドリング共通化（API タイムアウト・refusal・記録不足・認証切れ。DEVELOPMENT §エラーハンドリング）
 - [x] 26. 375px（iPhone SE）で全画面検証＋アクセシビリティ（aria-label・フォーカス表示・44px タッチターゲット）
-- [ ] 27. Vercel デプロイ（env 設定・本番動作確認・spend limit 最終確認）
+- [x] 27. Vercel デプロイ（env 設定・本番動作確認・spend limit 最終確認）
 
 ## 将来やること（MVP 後のバックログ）
 

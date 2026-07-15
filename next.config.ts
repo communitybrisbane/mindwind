@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // firebase-admin は Next の既定で「外部モジュール」扱いになるが、Vercel 実行時に
+  // 依存の jose(ESM) を require できず落ちるため、バンドルに含めて解決する
+  transpilePackages: ["firebase-admin"],
   async headers() {
     return [
       {
