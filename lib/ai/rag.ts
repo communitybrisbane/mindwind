@@ -4,9 +4,10 @@
 import { embedText } from "./embedding";
 import { adminDb } from "@/lib/db/admin";
 import type { ShapedRecord } from "@/lib/db/types";
+import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 import { topKSimilar } from "@/lib/logic/similarity";
 
-export const MIN_THOUGHTS_FOR_CONSULT = 3;
+export { MIN_THOUGHTS_FOR_CONSULT };
 export const RAG_TOP_K = 5;
 
 export type RagThought = ShapedRecord & { id: string; date: string };

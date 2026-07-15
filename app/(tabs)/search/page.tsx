@@ -5,6 +5,7 @@ import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import { SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser, type AppUser } from "@/lib/db/useUser";
+import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
 type ChatSummary = { id: string; title: string; updatedAt: string | null };
@@ -117,7 +118,7 @@ export default function SearchPage() {
           ...m,
           {
             role: "assistant",
-            text: `まずは3日分、記録してみましょう（いま${count}件）。記録がたまるほど、過去のあなたが力になれるよ。`,
+            text: `まずは${MIN_THOUGHTS_FOR_CONSULT}日分、記録してみましょう（いま${count}件）。記録がたまるほど、過去のあなたが力になれるよ。`,
           },
         ]);
         return;

@@ -1,5 +1,11 @@
 // 利用上限の一元管理。会員側の値を変えればゲスト側も自動で追従する
 
+/** 日記の最短文字数（未満は AI を呼ばずやさしく促す。クライアント・API 共通） */
+export const MIN_DIARY_LENGTH = 10;
+
+/** 相談に必要な最低記録数（未満はコールドスタート案内。文言にも使う） */
+export const MIN_THOUGHTS_FOR_CONSULT = 3;
+
 export const MEMBER_LIMITS = {
   /** 記録の上限（件/日）。実質無限の安全上限（暴走・悪用ガード） */
   recordPerDay: 30,

@@ -9,7 +9,7 @@ import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
-import { recordLimitFor } from "@/lib/logic/limits";
+import { MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
 
 type Message =
   | { role: "user" | "ai"; kind: "text"; text: string }
@@ -115,7 +115,7 @@ export default function RecordPage() {
   async function sendDiary(text: string) {
     if (!user) return;
     // 超短文は AI を呼ばずにやさしく促す（「疲れた。しんどい。」程度の短い日記は通す）
-    if (text.trim().length < 10) {
+    if (text.trim().length < MIN_DIARY_LENGTH) {
       setMessages((m) => [
         ...m,
         { role: "user", kind: "text", text },
