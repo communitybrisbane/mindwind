@@ -42,14 +42,19 @@ lib/          # ロジック（テスト対象）
 - テストは `lib/` のロジックのみ Vitest で書く。UI の細部はテストで縛らない（DEVELOPMENT.md 準拠）
 - API キー（Anthropic / OpenAI / Firebase Admin）はサーバー側のみ。クライアントに露出させない。`.env.local` はコミットしない
 
-## モック更新の手順
+## モックの扱い
 
-画面の変更は必ずモックにも反映する：
+**モック（`mockups/`）は凍結中。実装中の画面変更でモックを更新しない**（実装が正）。完成時に実アプリのスクリーンショットで置き換える予定。仕様の記録は `docs/DESIGN-mindwind.md` の更新のみ行う。
+
+<details>
+<summary>（参考）凍結解除後のモック更新手順</summary>
 
 1. `mockups/mockup.html` を編集（全13画面が1ファイルに入っている。フレームは 390×844）
 2. `cd mockups && python3 -m http.server 8931` でローカル配信
 3. Playwright MCP で `http://localhost:8931/mockup.html` を開き、該当フレーム（`#record1` など）を `browser_take_screenshot`（type: png, scale: device）で撮影
 4. 撮った PNG を `mockups/` の既存ファイル名に上書き（例：`03-record-input.png`）し、サーバーを停止
+
+</details>
 
 ## 主要な設計判断（変更時はユーザーに確認）
 
