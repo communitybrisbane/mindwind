@@ -33,3 +33,6 @@ npm-debug.log*
 
 # local-only docs
 docs/dena-research.md
+
+# ローカルバックアップ（scripts/backup.mjs の出力。日記の中身なのでコミットしない）
+/backups/

@@ -1,0 +1,14 @@
+# 依存パッケージの脆弱性監視と更新 PR の自動作成（GitHub 標準機能・無料）
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+    # 通常アップデートはメジャーを除外（壊れにくく）。セキュリティ更新は常に PR が来る
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 5
