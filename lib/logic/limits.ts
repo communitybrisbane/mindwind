@@ -3,6 +3,12 @@
 /** 日記の最短文字数（未満は AI を呼ばずやさしく促す。クライアント・API 共通） */
 export const MIN_DIARY_LENGTH = 10;
 
+/** 入力サイズの上限（AI トークン費用と悪用のガード。超過はサーバーが 400 を返す） */
+export const MAX_DIARY_LENGTH = 5000; // 日記・深掘り回答
+export const MAX_CONSULT_MESSAGE = 2000; // 相談の1メッセージ
+export const MAX_SHAPED_FIELD = 2000; // 成形カードの各項目
+export const MAX_TITLE_LENGTH = 50; // タイトル（AI 生成は15字だが編集の余地を残す）
+
 /** 相談に必要な最低記録数（未満はコールドスタート案内。文言にも使う） */
 export const MIN_THOUGHTS_FOR_CONSULT = 3;
 

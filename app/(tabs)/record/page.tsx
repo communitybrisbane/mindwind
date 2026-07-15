@@ -10,7 +10,7 @@ import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
-import { MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
+import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
 import {
   currentSession,
   fromStored,
@@ -400,6 +400,7 @@ export default function RecordPage() {
           mic
           disabled={sending || phase === 3 || limitReached}
           placeholder={phase === 1 ? "今日のことを自由に..." : "答えを入力..."}
+          maxLength={MAX_DIARY_LENGTH}
           onSend={handleSend}
           onTypingChange={setHasDraft}
           actionIcon={<SparklesIcon className="h-[18px] w-[18px]" />}

@@ -14,6 +14,8 @@ type Props = {
   mic?: boolean;
   /** 下書きの有無が変わったとき（空状態の案内の出し分けなどに使う） */
   onTypingChange?: (hasText: boolean) => void;
+  /** 入力の最大文字数（サーバー側の上限と揃える） */
+  maxLength?: number;
   /** 記録画面はセリフ体（日記帳の質感） */
   serif?: boolean;
 };
@@ -33,6 +35,7 @@ export default function ChatInputBar({
   actionAriaLabel,
   mic,
   onTypingChange,
+  maxLength,
   serif,
 }: Props) {
   const [text, setText] = useState("");
@@ -89,6 +92,7 @@ export default function ChatInputBar({
         rows={1}
         value={displayText}
         disabled={disabled}
+        maxLength={maxLength}
         placeholder={placeholder}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {

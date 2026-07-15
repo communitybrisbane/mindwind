@@ -6,7 +6,7 @@ import { MIN_THOUGHTS_FOR_CONSULT, searchRelevantThoughts, type RagThought } fro
 import { adminDb, verifyUserInfo } from "@/lib/db/admin";
 import { SHAPED_FIELDS } from "@/lib/db/types";
 import { tokyoDateKey } from "@/lib/logic/date";
-import { consultLimitFor } from "@/lib/logic/limits";
+import { consultLimitFor, MAX_CONSULT_MESSAGE } from "@/lib/logic/limits";
 
 export const maxDuration = 300;
 
@@ -30,7 +30,9 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => null);
   const message = typeof body?.message === "string" ? body.message.trim() : "";
-  if (!message) return NextResponse.json({ error: "message is required" }, { status: 400 });
+  if (!message || message.length > MAX_CONSULT_MESSAGE) {
+    return NextResponse.json({ error: "message length out of range" }, { status: 400 });
+  }
   const chatId = typeof body?.chatId === "string" ? body.chatId : null;
 
   const userDoc = adminDb.doc(`users/${uid}`);

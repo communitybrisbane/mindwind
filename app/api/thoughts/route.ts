@@ -4,7 +4,12 @@ import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
 import type { ShapedRecord } from "@/lib/db/types";
 import { tokyoDateKey } from "@/lib/logic/date";
-import { recordLimitFor } from "@/lib/logic/limits";
+import {
+  MAX_DIARY_LENGTH,
+  MAX_SHAPED_FIELD,
+  MAX_TITLE_LENGTH,
+  recordLimitFor,
+} from "@/lib/logic/limits";
 import { buildEmbeddingText } from "@/lib/logic/recordText";
 
 export const maxDuration = 30;
@@ -37,12 +42,19 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => null);
   const shaped = body?.shaped as ShapedRecord | undefined;
-  if (!shaped || shapedKeys.some((key) => typeof shaped[key] !== "string" || !shaped[key].trim())) {
+  const fieldValid = (key: (typeof shapedKeys)[number]) => {
+    const value = shaped?.[key];
+    if (typeof value !== "string" || !value.trim()) return false;
+    return value.length <= (key === "title" ? MAX_TITLE_LENGTH : MAX_SHAPED_FIELD);
+  };
+  if (!shaped || !shapedKeys.every(fieldValid)) {
     return NextResponse.json({ error: "invalid shaped record" }, { status: 400 });
   }
-  const rawText = typeof body?.rawText === "string" ? body.rawText : "";
-  const deepDiveQuestion = typeof body?.deepDiveQuestion === "string" ? body.deepDiveQuestion : "";
-  const deepDiveAnswer = typeof body?.deepDiveAnswer === "string" ? body.deepDiveAnswer : "";
+  const text = (v: unknown, max: number) =>
+    typeof v === "string" ? v.slice(0, max) : "";
+  const rawText = text(body?.rawText, MAX_DIARY_LENGTH);
+  const deepDiveQuestion = text(body?.deepDiveQuestion, MAX_DIARY_LENGTH);
+  const deepDiveAnswer = text(body?.deepDiveAnswer, MAX_DIARY_LENGTH);
 
   const thoughts = adminDb.collection(`users/${uid}/thoughts`);
   const date = tokyoDateKey(new Date());

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODELS } from "@/lib/ai/anthropic";
 import { buildSystemPrompt } from "@/lib/ai/mentorPrompt";
 import { adminDb, verifyUser } from "@/lib/db/admin";
-import { MIN_DIARY_LENGTH } from "@/lib/logic/limits";
+import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH } from "@/lib/logic/limits";
 
 export const maxDuration = 30;
 
@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const diary = typeof body?.diary === "string" ? body.diary.trim() : "";
   // 超短文はクライアントで促す設計（ここは直接叩かれたときのコスト防御）
-  if (diary.length < MIN_DIARY_LENGTH) {
-    return NextResponse.json({ error: "diary too short" }, { status: 400 });
+  if (diary.length < MIN_DIARY_LENGTH || diary.length > MAX_DIARY_LENGTH) {
+    return NextResponse.json({ error: "diary length out of range" }, { status: 400 });
   }
 
   const userSnap = await adminDb.doc(`users/${uid}`).get();

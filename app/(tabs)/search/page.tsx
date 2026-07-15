@@ -6,7 +6,7 @@ import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
-import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
+import { MAX_CONSULT_MESSAGE, MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
@@ -241,6 +241,7 @@ export default function SearchPage() {
           mic
           disabled={thinking || limitReached}
           placeholder={messages.length === 0 ? "なんでも聞いてみよう" : "過去の自分に相談しよう"}
+          maxLength={MAX_CONSULT_MESSAGE}
           onSend={send}
           actionIcon={<SendIcon className="h-[18px] w-[18px]" />}
           actionAriaLabel="送信する"
