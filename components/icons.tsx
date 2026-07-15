@@ -15,7 +15,7 @@ export function SpiralIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** ホームタブ：家 */
+/** ホームタブ：家（一体型アウトライン＋アーチドア） */
 export function HouseIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -28,9 +28,8 @@ export function HouseIcon(props: SVGProps<SVGSVGElement>) {
       aria-hidden
       {...props}
     >
-      <path d="M3 10.5 12 3l9 7.5" />
-      <path d="M5.5 8.8V20a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V8.8" />
-      <path d="M10 21v-6h4v6" />
+      <path d="M3 10.2 12 3l9 7.2V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+      <path d="M9.3 22v-4.5a2.7 2.7 0 0 1 5.4 0V22" />
     </svg>
   );
 }
