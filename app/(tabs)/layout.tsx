@@ -1,3 +1,4 @@
+import AuthGuard from "@/components/AuthGuard";
 import TabBar from "@/components/TabBar";
 
 export default function TabsLayout({
@@ -5,7 +6,9 @@ export default function TabsLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <AuthGuard>{children}</AuthGuard>
+      </div>
       <TabBar />
     </>
   );

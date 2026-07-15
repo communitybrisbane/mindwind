@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import AuthGuard from "@/components/AuthGuard";
 import AutoGrowTextarea from "@/components/AutoGrowTextarea";
 import Header from "@/components/Header";
 import { SpiralIcon } from "@/components/icons";
@@ -21,7 +22,9 @@ const inputClass =
 export default function OnboardingPage() {
   return (
     <Suspense>
-      <OnboardingForm />
+      <AuthGuard allowWithoutProfile>
+        <OnboardingForm />
+      </AuthGuard>
     </Suspense>
   );
 }

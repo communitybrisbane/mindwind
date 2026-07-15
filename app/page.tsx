@@ -2,16 +2,23 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signInWithPopup } from "firebase/auth";
 import { SpiralIcon } from "@/components/icons";
 import { auth, googleProvider } from "@/lib/db/firebase";
+import { useUser } from "@/lib/db/useUser";
 
 /** スタート画面（Google ログイン） */
 export default function StartPage() {
   const router = useRouter();
+  const { user, loading } = useUser();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
+  // ログイン済みならホームへ（振り分けの続きは認証ガードが行う）
+  useEffect(() => {
+    if (!loading && user) router.replace("/home");
+  }, [user, loading, router]);
 
   async function login() {
     if (busy) return;

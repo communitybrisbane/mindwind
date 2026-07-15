@@ -17,20 +17,16 @@ const app =
 export const adminAuth = getAuth(app);
 export const adminDb = getFirestore(app);
 
-// 認証実装まで（Phase 6）の開発用固定ユーザー。本番ビルドでは必ず null
-const DEV_UID = process.env.NODE_ENV === "development" ? "dev-user" : null;
-
 /**
  * Authorization: Bearer <idToken> を検証して uid を返す。
  * 無効なら null（呼び出し側で 401 を返すこと）。
- * dev 環境ではトークンなし・無効時に固定 uid にフォールバックする。
  */
 export async function verifyUser(authHeader: string | null): Promise<string | null> {
-  if (!authHeader?.startsWith("Bearer ")) return DEV_UID;
+  if (!authHeader?.startsWith("Bearer ")) return null;
   try {
     const decoded = await adminAuth.verifyIdToken(authHeader.slice(7));
     return decoded.uid;
   } catch {
-    return DEV_UID;
+    return null;
   }
 }
