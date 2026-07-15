@@ -110,6 +110,18 @@ function OnboardingForm() {
     }
   }
 
+  /** スキップ：空のプロフィールを保存して「初回済み」にする（次回からオンボーディングに戻されない） */
+  async function skip() {
+    if (user) {
+      await authedFetch(user, "/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emptyProfile),
+      }).catch(() => {});
+    }
+    router.push("/home");
+  }
+
   async function save() {
     if (!user || saving) return;
     setSaving(true);
@@ -220,7 +232,7 @@ function OnboardingForm() {
           {!isEdit && (
             <button
               type="button"
-              onClick={() => router.push("/home")}
+              onClick={() => void skip()}
               className="mx-auto mt-4 block text-[13px] text-ink-secondary underline"
             >
               あとで入力する

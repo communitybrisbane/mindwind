@@ -6,9 +6,10 @@ import { SpiralIcon } from "./icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { Profile } from "@/lib/db/types";
 
-function isProfileEmpty(profile: Profile | null | undefined): boolean {
-  if (!profile) return true;
-  return !profile.nickname && !profile.activity && !profile.stage && !profile.goal;
+// profile フィールドが「存在しない」＝初回ログインとみなす。
+// スキップ時は空のプロフィールを保存するので、空値でも2回目以降は素通りする
+function isFirstLogin(profile: Profile | null | undefined): boolean {
+  return profile == null;
 }
 
 /**
@@ -48,7 +49,7 @@ export default function AuthGuard({
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (cancelled) return;
-        if (isProfileEmpty(data?.profile)) router.replace("/onboarding");
+        if (isFirstLogin(data?.profile)) router.replace("/onboarding");
         else setReady(true);
       })
       .catch(() => {
