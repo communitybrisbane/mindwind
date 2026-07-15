@@ -1,5 +1,7 @@
 # MindWind - あなたが自分のメンター
 
+**▶ 使ってみる: https://mindwind.days-count.com**（Google ログイン、または「ゲストで試す」で登録なしに体験できます。スマホなら「ホーム画面に追加」でアプリとして使えます）
+
 調子がいい時、結果が出ている時、そのマインドと行動を記録しておく。調子が悪い時、結果が出ていない時、その記録を見て再現する。つまり、**あなたが自分のメンターになる。**
 
 ## ペルソナ
@@ -38,7 +40,7 @@
 2. **深掘り** — AI が1回だけ質問を返す（曖昧なところを具体化。スキップ可）
 3. **成形** — AI が日記＋回答を **出来事 / 思考 / 行動 / 理由 / 感情 / 価値観** の6項目＋タイトルに整理してチャット内にカード表示。その場で編集して保存
 
-保存するとホームに戻り、ストリークとカレンダーが更新されます（記録は1日3件まで）。
+保存するとホームに戻り、ストリークとカレンダーが更新されます。成形は生成中から項目が順に埋まって見えるストリーミング表示です（記録は実質無制限。安全上限あり）。
 
 ### 迷った時：過去の自分に相談する
 
@@ -70,7 +72,7 @@
 
 ## 画面
 
-モックは [`mockups/`](mockups/) にあります（基準フレーム 390×844）。
+設計時のモックは [`mockups/`](mockups/) にあります（基準フレーム 390×844）。実際の画面は上のリンクから触って確認できます。
 
 | | | |
 |---|---|---|
@@ -93,6 +95,27 @@ npm run dev
 ### 環境変数
 
 Firebase（クライアント + Admin SDK）、Claude API、OpenAI API の認証情報を `.env.local` に設定してください。詳細は [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) を参照。
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 16（App Router）+ TypeScript + Tailwind CSS 4。PWA 対応（ホーム画面追加・スタンドアロン起動）
+- **バックエンド**: Next.js API Routes + Firebase Admin SDK
+- **AI**: Claude API — 深掘り質問 = Haiku 4.5 / 成形 = Sonnet 5（Structured Outputs・ストリーミング）/ 相談 = Opus 4.8（adaptive thinking・ストリーミング・prompt caching）
+- **RAG**: OpenAI text-embedding-3-small ＋ コサイン類似度で過去記録の上位5件を検索
+- **データ**: Firebase Firestore（東京リージョン・本人のみアクセス可のセキュリティルール）
+- **認証**: Firebase Authentication（Google ログイン＋匿名ゲスト。ゲストは `linkWithPopup` でデータごと本登録に昇格）
+- **デプロイ**: Vercel（`git push` で自動デプロイ）＋独自ドメイン
+- **テスト**: Vitest（`lib/` の純ロジックのみ・45件）
+
+## 開発コマンド
+
+```bash
+npm run dev      # 開発サーバー
+npm run test     # Vitest
+npm run lint     # ESLint
+npm run build    # 本番ビルド
+npm run backup   # Firestore 全データをローカル JSON にバックアップ
+```
 
 ---
 
