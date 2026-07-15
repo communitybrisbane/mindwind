@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
       max_tokens: 2000,
       // 固定プレフィックス（人格＋profile）をキャッシュし、可変の日記は messages 末尾に置く
       system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-      output_config: { format: { type: "json_schema", schema: shapedSchema } },
+      // effort: "low" で思考を抑えて高速化（分類タスクには十分。ARCHITECTURE の仕様通り）
+      output_config: { effort: "low", format: { type: "json_schema", schema: shapedSchema } },
       messages: [{ role: "user", content: userContent }],
     });
 
