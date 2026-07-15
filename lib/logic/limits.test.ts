@@ -19,7 +19,13 @@ describe("consultLimitFor / recordLimitFor", () => {
     expect(consultLimitFor(true)).toBe(guestLimit(MEMBER_LIMITS.consultPerDay));
   });
 
-  it("記録：ゲストも会員と同じ", () => {
-    expect(recordLimitFor()).toBe(MEMBER_LIMITS.recordPerDay);
+  it("記録：会員は満額・ゲストは 1/10", () => {
+    expect(recordLimitFor(false)).toBe(MEMBER_LIMITS.recordPerDay);
+    expect(recordLimitFor(true)).toBe(guestLimit(MEMBER_LIMITS.recordPerDay));
+  });
+
+  it("現在の値：会員30・ゲスト3", () => {
+    expect(recordLimitFor(false)).toBe(30);
+    expect(recordLimitFor(true)).toBe(3);
   });
 });

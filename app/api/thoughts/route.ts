@@ -1,7 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import { embedText } from "@/lib/ai/embedding";
-import { adminDb, verifyUser } from "@/lib/db/admin";
+import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
 import type { ShapedRecord } from "@/lib/db/types";
 import { tokyoDateKey } from "@/lib/logic/date";
 import { recordLimitFor } from "@/lib/logic/limits";
@@ -30,8 +30,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const uid = await verifyUser(req.headers.get("authorization"));
-  if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const authInfo = await verifyUserInfo(req.headers.get("authorization"));
+  if (!authInfo) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { uid, isGuest } = authInfo;
 
   const body = await req.json().catch(() => null);
   const shaped = body?.shaped as ShapedRecord | undefined;
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   // 1日の記録上限（Asia/Tokyo 日付境界。上限値は lib/logic/limits.ts で一元管理）
   const todayCount = (await thoughts.where("date", "==", date).count().get()).data().count;
-  if (todayCount >= recordLimitFor()) {
+  if (todayCount >= recordLimitFor(isGuest)) {
     return NextResponse.json({ error: "daily_limit" }, { status: 409 });
   }
 

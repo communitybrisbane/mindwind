@@ -9,6 +9,7 @@ import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
+import { recordLimitFor } from "@/lib/logic/limits";
 
 type Message =
   | { role: "user" | "ai"; kind: "text"; text: string }
@@ -45,7 +46,6 @@ function fromStored(stored: StoredMessage[]): Message[] {
   });
 }
 
-const DAILY_LIMIT = 3;
 
 // 記録フェーズ：1=日記 2=深掘り 3=成形
 type Phase = 1 | 2 | 3;
@@ -109,7 +109,8 @@ export default function RecordPage() {
   // 空状態の案内は「まだ何もない」ときだけ（入力を始めたら・今日すでに記録があるときは出さない）
   const showEmptyState = currentMessages.length === 0 && savedRecords.length === 0 && !hasDraft;
 
-  const limitReached = savedRecords.length >= DAILY_LIMIT;
+  const dailyLimit = recordLimitFor(user?.isGuest ?? false);
+  const limitReached = savedRecords.length >= dailyLimit;
 
   async function sendDiary(text: string) {
     if (!user) return;
@@ -221,15 +222,16 @@ export default function RecordPage() {
         }),
       });
       if (res.status === 409) {
-        setError("今日の記録は上限（3件）に達しました");
+        setError(`今日の記録は上限（${dailyLimit}件）に達しました`);
         return;
       }
       if (!res.ok) throw new Error(`thoughts ${res.status}`);
       const { id } = await res.json();
 
-      // 保存済みカードを含む当日チャットを recordChat に保存（翌日以降は破棄される）
+      // recordChat には保存済みカードだけを残す（完了セッションの会話はもう表示されず、
+      // 原文と深掘りQ&Aは thoughts 側に保存済み。ドキュメントサイズを自然に抑える）
       const savedMessages: Message[] = [
-        ...messages,
+        ...messages.filter((m) => m.kind === "card"),
         { role: "ai", kind: "card", shaped, thoughtId: id },
       ];
       await authedFetch(user, "/api/record-chat", {
@@ -412,7 +414,7 @@ export default function RecordPage() {
       <div className="flex-none px-4 pb-3">
         {limitReached && (
           <p className="pb-2 text-[13px] text-ink-secondary">
-            今日の記録は上限（3件）に達しました
+            今日の記録は上限（{dailyLimit}件）に達しました
           </p>
         )}
         {phase === 1 && !limitReached && (

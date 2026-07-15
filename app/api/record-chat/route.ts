@@ -30,7 +30,8 @@ export async function PUT(req: NextRequest) {
   const messages = body?.messages;
   const valid =
     Array.isArray(messages) &&
-    messages.length <= 60 &&
+    // カード（最大30）＋進行中セッションの会話ぶんの余裕
+    messages.length <= 100 &&
     messages.every(
       (m: StoredMessage) =>
         (m.role === "user" || m.role === "ai") &&
