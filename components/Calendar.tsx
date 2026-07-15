@@ -9,9 +9,11 @@ type Props = {
   /** 記録がある日の日付キー（"YYYY-MM-DD"） */
   recordedDates: Set<string>;
   todayKey: string;
+  /** 記録がある日をタップしたとき（その日の記録を表示する） */
+  onSelectDate?: (dateKey: string) => void;
 };
 
-export default function Calendar({ recordedDates, todayKey }: Props) {
+export default function Calendar({ recordedDates, todayKey, onSelectDate }: Props) {
   const [{ year, month }, setYearMonth] = useState(() => parseYearMonth(todayKey));
 
   return (
@@ -55,17 +57,29 @@ export default function Calendar({ recordedDates, todayKey }: Props) {
             const dateKey = buildDateKey(year, month, day);
             const recorded = recordedDates.has(dateKey);
             const isToday = dateKey === todayKey;
+            const cellClass = `flex h-9 w-9 items-center justify-center rounded-full text-sm ${
+              recorded
+                ? "bg-accent font-medium text-white"
+                : isToday
+                  ? "border border-accent text-accent"
+                  : "text-ink-secondary"
+            }`;
+            // 記録がある日はタップでその日の記録を開ける
+            if (recorded && onSelectDate) {
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`${month}月${day}日の記録を見る`}
+                  onClick={() => onSelectDate(dateKey)}
+                  className={cellClass}
+                >
+                  {day}
+                </button>
+              );
+            }
             return (
-              <span
-                key={i}
-                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${
-                  recorded
-                    ? "bg-accent font-medium text-white"
-                    : isToday
-                      ? "border border-accent text-accent"
-                      : "text-ink-secondary"
-                }`}
-              >
+              <span key={i} className={cellClass}>
                 {day}
               </span>
             );

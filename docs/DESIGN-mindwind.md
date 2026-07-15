@@ -348,6 +348,7 @@ MindWind はモバイルファーストの Web アプリとして、PC でもス
 - Card container: white bg, 12px radius, card shadow
 - Padding: `--space-3` (16px)
 - 前月/次月ナビ: chevron SVG icons
+- **記録ありの日はタップ可能**：タップでその日の記録を中央モーダルに表示（日付見出し＋タイトル＋6項目のラベル付き表示。複数件は縦に並べる。✕/背景タップで閉じる）
 
 **初期状態（記録0件・Empty State）**
 - Hero のストリーク行: 数字の代わりに "今日から記録を始めよう"（flame アイコンは共通）

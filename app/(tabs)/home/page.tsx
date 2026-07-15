@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Calendar from "@/components/Calendar";
+import DayRecordsModal from "@/components/DayRecordsModal";
 import Header from "@/components/Header";
 import RecentThoughts from "@/components/RecentThoughts";
 import Toast from "@/components/Toast";
@@ -18,6 +19,7 @@ export default function HomePage() {
   const { user } = useUser();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [thoughts, setThoughts] = useState<Thought[] | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // 日付・挨拶はクライアントで確定（ハイドレーション差異を避ける）
   const now = useSyncExternalStore(
@@ -110,9 +112,21 @@ export default function HomePage() {
 
         {thoughts && now && (
           <div className="mt-4 flex flex-col gap-4 pb-4">
-            <Calendar recordedDates={new Set(thoughts.map((t) => t.date))} todayKey={now} />
+            <Calendar
+              recordedDates={new Set(thoughts.map((t) => t.date))}
+              todayKey={now}
+              onSelectDate={setSelectedDate}
+            />
             <RecentThoughts thoughts={thoughts} onDelete={(id) => void deleteThought(id)} />
           </div>
+        )}
+
+        {selectedDate && thoughts && (
+          <DayRecordsModal
+            dateKey={selectedDate}
+            thoughts={thoughts.filter((t) => t.date === selectedDate)}
+            onClose={() => setSelectedDate(null)}
+          />
         )}
       </main>
     </>
