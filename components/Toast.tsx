@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CheckIcon } from "./icons";
 
 const KEY = "mindwind-toast";
 
@@ -28,9 +29,7 @@ export default function Toast() {
 
   return (
     <div className="absolute left-1/2 top-14 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-lg bg-leaf px-4 py-2 shadow-card">
-      <svg viewBox="0 0 24 24" className="h-4 w-4 text-primary" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M4 12l6 6L20 6" />
-      </svg>
+      <CheckIcon className="h-4 w-4 text-primary" />
       <span className="text-sm font-medium text-primary">{message}</span>
     </div>
   );

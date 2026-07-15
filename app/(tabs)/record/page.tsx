@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import { requestToast } from "@/components/Toast";
 import ShapedCard from "@/components/ShapedCard";
-import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
+import { BlocksIcon, CheckIcon, ChevronDownIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
@@ -327,15 +327,11 @@ export default function RecordPage() {
                   onClick={() => setExpandedRecord(expandedRecord === i ? null : i)}
                   className="flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left shadow-card"
                 >
-                  <svg viewBox="0 0 24 24" className="h-4 w-4 flex-none text-accent" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M4 12l6 6L20 6" />
-                  </svg>
+                  <CheckIcon className="h-4 w-4 flex-none text-accent" />
                   <span className="flex-1 truncate text-sm font-medium text-ink">
                     {record.kind === "card" ? record.shaped.title : ""}
                   </span>
-                  <svg viewBox="0 0 24 24" className={`h-4 w-4 flex-none text-ink-tertiary transition-transform ${expandedRecord === i ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
+                  <ChevronDownIcon className={`h-4 w-4 flex-none text-ink-tertiary transition-transform ${expandedRecord === i ? "rotate-180" : ""}`} />
                 </button>
                 {expandedRecord === i && record.kind === "card" && (
                   <div className="mt-2">

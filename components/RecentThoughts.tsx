@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BlocksIcon } from "./icons";
-import { SHAPED_FIELDS, type ShapedRecord } from "@/lib/db/types";
+import ThoughtFields from "./ThoughtFields";
+import { BlocksIcon, ChevronDownIcon, TrashIcon } from "./icons";
+import type { ShapedRecord } from "@/lib/db/types";
 
 export type ThoughtItem = ShapedRecord & { id: string; date: string };
 
@@ -61,31 +62,13 @@ export default function RecentThoughts({ thoughts, onDelete }: Props) {
                   <span className="flex-1 truncate text-base font-medium text-ink">
                     {thought.title}
                   </span>
-                  <svg
-                    viewBox="0 0 24 24"
+                  <ChevronDownIcon
                     className={`h-4 w-4 flex-none text-ink-tertiary transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
+                  />
                 </button>
                 {expanded && (
                   <div className="pb-4">
-                    <div className="flex flex-col gap-4">
-                      {SHAPED_FIELDS.map(({ key, label }) => (
-                        <div key={key}>
-                          <p className="text-[13px] font-semibold text-accent">{label}</p>
-                          <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-ink">
-                            {thought[key]}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                    <ThoughtFields thought={thought} />
                     <div className="mt-3 flex justify-end">
                       <button
                         type="button"
@@ -93,9 +76,7 @@ export default function RecentThoughts({ thoughts, onDelete }: Props) {
                         onClick={() => onDelete(thought.id)}
                         className="flex h-8 w-8 items-center justify-center text-ink-tertiary"
                       >
-                        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                          <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" />
-                        </svg>
+                        <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
                   </div>

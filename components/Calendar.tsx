@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 import { buildDateKey, monthGrid, parseYearMonth, shiftMonth } from "@/lib/logic/calendar";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
@@ -25,9 +26,7 @@ export default function Calendar({ recordedDates, todayKey, onSelectDate }: Prop
           onClick={() => setYearMonth((ym) => shiftMonth(ym.year, ym.month, -1))}
           className="flex h-9 w-9 items-center justify-center text-ink-secondary"
         >
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+          <ChevronLeftIcon className="h-4 w-4" />
         </button>
         <h2 className="text-base font-semibold text-ink">
           {year}年{month}月
@@ -38,9 +37,7 @@ export default function Calendar({ recordedDates, todayKey, onSelectDate }: Prop
           onClick={() => setYearMonth((ym) => shiftMonth(ym.year, ym.month, 1))}
           className="flex h-9 w-9 items-center justify-center text-ink-secondary"
         >
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M9 6l6 6-6 6" />
-          </svg>
+          <ChevronRightIcon className="h-4 w-4" />
         </button>
       </div>
 

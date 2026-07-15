@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { SHAPED_FIELDS, type ShapedRecord } from "@/lib/db/types";
+import CenterModal from "./CenterModal";
+import ThoughtFields from "./ThoughtFields";
+import { PaperclipIcon } from "./icons";
+import type { ShapedRecord } from "@/lib/db/types";
 
 export type RefThought = ShapedRecord & { id: string; date: string };
 
@@ -25,9 +28,7 @@ export default function RefThoughts({ refs }: { refs: RefThought[] }) {
         onClick={() => setOpen(!open)}
         className="inline-flex items-center gap-1.5 rounded-full border border-ceramic bg-white px-2.5 py-1 text-xs text-ink-secondary"
       >
-        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-          <path d="m21 11.5-8.5 8.5a6 6 0 0 1-8.5-8.5l8.5-8.5a4 4 0 0 1 5.7 5.7l-8.5 8.5a2 2 0 0 1-2.8-2.8l7.8-7.8" />
-        </svg>
+        <PaperclipIcon className="h-3 w-3" />
         参考にした記録 {refs.length}件
       </button>
 
@@ -49,44 +50,20 @@ export default function RefThoughts({ refs }: { refs: RefThought[] }) {
       )}
 
       {selected && (
-        <div
-          className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4"
-          onClick={() => setSelected(null)}
+        <CenterModal
+          ariaLabel={selected.title}
+          onClose={() => setSelected(null)}
+          header={
+            <>
+              <p className="text-[13px] text-ink-secondary">{shortDate(selected.date)}</p>
+              <h3 className="mt-1 text-base font-semibold text-ink">{selected.title}</h3>
+            </>
+          }
         >
-          <div
-            role="dialog"
-            aria-label={selected.title}
-            onClick={(e) => e.stopPropagation()}
-            className="max-h-[80vh] w-full max-w-[398px] overflow-y-auto rounded-2xl bg-white p-4"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[13px] text-ink-secondary">{shortDate(selected.date)}</p>
-                <h3 className="mt-1 text-base font-semibold text-ink">{selected.title}</h3>
-              </div>
-              <button
-                type="button"
-                aria-label="閉じる"
-                onClick={() => setSelected(null)}
-                className="flex h-8 w-8 flex-none items-center justify-center text-ink-secondary"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="mt-4 flex flex-col gap-4">
-              {SHAPED_FIELDS.map(({ key, label }) => (
-                <div key={key}>
-                  <p className="text-[13px] font-semibold text-accent">{label}</p>
-                  <p className="mt-2 whitespace-pre-wrap text-[15px] leading-relaxed text-ink">
-                    {selected[key]}
-                  </p>
-                </div>
-              ))}
-            </div>
+          <div className="mt-4">
+            <ThoughtFields thought={selected} />
           </div>
-        </div>
+        </CenterModal>
       )}
     </div>
   );

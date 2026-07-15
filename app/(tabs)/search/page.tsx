@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
-import { SendIcon, SpiralIcon } from "@/components/icons";
+import { ClockIcon, PlusIcon, SendIcon, SpiralIcon, TrashIcon } from "@/components/icons";
 import { authedFetch, useUser, type AppUser } from "@/lib/db/useUser";
 import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 
@@ -184,15 +184,10 @@ export default function SearchPage() {
             if (user) setChats(await fetchChats(user));
           }}
         >
-          <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7v5l3 2" />
-          </svg>
+          <ClockIcon className="h-[18px] w-[18px]" />
         </button>
         <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={startNewChat}>
-          <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <PlusIcon className="h-[18px] w-[18px]" />
         </button>
       </div>
 
@@ -314,9 +309,7 @@ export default function SearchPage() {
                     onClick={() => void deleteChat(chat.id)}
                     className="flex h-8 w-8 flex-none items-center justify-center text-ink-tertiary"
                   >
-                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                      <path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M10 11v6M14 11v6" />
-                    </svg>
+                    <TrashIcon className="h-4 w-4" />
                   </button>
                 </li>
               ))}
