@@ -43,3 +43,11 @@ body {
   color: var(--color-ink);
   background: #d9d7d2; /* シェル外側（PC表示時） */
 }
+
+/* スクロールバーは表示しない（スマホアプリの見た目を優先。スクロール自体は普通に効く） */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+*::-webkit-scrollbar {
+  display: none; /* Chrome / Safari / Edge */
+}
