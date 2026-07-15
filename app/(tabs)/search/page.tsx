@@ -8,12 +8,7 @@ import RefThoughts, { type RefThought } from "@/components/RefThoughts";
 import ThinkingBubble from "@/components/ThinkingBubble";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
-import {
-  consultLimitFor,
-  MAX_CONSULT_MESSAGE,
-  MEMBER_LIMITS,
-  MIN_THOUGHTS_FOR_CONSULT,
-} from "@/lib/logic/limits";
+import { MAX_CONSULT_MESSAGE, MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
@@ -229,11 +224,11 @@ export default function SearchPage() {
         {limitReached &&
           (user?.isGuest ? (
             <p className="pb-2 text-[13px] text-ink-secondary">
-              ゲストの相談は1日{consultLimitFor(true)}通まで。
+              今日のゲストの上限に達しました。
               <Link href="/onboarding?edit=1" className="font-semibold text-accent underline">
                 Google アカウントと連携
               </Link>
-              すると1日{MEMBER_LIMITS.consultPerDay}通になります
+              するともっと相談できます
             </p>
           ) : (
             <p className="pb-2 text-[13px] text-ink-secondary">

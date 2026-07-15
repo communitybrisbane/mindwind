@@ -12,7 +12,7 @@ import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading } from "@/lib/logic/date";
-import { MAX_DIARY_LENGTH, MEMBER_LIMITS, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
+import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
 import {
   currentSession,
   fromStored,
@@ -368,11 +368,11 @@ export default function RecordPage() {
         {limitReached &&
           (user?.isGuest ? (
             <p className="pb-2 text-[13px] text-ink-secondary">
-              ゲストの記録は1日{dailyLimit}件まで。
+              今日のゲストの上限に達しました。
               <Link href="/onboarding?edit=1" className="font-semibold text-accent underline">
                 Google アカウントと連携
               </Link>
-              すると1日{MEMBER_LIMITS.recordPerDay}件になります
+              するともっと記録できます
             </p>
           ) : (
             <p className="pb-2 text-[13px] text-ink-secondary">
