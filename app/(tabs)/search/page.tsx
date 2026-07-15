@@ -1,23 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ChatHistoryDrawer, { type ChatSummary } from "@/components/ChatHistoryDrawer";
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
-import { ClockIcon, PlusIcon, SendIcon, SpiralIcon, TrashIcon } from "@/components/icons";
+import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, useUser, type AppUser } from "@/lib/db/useUser";
 import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
+import { readNdjson } from "@/lib/logic/ndjson";
 
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
-type ChatSummary = { id: string; title: string; updatedAt: string | null };
 
 const iconButtonClass =
   "flex h-8 w-8 items-center justify-center rounded-full border border-input-border bg-white text-accent";
-
-function formatUpdatedAt(iso: string | null): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  return `${d.getMonth() + 1}/${d.getDate()}`;
-}
 
 export default function SearchPage() {
   const { user } = useUser();
@@ -126,37 +121,31 @@ export default function SearchPage() {
       if (!res.ok || !res.body) throw new Error(`consult ${res.status}`);
 
       // ndjson ストリームを読みながら AI バブルへ逐次反映する
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
       let refs: RefThought[] = [];
       let started = false;
       let failed = false;
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          const data = JSON.parse(line);
-          if (data.type === "meta") setChatId(data.chatId);
-          else if (data.type === "refs") refs = data.refs;
-          else if (data.type === "delta") {
-            if (!started) {
-              started = true;
-              setThinking(false);
-              setMessages((m) => [...m, { role: "assistant", text: "" }]);
-            }
-            updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
-          } else if (data.type === "done") {
-            updateLastAssistant((msg) => ({ ...msg, refs: refs.length ? refs : undefined }));
-          } else if (data.type === "error") {
-            failed = true;
+      await readNdjson(res.body, (event) => {
+        const data = event as
+          | { type: "meta"; chatId: string }
+          | { type: "refs"; refs: RefThought[] }
+          | { type: "delta"; text: string }
+          | { type: "done" }
+          | { type: "error" };
+        if (data.type === "meta") setChatId(data.chatId);
+        else if (data.type === "refs") refs = data.refs;
+        else if (data.type === "delta") {
+          if (!started) {
+            started = true;
+            setThinking(false);
+            setMessages((m) => [...m, { role: "assistant", text: "" }]);
           }
+          updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
+        } else if (data.type === "done") {
+          updateLastAssistant((msg) => ({ ...msg, refs: refs.length ? refs : undefined }));
+        } else if (data.type === "error") {
+          failed = true;
         }
-      }
+      });
       if (failed && !started) throw new Error("consult stream error");
     } catch {
       setMessages((m) => [
@@ -264,61 +253,18 @@ export default function SearchPage() {
 
       {/* 相談履歴ドロワー（左からスライドイン） */}
       {drawerOpen && (
-        <div
-          className="fixed inset-0 z-30 flex justify-center bg-black/40"
-          onClick={() => setDrawerOpen(false)}
-        >
-          {/* アプリシェル幅に合わせてドロワーを左端に出す */}
-          <div className="flex h-full w-full max-w-[430px] justify-start">
-          <div
-            className="flex h-full w-[78%] max-w-[335px] flex-col bg-warm p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={startNewChat}
-              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-primary text-sm font-semibold text-white"
-            >
-              ＋ 新しい相談
-            </button>
-            <h2 className="mt-5 text-[13px] font-semibold text-ink-secondary">相談履歴</h2>
-            <ul className="mt-2 flex-1 overflow-y-auto">
-              {chats.length === 0 && (
-                <li className="py-3 text-sm text-ink-secondary">まだ相談履歴がありません</li>
-              )}
-              {chats.map((chat) => (
-                <li key={chat.id} className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (user) void openChat(user, chat.id);
-                      setDrawerOpen(false);
-                    }}
-                    className={`flex min-h-11 flex-1 items-center gap-2 rounded-lg px-2.5 text-left ${
-                      chat.id === chatId ? "bg-leaf" : ""
-                    }`}
-                  >
-                    <span className="flex-1 truncate text-sm text-ink">{chat.title}</span>
-                    <span className="flex-none text-xs text-ink-tertiary">
-                      {formatUpdatedAt(chat.updatedAt)}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="この相談履歴を削除"
-                    onClick={() => void deleteChat(chat.id)}
-                    className="flex h-8 w-8 flex-none items-center justify-center text-ink-tertiary"
-                  >
-                    <TrashIcon className="h-4 w-4" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-          </div>
-        </div>
+        <ChatHistoryDrawer
+          chats={chats}
+          currentChatId={chatId}
+          onSelect={(id) => {
+            if (user) void openChat(user, id);
+            setDrawerOpen(false);
+          }}
+          onDelete={(id) => void deleteChat(id)}
+          onNewChat={startNewChat}
+          onClose={() => setDrawerOpen(false)}
+        />
       )}
-
     </main>
   );
 }
