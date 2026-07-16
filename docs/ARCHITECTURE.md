@@ -7,17 +7,20 @@
 - **AI**: Claude API（深掘り質問=Haiku 4.5／成形=Sonnet 5／相談=Opus 4.8。詳細は「使用モデルと API 機能」参照）
 - **Embeddings**: OpenAI `text-embedding-3-small`（1536次元・ベクトル化）
 - **Database**: Firebase Firestore（記録・ベクトル保存）
-- **Authentication**: Firebase Authentication（Google ログイン、MVP から実装）
+- **Authentication**: Firebase Authentication（Google ログイン＋匿名ゲスト。ゲストは `linkWithPopup` で Google に昇格でき、uid が変わらないためデータはそのまま引き継がれる）
 - **Audio**: Web Speech API（音声入力。iOS Safari の自動停止には onend 自動再開ループで対応。非対応環境はマイク非表示。詳細は DESIGN-mindwind.md）
-- **Deploy**: Vercel
+- **Deploy**: Vercel（本番: https://mindwind.days-count.com。master への push で自動デプロイ）
 
 ## 認証・セキュリティ設計
 
-- スタート画面（`/`）の「はじめる」ボタン = Google ログイン。成功後 `/home` へ遷移
+- スタート画面（`/`）に「Google ではじめる」（`signInWithPopup`）と「ゲストで試す」（`signInAnonymously`）の2つの入口。成功後 `/home` へ遷移
 - クライアントは Firebase ID トークンを API リクエストに添付（`Authorization: Bearer <token>`）
 - API Routes は Firebase Admin SDK でトークンを検証し、`uid` に紐づく記録のみ操作
 - Firestore セキュリティルール: `request.auth.uid == userId` で本人以外のアクセスを遮断
 - Claude / OpenAI の API キーはサーバー側のみで使用（クライアントに露出しない）
+- 入力サイズはサーバー側で検証（`lib/logic/limits.ts`：日記・深掘り回答 5000字、相談1メッセージ 2000字、成形カード各項目 2000字、タイトル 50字。日記は最短10字未満だと AI を呼ばず優しく促す）
+- セキュリティヘッダーを全ページに付与（`next.config.ts`：`frame-ancestors 'none'` + `X-Frame-Options: DENY`〔クリックジャッキング防止〕、`X-Content-Type-Options: nosniff`、`Referrer-Policy: strict-origin-when-cross-origin`、`Permissions-Policy` でカメラ等を無効化〔マイクは音声入力で使うため許可〕）
+- `/dev-login` は開発専用（カスタムトークンで UI 検証用ログイン）。本番では何もせず `/` へ戻す
 
 ## ベクトル検索の実装方法（MVP）
 
@@ -44,8 +47,8 @@
 
 | 機能 | モデル | 理由と設定 |
 |------|--------|-----------|
-| 深掘り質問の生成 | `claude-haiku-4-5` | 短い出力・単純タスク・低レイテンシ優先（日記送信直後にユーザーを待たせる場所）。thinking なし、`max_tokens` は小さく（〜512） |
-| 成形（6項目への分類・統合） | `claude-sonnet-5` | **Structured Outputs**（`output_config.format` に JSON スキーマ）で6項目＋タイトルのスキーマ準拠を保証。JSONパース失敗のエラー処理が実質不要になる。`output_config.effort: "low"` |
+| 深掘り質問の生成 | `claude-haiku-4-5` | 短い出力・単純タスク・低レイテンシ優先（日記送信直後にユーザーを待たせる場所）。thinking なし、`max_tokens: 300` |
+| 成形（6項目への分類・統合） | `claude-sonnet-5` | **Structured Outputs**（`output_config.format` に JSON スキーマ）で6項目＋タイトルのスキーマ準拠を保証。JSONパース失敗のエラー処理が実質不要になる。`output_config.effort: "low"`。**ストリーミング**（NDJSON で部分成形を流し、カードの項目が生成中から順に埋まって見える） |
 | 相談（RAG＋パターン分析＋アドバイス） | `claude-opus-4-8` | アプリの価値の核心で最も知性が要る処理。`thinking: {type: "adaptive"}` を明示（Opus 4.8 は省略すると thinking なしになる）、`effort` はデフォルト（high） |
 | ベクトル化 | OpenAI `text-embedding-3-small` | 安定・安価（変更なし） |
 | 音声入力 | Web Speech API | ブラウザ完結・無料（変更なし） |
@@ -108,7 +111,8 @@ users/{userId}/
   │   ├── stage: string             # いまのステージ："student" | "year1" | "year2" | "year3plus"
   │   └── goal: string              # いまの目標・課題（任意）
   ├── thoughts/{thoughtId}/
-      ├── date: timestamp
+      ├── date: string              # "2026-07-14"（Asia/Tokyo の日付キー。日次上限のカウント・カレンダー点灯に使用）
+      ├── createdAt: timestamp      # serverTimestamp（一覧の新しい順ソートに使用）
       ├── title: string             # 成形時に AI が生成（15文字以内・体言止め。表示専用でベクトル化しない）
       ├── rawText: string           # 元の入力全文
       ├── event: string             # 出来事（以下6フィールドはユーザー編集＋深掘り回答をマージした最終値）
@@ -123,9 +127,10 @@ users/{userId}/
       └── embedding: number[1536]   # マージ後の6項目を連結したテキストのベクトル
 
 users/{userId}/
+  ├── consultCount: map             # 相談の日次カウント {date: "2026-07-14", count: number}（Asia/Tokyo でリセット。記録側は thoughts の date カウントクエリで判定するためフィールドなし）
   ├── recordChat: map               # 当日の記録チャット（復元用。日付が変わったら破棄。ベクトル化しない）
   │   ├── date: string              # "2026-07-14"（Asia/Tokyo）
-  │   └── messages: array           # {role, content, type("text"|"card"), thoughtId?}
+  │   └── messages: array           # {role("user"|"ai"), content, type("text"|"card"), thoughtId?}。card の content は成形6項目＋タイトルの JSON 文字列
   ├── chats/{chatId}/               # 相談スレッド（履歴として保持。ベクトル化しない）
       ├── title: string             # 最初の質問から生成
       ├── createdAt: timestamp
@@ -145,6 +150,7 @@ users/{userId}/
 - **スタート画面 (`/`)**: ナビなし。ロゴ＋タグライン＋「Google ではじめる」ボタンのみ
 - **ダッシュボード (`/home`)**: ストリーク、カレンダー、最近の記録
 - **viewport**: `viewport-fit=cover` で iPhone ノッチ対応
+- **PWA**: `app/manifest.ts` で Web App Manifest を配信（`display: standalone`）。スマホの「ホーム画面に追加」でアプリとして起動できる。OGP 画像・アイコン（icon / apple-icon）も `app/` 直下で配信
 
 ## ルーティング
 
@@ -157,6 +163,7 @@ users/{userId}/
 | `/search` | 相談ページ | あり | 必要 |
 | `/terms` | 利用規約（静的ページ） | なし | 不要 |
 | `/privacy` | プライバシーポリシー（静的ページ） | なし | 不要 |
+| `/dev-login` | 開発専用ログイン（本番では `/` へ戻す） | なし | 不要 |
 
 未ログインで認証必須ページにアクセスした場合は `/` にリダイレクト。
 
@@ -200,7 +207,7 @@ users/{userId}/
 
 1. **ユーザーが質問**：「新しいプロジェクト始めるべき？」（続けて「焦らないために何を意識してた？」のような追い質問もできる）
 2. **記録数チェック**：記録が3件未満なら分析せず「まずは3日分記録してみましょう（現在◯件）」と案内
-3. **ベクトル検索**：最新の質問（追い質問で主語が省略される場合に備え、スレッド内の会話文脈で補完したクエリ）をベクトル化し、関連する過去記録を上位5件抽出。**検索対象は日記の記録（thoughts）のみ。会話履歴はベクトル化せず RAG に含めない**
+3. **ベクトル検索**：最新の質問（追い質問で主語が省略される場合に備え、直前のユーザー発言を連結したクエリ）をベクトル化し、関連する過去記録を上位5件抽出。**検索対象は日記の記録（thoughts）のみ。会話履歴はベクトル化せず RAG に含めない**
 4. **パターン分析・回答生成**：抽出した記録 + **現在のスレッド内の全メッセージ**（Claude に渡すのは上限20メッセージ。超過時は古い順に対象から外す。画面には全件表示）を Claude に渡し、行動・心理・価値観パターンを認識して回答
 5. **履歴保存**：メッセージを現在のスレッドに保存（画面を離れても復元される）
 
@@ -220,6 +227,7 @@ users/{userId}/
 - **相談**：**30メッセージ/日/ユーザー**を上限とする。超過時は入力バーを無効化し「今日の相談はここまで。また明日話そう」と表示。カウントは Asia/Tokyo の日付単位で API Routes 側で判定
 - **ゲスト（匿名認証）**：スタート画面の「ゲストで試す」から `signInAnonymously` で利用開始できる。記録は会員と同じ上限、**相談は会員の 1/10**（上限値は `lib/logic/limits.ts` で一元管理し、会員側を変えると自動追従）。ゲスト判定はサーバー側で ID トークンの `sign_in_provider === "anonymous"` を見る（偽装不可）。`linkWithPopup` で Google に昇格でき、uid が変わらないためデータはそのまま引き継がれる。Firebase Console で匿名アカウントの30日自動削除を有効にする
 - **運用ルール**：Anthropic / OpenAI の管理画面で**月額 spend limit を設定**しておく（アプリ側のバグによる暴走時の最後の砦）
+- **バックアップ**：`npm run backup`（`scripts/backup.mjs`）で Firestore 全データをローカル JSON に書き出す（無料の PITR 代替。出力先 `backups/` は gitignore 済み・OneDrive 同期でクラウドにも残る）
 
 ## ストリーク・カレンダーの判定基準
 
@@ -229,9 +237,11 @@ users/{userId}/
 
 ## MVP スコープ
 
+> MVP は全タスク完了し、本番稼働中（https://mindwind.days-count.com）。実装順の記録は `docs/PLAN.md` を参照。
+
 ### 含める
 
-- Google 認証（Firebase Authentication）
+- 認証（Google ログイン＋匿名ゲスト・ログアウト・アカウント削除）
 - プロフィール登録（オンボーディング・スキップ可・後から編集可）
 - 記録（音声/テキスト入力）
 - AI による深掘り質問 + 成形（日記＋回答を6項目へ統合）
@@ -252,11 +262,10 @@ users/{userId}/
 
 ## 今後の拡張
 
-### MVP 完成後
+**優先度付きの最新バックログは `docs/PLAN.md`「将来やること」が正**（保存時暗号化〔他人に使ってもらう前に必須〕・古いゲストの掃除・保存後の記録編集・RAG の類似度しきい値・スケール対応など）。以下は優先度未定のアイデア置き場：
 
 - 9時の振り返り通知
 - 定期レポート
-- 保存済み記録の編集（6項目の編集→再ベクトル化）
 - 音声入力のサーバー側 STT 化（Whisper 等。Web Speech API の品質に不満が出た場合）
 - AI の学習カスタマイズ
 - データエクスポート
