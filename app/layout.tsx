@@ -18,6 +18,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // ネイティブアプリ同様、ピンチ拡大縮小を無効化（iOS の入力フォーカス時の自動ズームも防ぐ）
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
   // ステータスバー領域の色（スタート画面では ThemeColor が緑に切り替える）
   themeColor: "#f2f0eb",

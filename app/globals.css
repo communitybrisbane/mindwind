@@ -59,6 +59,8 @@ body {
 html,
 body {
   overscroll-behavior: none;
+  /* ダブルタップ拡大を無効化（ピンチ拡大は viewport の userScalable: false 側で無効化） */
+  touch-action: manipulation;
 }
 .overflow-y-auto {
   overscroll-behavior: contain;
