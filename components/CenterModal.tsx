@@ -9,10 +9,12 @@ type Props = {
   /** ✕ボタンの左に出すヘッダー内容（タイトルなど） */
   header: ReactNode;
   children: ReactNode;
+  /** ノートの紙面スタイル（過去ログの表示用。背景が紙色になる） */
+  paper?: boolean;
 };
 
 /** 中央モーダル（dim 背景・✕/背景タップで閉じる・長い内容はカード内スクロール） */
-export default function CenterModal({ ariaLabel, onClose, header, children }: Props) {
+export default function CenterModal({ ariaLabel, onClose, header, children, paper }: Props) {
   return (
     <div
       className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4"
@@ -22,7 +24,9 @@ export default function CenterModal({ ariaLabel, onClose, header, children }: Pr
         role="dialog"
         aria-label={ariaLabel}
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[80vh] w-full max-w-[398px] overflow-y-auto rounded-2xl bg-white p-4"
+        className={`max-h-[80vh] w-full max-w-[398px] overflow-y-auto rounded-2xl p-4 ${
+          paper ? "bg-[#f7f4ec]" : "bg-white"
+        }`}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">{header}</div>

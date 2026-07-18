@@ -83,6 +83,16 @@ body {
     );
 }
 
+/* 罫線のみ（赤の余白線なし）。過去ログのモーダルなど、ノートの紙面を再現する場所に使う */
+.notebook-lines {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 33px,
+    rgba(107, 92, 63, 0.16) 33px,
+    rgba(107, 92, 63, 0.16) 34px
+  );
+}
+
 /* 音声入力中のマイクボタン：赤い波紋が外側に広がるパルス（DESIGN §Recording Pulse） */
 @keyframes mic-pulse {
   0% {

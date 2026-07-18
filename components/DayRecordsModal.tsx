@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import CenterModal from "./CenterModal";
-import ThoughtFields from "./ThoughtFields";
+import FairCopy from "./FairCopy";
 import { PencilIcon, TrashIcon } from "./icons";
 import type { ShapedRecord } from "@/lib/db/types";
 
@@ -19,9 +19,10 @@ type Props = {
 
 /**
  * カレンダーの日付タップで開く、その日の記録の中央モーダル。
- * 過去日の日記を書く入口と、古い記録の削除導線を兼ねる（docs/ARCHITECTURE.md「過去日付の記録」）：
+ * 過去ログもノートの紙面として見せる（紙色＋罫線・行送り34px。DESIGN §Recording Page リデザイン）。
+ * 過去日の日記を書く入口と、古い記録の編集・削除の導線を兼ねる：
  * - 記録0件の過去日：空状態＋「この日の日記を書く」→ /record?date=（過去日は1日1件まで）
- * - 記録ありの過去日：表示＋各記録の削除ボタン（追記ボタンは出さない）
+ * - 記録ありの過去日：表示＋各記録の編集・削除ボタン（追記ボタンは出さない）
  * - 今日：記録の有無に関わらず「今日の日記を書く」→ 通常の記録タブ
  */
 export default function DayRecordsModal({ dateKey, todayKey, thoughts, onClose, onDelete, onEdit }: Props) {
@@ -32,27 +33,29 @@ export default function DayRecordsModal({ dateKey, todayKey, thoughts, onClose, 
 
   return (
     <CenterModal
+      paper
       ariaLabel={`${m}月${d}日の記録`}
       onClose={onClose}
       header={
-        <h3 className="text-base font-semibold text-ink">
+        <h3 className="font-serif text-base font-semibold text-primary">
           {y}年{m}月{d}日の記録
         </h3>
       }
     >
-      <div className="mt-2 flex flex-col gap-6">
+      {/* 罫線はこのコンテナの背景。中の文字はすべて行送り34pxで罫線に揃える */}
+      <div className="notebook-lines mt-2">
         {thoughts.length === 0 && (
-          <p className="py-6 text-center text-sm text-ink-secondary">
+          <p className="text-center font-serif text-sm leading-[34px] text-ink-secondary">
             この日の記録はまだありません
           </p>
         )}
-        {thoughts.map((thought) => (
-          <div key={thought.id} className="border-t border-ceramic pt-4 first:border-t-0 first:pt-2">
-            <h4 className="text-[15px] font-semibold text-primary">{thought.title}</h4>
-            <div className="mt-3">
-              <ThoughtFields thought={thought} />
-            </div>
-            <div className="mt-3 flex justify-end gap-1">
+        {thoughts.map((thought, i) => (
+          <div key={thought.id} className={i > 0 ? "mt-[34px]" : ""}>
+            <h4 className="font-serif text-[17px] font-semibold leading-[34px] text-primary">
+              {thought.title}
+            </h4>
+            <FairCopy value={{ ...thought, title: undefined }} />
+            <div className="flex h-[34px] items-center justify-end gap-1">
               <button
                 type="button"
                 aria-label="この記録を編集"
@@ -72,17 +75,17 @@ export default function DayRecordsModal({ dateKey, todayKey, thoughts, onClose, 
             </div>
           </div>
         ))}
-        {showWriteButton && (
-          <div className="flex justify-center pb-2">
-            <Link
-              href={writeHref}
-              className="flex h-11 items-center justify-center rounded-2xl bg-primary px-8 text-[15px] font-medium text-white"
-            >
-              {isToday ? "今日の日記を書く" : "この日の日記を書く"}
-            </Link>
-          </div>
-        )}
       </div>
+      {showWriteButton && (
+        <div className="flex justify-center pb-1 pt-4">
+          <Link
+            href={writeHref}
+            className="flex h-11 items-center justify-center rounded-full border border-primary/40 bg-white/60 px-8 font-serif text-[15px] text-primary"
+          >
+            {isToday ? "今日の日記を書く ✦" : "この日の日記を書く ✦"}
+          </Link>
+        </div>
+      )}
     </CenterModal>
   );
 }
