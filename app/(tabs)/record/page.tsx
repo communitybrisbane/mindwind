@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ChatInputBar from "@/components/ChatInputBar";
 import SavedRecordChips from "@/components/SavedRecordChips";
 import ThinkingBubble from "@/components/ThinkingBubble";
@@ -11,7 +11,8 @@ import ShapedCard from "@/components/ShapedCard";
 import { BlocksIcon, SparklesIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { ShapedRecord } from "@/lib/db/types";
-import { formatDateHeading } from "@/lib/logic/date";
+import { resolveRecordDate } from "@/lib/logic/backdate";
+import { formatDateHeading, tokyoDateKey, tokyoDayStart } from "@/lib/logic/date";
 import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 import { parsePartialShaped } from "@/lib/logic/partialShaped";
@@ -52,6 +53,13 @@ const phaseSubtitles: Record<Phase, string> = {
   3: "今日の記録",
 };
 
+// 過去日付モード（?date=）のフェーズの一言
+const pastPhaseSubtitles: Record<Phase, string> = {
+  1: "この日のこと",
+  2: "もう少しだけ",
+  3: "この日の記録",
+};
+
 const hints = [
   "何があった？",
   "どう考えた？",
@@ -60,7 +68,22 @@ const hints = [
   "今どんな気持ち？",
 ];
 
+/** ?date= の読み取りに useSearchParams が必要なため Suspense で包み、
+ * 日付切替（過去日 ⇄ 今日）で key を変えて書きかけの状態を確実にリセットする */
 export default function RecordPage() {
+  return (
+    <Suspense>
+      <RecordPageBody />
+    </Suspense>
+  );
+}
+
+function RecordPageBody() {
+  const dateParam = useSearchParams().get("date");
+  return <RecordSession key={dateParam ?? "today"} dateParam={dateParam} />;
+}
+
+function RecordSession({ dateParam }: { dateParam: string | null }) {
   const router = useRouter();
   const { user } = useUser();
   const [phase, setPhase] = useState<Phase>(1);
@@ -77,11 +100,19 @@ export default function RecordPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 日付はクライアントで確定（サーバーとのハイドレーション差異を避ける）
-  const dateHeading = useSyncExternalStore(
+  const todayKey = useSyncExternalStore(
     () => () => {},
-    () => formatDateHeading(new Date()),
+    () => tokyoDateKey(new Date()),
     () => "",
   );
+
+  // 過去日付モード：?date= が有効な過去日のときだけ。今日・不正・未来は通常モード（サーバー側でも検証）
+  const resolved = todayKey ? resolveRecordDate(dateParam, todayKey) : null;
+  const targetDate = resolved?.ok && resolved.isPast ? resolved.date : null;
+
+  const dateHeading = todayKey
+    ? formatDateHeading(targetDate ? tokyoDayStart(targetDate) : new Date())
+    : "";
 
   useEffect(() => {
     // sending も依存に入れて「考え中バブル」が出た瞬間に最下部へスクロール
@@ -91,9 +122,10 @@ export default function RecordPage() {
     });
   }, [messages, shaped, sending, streamingShaped]);
 
-  // 当日の記録チャットを復元（日付が変わっていればサーバーが null を返し空状態から始まる）
+  // 当日の記録チャットを復元（日付が変わっていればサーバーが null を返し空状態から始まる）。
+  // 過去日付モードは復元対象外（?date= 付きでは復元しない。書きかけも保存しない）
   useEffect(() => {
-    if (!user) return;
+    if (!user || dateParam) return;
     authedFetch(user, "/api/record-chat")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
@@ -101,7 +133,7 @@ export default function RecordPage() {
           setMessages(fromStored(data.recordChat.messages));
       })
       .catch(() => {});
-  }, [user]);
+  }, [user, dateParam]);
 
   // 保存済みのやり取りはタイトルだけのチップに畳み、進行中のメッセージだけをチャットに出す
   const savedRecords = savedCards(messages);
@@ -255,9 +287,16 @@ export default function RecordPage() {
         rawText: diaryText,
         deepDiveQuestion: deepDiveAnswer ? deepDiveQuestion : "",
         deepDiveAnswer,
+        ...(targetDate ? { date: targetDate } : {}),
       });
       if (res.status === 409) {
-        setError(`今日の記録は上限（${dailyLimit}件）に達しました`);
+        const data = await res.json().catch(() => null);
+        // 過去日は1日1件まで（別端末等で先に保存されていた場合）
+        if (data?.error === "date_taken") {
+          setError("この日はすでに記録があります。書き直すには、カレンダーからこの日の記録を削除してね");
+        } else {
+          setError(`今日の記録は上限（${dailyLimit}件）に達しました`);
+        }
         return;
       }
       if (!res.ok) throw new Error(`thoughts ${res.status}`);
@@ -322,11 +361,18 @@ export default function RecordPage() {
 
       {/* 日付見出し（日記帳の質感） */}
       <div className="flex-none px-4 pb-2 pt-4">
-        <h1 className="text-[22px] font-semibold text-primary">
-          {dateHeading || " "}
-        </h1>
+        <div className="flex items-baseline justify-between">
+          <h1 className="text-[22px] font-semibold text-primary">
+            {dateHeading || " "}
+          </h1>
+          {targetDate && (
+            <Link href="/record" className="text-[13px] text-ink-secondary underline">
+              今日に戻る
+            </Link>
+          )}
+        </div>
         <p className="mt-1 text-[13px] text-ink-secondary">
-          {phaseSubtitles[phase]}
+          {(targetDate ? pastPhaseSubtitles : phaseSubtitles)[phase]}
         </p>
       </div>
 
@@ -361,7 +407,7 @@ export default function RecordPage() {
             <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
               <BlocksIcon className="h-16 w-16 text-accent" strokeWidth={1.2} />
               <p className="mt-5 text-lg font-semibold text-ink">
-                今日のことを話してみよう
+                {targetDate ? "この日のことを話してみよう" : "今日のことを話してみよう"}
               </p>
               <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
                 うまくいった日も、そうでない日も。
@@ -454,7 +500,13 @@ export default function RecordPage() {
           serif
           mic
           disabled={sending || phase === 3 || limitReached}
-          placeholder={phase === 1 ? "今日のことを自由に..." : "答えを入力..."}
+          placeholder={
+            phase === 1
+              ? targetDate
+                ? "この日のことを自由に..."
+                : "今日のことを自由に..."
+              : "答えを入力..."
+          }
           maxLength={MAX_DIARY_LENGTH}
           onSend={handleSend}
           onTypingChange={setHasDraft}
