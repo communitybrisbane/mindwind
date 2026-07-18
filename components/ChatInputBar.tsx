@@ -41,6 +41,9 @@ export default function ChatInputBar({
   const [text, setText] = useState("");
   // 音声認識の途中経過（確定前）。表示上はテキスト末尾に足して見せる
   const [interim, setInterim] = useState("");
+  // 録音中はプレースホルダーで状態を伝える。マイクが使えなかったときは案内を出す
+  const [recording, setRecording] = useState(false);
+  const [micError, setMicError] = useState(false);
   const [grown, setGrown] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
   const displayText = interim ? text + interim : text;
@@ -85,6 +88,11 @@ export default function ChatInputBar({
 
   return (
     <div>
+      {micError && (
+        <p className="pb-1.5 text-[13px] text-error">
+          マイクを使えませんでした。ブラウザのマイク許可を確認してね
+        </p>
+      )}
       {/* ボタンはテキストエリアだけを包むこの div に固定する（注記の分だけずれないように） */}
       <div className="relative">
         <textarea
@@ -93,7 +101,7 @@ export default function ChatInputBar({
         value={displayText}
         disabled={disabled}
         maxLength={maxLength}
-        placeholder={placeholder}
+        placeholder={recording ? "聞き取り中…話してみて" : placeholder}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           // Enter は改行のまま。⌘/Ctrl + Enter で送信
@@ -112,6 +120,11 @@ export default function ChatInputBar({
               disabled={disabled}
               onFinal={(t) => setText((prev) => prev + t)}
               onInterim={setInterim}
+              onRecordingChange={(r) => {
+                setRecording(r);
+                if (r) setMicError(false);
+              }}
+              onError={() => setMicError(true)}
             />
           </div>
         )}

@@ -13,7 +13,7 @@ type Recognition = {
   stop(): void;
   onresult: ((e: RecognitionEvent) => void) | null;
   onend: (() => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((e: { error?: string }) => void) | null;
 };
 type RecognitionEvent = {
   resultIndex: number;
@@ -36,11 +36,13 @@ type Props = {
   /** 認識途中のテキスト（リアルタイム表示用。確定時は "" が来る） */
   onInterim: (text: string) => void;
   onRecordingChange?: (recording: boolean) => void;
+  /** マイクが使えず録音を停止したとき（許可拒否・認識サービスエラー。呼び出し側で案内を出す） */
+  onError?: () => void;
   disabled?: boolean;
 };
 
 /** 音声入力ボタン（32px 丸形）。ブラウザ非対応時は何も描画しない */
-export default function MicButton({ onFinal, onInterim, onRecordingChange, disabled }: Props) {
+export default function MicButton({ onFinal, onInterim, onRecordingChange, onError, disabled }: Props) {
   // SSR では false、クライアントで対応可否を判定（非対応ならボタン自体を出さない）
   const supported = useSyncExternalStore(
     () => () => {},
@@ -50,6 +52,8 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, disab
   const [recording, setRecording] = useState(false);
   const recognitionRef = useRef<Recognition | null>(null);
   const recordingRef = useRef(false);
+  // 致命的エラー（許可拒否など）の目印。onerror → onend の順で発火するため onend 側で拾う
+  const fatalErrorRef = useRef(false);
 
   useEffect(
     () => () => {
@@ -81,8 +85,22 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, disab
       }
       onInterim(interim);
     };
+    // 無害なエラー（無音・中断）は自動再開に任せ、それ以外（not-allowed / audio-capture /
+    // network 等）は録音を止めてユーザーに知らせる（無言で失敗させない）
+    rec.onerror = (e) => {
+      const code = e?.error ?? "";
+      if (code === "no-speech" || code === "aborted") return;
+      fatalErrorRef.current = true;
+    };
     // iOS Safari は連続認識が勝手に止まるため、録音中フラグが立つ間は即再開する（実装必須）
     rec.onend = () => {
+      if (fatalErrorRef.current) {
+        fatalErrorRef.current = false;
+        setRec(false);
+        onInterim("");
+        onError?.();
+        return;
+      }
       if (!recordingRef.current) return;
       try {
         rec.start();
@@ -90,7 +108,6 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, disab
         setRec(false);
       }
     };
-    rec.onerror = null;
     recognitionRef.current = rec;
     rec.start();
     setRec(true);
@@ -112,7 +129,7 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, disab
       disabled={disabled}
       onClick={recording ? stop : start}
       className={`flex h-8 w-8 items-center justify-center rounded-full text-white disabled:bg-ink-tertiary ${
-        recording ? "animate-pulse bg-error" : "bg-accent"
+        recording ? "animate-mic-pulse bg-error" : "bg-accent"
       }`}
     >
       <MicIcon className="h-[18px] w-[18px]" />
