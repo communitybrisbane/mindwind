@@ -41,3 +41,8 @@ export function tokyoDateKey(date: Date): string {
     day: "2-digit",
   }).format(date);
 }
+
+/** 日付キーの Asia/Tokyo 0時を指す Date（日次上限の createdAt 範囲クエリに使う） */
+export function tokyoDayStart(dateKey: string): Date {
+  return new Date(`${dateKey}T00:00:00+09:00`);
+}

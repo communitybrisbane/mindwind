@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
 import type { ShapedRecord } from "@/lib/db/types";
-import { tokyoDateKey } from "@/lib/logic/date";
+import { resolveRecordDate } from "@/lib/logic/backdate";
+import { tokyoDateKey, tokyoDayStart } from "@/lib/logic/date";
 import {
   MAX_DIARY_LENGTH,
   MAX_SHAPED_FIELD,
@@ -58,13 +59,22 @@ export async function POST(req: NextRequest) {
 
   const userDoc = adminDb.doc(`users/${uid}`);
   const thoughts = userDoc.collection("thoughts");
-  const date = tokyoDateKey(new Date());
+  const todayKey = tokyoDateKey(new Date());
+
+  // 過去日付の記録（バックデート）：未指定なら今日。未来・不正な日付は 400
+  const resolved = resolveRecordDate(body?.date, todayKey);
+  if (!resolved.ok) {
+    return NextResponse.json({ error: "invalid_date" }, { status: 400 });
+  }
+  const { date, isPast } = resolved;
 
   try {
     // 独立した処理は並列で走らせて待ち時間を圧縮する
     // （上限超過時は embedding 1回ぶん無駄になるが $0.00001 なので許容）
-    const [countSnap, embedding, userSnap] = await Promise.all([
-      thoughts.where("date", "==", date).count().get(),
+    // 日次上限は「今日書いた件数」（createdAt 基準）で数える：過去日付指定での上限すり抜けを防ぐ
+    const [countSnap, targetDateSnap, embedding, userSnap] = await Promise.all([
+      thoughts.where("createdAt", ">=", tokyoDayStart(todayKey)).count().get(),
+      isPast ? thoughts.where("date", "==", date).count().get() : Promise.resolve(null),
       embedText(buildEmbeddingText(shaped)),
       userDoc.get(),
     ]);
@@ -74,21 +84,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "daily_limit" }, { status: 409 });
     }
 
+    // 過去日は1日1件まで（すでに記録がある日には追記できない。削除→書き直しで対応）
+    if (targetDateSnap && targetDateSnap.data().count > 0) {
+      return NextResponse.json({ error: "date_taken" }, { status: 409 });
+    }
+
     // recordChat は保存済みカードのみ保持する設計。新しいカードをサーバー側で追記して
-    // クライアントの2本目のリクエストをなくす（日付が変わっていたら作り直し）
+    // クライアントの2本目のリクエストをなくす（日付が変わっていたら作り直し）。
+    // 過去日モードのセッションは復元対象外なので recordChat には積まない
     const docRef = thoughts.doc();
     const existing = userSnap.get("recordChat");
     const cards =
-      existing?.date === date
+      existing?.date === todayKey
         ? existing.messages.filter((m: { type: string }) => m.type === "card")
         : [];
-    const recordChat = {
-      date,
-      messages: [
-        ...cards,
-        { role: "ai", type: "card", content: JSON.stringify(shaped), thoughtId: docRef.id },
-      ],
-    };
+    const recordChat = isPast
+      ? existing?.date === todayKey
+        ? existing
+        : null
+      : {
+          date: todayKey,
+          messages: [
+            ...cards,
+            { role: "ai", type: "card", content: JSON.stringify(shaped), thoughtId: docRef.id },
+          ],
+        };
 
     await Promise.all([
       docRef.set({
@@ -107,7 +127,7 @@ export async function POST(req: NextRequest) {
         embedding,
         createdAt: FieldValue.serverTimestamp(),
       }),
-      userDoc.set({ recordChat }, { merge: true }),
+      recordChat ? userDoc.set({ recordChat }, { merge: true }) : Promise.resolve(null),
     ]);
     return NextResponse.json({ id: docRef.id });
   } catch (e) {

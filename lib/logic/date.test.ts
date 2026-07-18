@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDateHeading, greeting, tokyoDateKey, tokyoHour } from "./date";
+import { formatDateHeading, greeting, tokyoDateKey, tokyoDayStart, tokyoHour } from "./date";
 
 describe("formatDateHeading", () => {
   it("東京時間の月日と曜日を返す", () => {
@@ -36,5 +36,16 @@ describe("tokyoDateKey", () => {
   it("東京0時をまたぐと日付が変わる", () => {
     expect(tokyoDateKey(new Date("2026-07-14T14:59:59Z"))).toBe("2026-07-14");
     expect(tokyoDateKey(new Date("2026-07-14T15:00:00Z"))).toBe("2026-07-15");
+  });
+});
+
+describe("tokyoDayStart", () => {
+  it("日付キーの東京0時（UTC 前日15時）を返す", () => {
+    const start = tokyoDayStart("2026-07-18");
+    expect(start.toISOString()).toBe("2026-07-17T15:00:00.000Z");
+  });
+
+  it("tokyoDateKey と往復して一致する（0時ちょうどはその日）", () => {
+    expect(tokyoDateKey(tokyoDayStart("2026-07-18"))).toBe("2026-07-18");
   });
 });
