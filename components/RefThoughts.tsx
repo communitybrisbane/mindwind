@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import CenterModal from "./CenterModal";
-import ThoughtFields from "./ThoughtFields";
-import { PaperclipIcon } from "./icons";
+import FairCopy from "./FairCopy";
 import type { ShapedRecord } from "@/lib/db/types";
 
 export type RefThought = ShapedRecord & { id: string; date: string };
@@ -13,55 +12,48 @@ function shortDate(dateKey: string): string {
   return `${m}/${d}`;
 }
 
-/** AI 回答の下の「参考にした記録」チップ（2段階開示：チップ→一覧→中央モーダル） */
+/** メンターの返事に添える「読み返したページ」——根拠になった過去の記録の紙片。
+ *  タップでノート紙面の中央モーダルを開く（文通スタイル。DESIGN §Search Page リデザイン） */
 export default function RefThoughts({ refs }: { refs: RefThought[] }) {
-  const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<RefThought | null>(null);
 
   if (refs.length === 0) return null;
 
   return (
-    <div className="mt-2">
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 rounded-full border border-ceramic bg-white px-2.5 py-1 text-xs text-ink-secondary"
-      >
-        <PaperclipIcon className="h-3 w-3" />
-        参考にした記録 {refs.length}件
-      </button>
-
-      {open && (
-        <ul className="mt-2 divide-y divide-ceramic rounded-xl bg-white px-3 shadow-card">
-          {refs.map((ref) => (
-            <li key={ref.id}>
-              <button
-                type="button"
-                onClick={() => setSelected(ref)}
-                className="flex min-h-11 w-full items-center gap-3 py-2.5 text-left"
-              >
-                <span className="flex-none text-[13px] text-ink-secondary">{shortDate(ref.date)}</span>
-                <span className="flex-1 truncate text-sm text-ink">{ref.title}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="mt-3">
+      <p className="text-[10.5px] tracking-[0.14em] text-ink-tertiary">読み返したページ</p>
+      {refs.map((ref) => (
+        <button
+          key={ref.id}
+          type="button"
+          onClick={() => setSelected(ref)}
+          className="paper-slip mt-1.5 flex w-full items-center gap-2 rounded-r-md border border-l-[3px] border-[rgba(107,92,63,0.2)] border-l-accent px-2.5 py-[7px] text-left"
+        >
+          <span className="flex-none font-serif text-[11px] text-ink-tertiary">
+            {shortDate(ref.date)}
+          </span>
+          <span className="min-w-0 truncate font-serif text-[13px] text-ink">{ref.title}</span>
+        </button>
+      ))}
 
       {selected && (
         <CenterModal
+          paper
           ariaLabel={selected.title}
           onClose={() => setSelected(null)}
           header={
             <>
-              <p className="text-[13px] text-ink-secondary">{shortDate(selected.date)}</p>
-              <h3 className="mt-1 text-base font-semibold text-ink">{selected.title}</h3>
+              <p className="font-serif text-[13px] text-ink-secondary">
+                {shortDate(selected.date)}
+              </p>
+              <h3 className="mt-1 font-serif text-base font-semibold text-primary">
+                {selected.title}
+              </h3>
             </>
           }
         >
-          <div className="mt-4">
-            <ThoughtFields thought={selected} />
+          <div className="notebook-lines mt-3">
+            <FairCopy value={{ ...selected, title: undefined }} />
           </div>
         </CenterModal>
       )}

@@ -93,6 +93,17 @@ body {
   );
 }
 
+/* ノートの紙片（相談の「読み返したページ」チップ。細かい罫線入りの切れ端） */
+.paper-slip {
+  background-color: #fffdf8;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 17px,
+    rgba(107, 92, 63, 0.12) 17px,
+    rgba(107, 92, 63, 0.12) 18px
+  );
+}
+
 /* 音声入力中のマイクボタン：赤い波紋が外側に広がるパルス（DESIGN §Recording Pulse） */
 @keyframes mic-pulse {
   0% {

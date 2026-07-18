@@ -16,8 +16,10 @@ type Props = {
   onTypingChange?: (hasText: boolean) => void;
   /** 入力の最大文字数（サーバー側の上限と揃える） */
   maxLength?: number;
-  /** 記録画面はセリフ体（日記帳の質感） */
+  /** セリフ体（日記帳・便箋の質感） */
   serif?: boolean;
+  /** 紙の上に置いたピル（相談の文通スタイル。半透明白＋茶の枠） */
+  paper?: boolean;
 };
 
 const SINGLE_LINE_HEIGHT = 48;
@@ -37,6 +39,7 @@ export default function ChatInputBar({
   onTypingChange,
   maxLength,
   serif,
+  paper,
 }: Props) {
   const [text, setText] = useState("");
   // 音声認識の途中経過（確定前）。表示上はテキスト末尾に足して見せる
@@ -110,9 +113,11 @@ export default function ChatInputBar({
             send();
           }
         }}
-        className={`block w-full resize-none overflow-hidden rounded-3xl border border-input-border bg-white text-base leading-6 text-ink placeholder:text-ink-tertiary focus:border-accent focus:outline-none disabled:bg-ceramic ${
-          serif ? "font-serif" : ""
-        } ${grown ? "px-3 pb-[52px] pt-3" : "h-12 px-12 py-3"}`}
+        className={`block w-full resize-none overflow-hidden rounded-3xl border text-base leading-6 text-ink placeholder:text-ink-tertiary focus:border-accent focus:outline-none disabled:bg-ceramic ${
+          paper
+            ? "border-[rgba(107,92,63,0.35)] bg-white/70"
+            : "border-input-border bg-white"
+        } ${serif ? "font-serif" : ""} ${grown ? "px-3 pb-[52px] pt-3" : "h-12 px-12 py-3"}`}
       />
         {mic && (
           <div className="absolute bottom-2 left-2">

@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import ChatHistoryDrawer, { type ChatSummary } from "@/components/ChatHistoryDrawer";
 import ChatInputBar from "@/components/ChatInputBar";
 import RefThoughts, { type RefThought } from "@/components/RefThoughts";
-import ThinkingBubble from "@/components/ThinkingBubble";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
 import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
 import { MAX_CONSULT_MESSAGE, MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
@@ -14,12 +13,27 @@ import { readNdjson } from "@/lib/logic/ndjson";
 type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
 
 const iconButtonClass =
-  "flex h-8 w-8 items-center justify-center rounded-full border border-input-border bg-white text-accent";
+  "flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[rgba(0,98,65,0.08)] text-primary";
+
+/** "2026-07-18" や ISO 文字列 → "7月18日" */
+function threadDateLabel(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(d);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("month")}月${get("day")}日`;
+}
 
 export default function SearchPage() {
   const { user } = useUser();
   const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  // スレッド見出しの日付（新規=今日、履歴から開いたら最終更新日）
+  const [threadDate, setThreadDate] = useState<string>(() => new Date().toISOString());
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [thinking, setThinking] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -55,6 +69,7 @@ export default function SearchPage() {
   function startNewChat() {
     setChatId(null);
     setMessages([]);
+    setThreadDate(new Date().toISOString());
     setDrawerOpen(false);
   }
 
@@ -148,27 +163,30 @@ export default function SearchPage() {
   }
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col">
-      {/* ヘッダーアイコン行（見出しテキストなし） */}
-      <div className="flex flex-none items-center justify-between px-4 pt-3">
-        <button
-          type="button"
-          aria-label="相談履歴"
-          className={iconButtonClass}
-          onClick={async () => {
-            setDrawerOpen(true);
-            if (user) setChats(await fetchChats(user));
-          }}
-        >
-          <ClockIcon className="h-[18px] w-[18px]" />
-        </button>
-        <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={startNewChat}>
-          <PlusIcon className="h-[18px] w-[18px]" />
-        </button>
+    <main className="flex min-h-0 flex-1 flex-col bg-[#f7f4ec]">
+      {/* ヘッダー行（小ラベル＋丸ボタン。便箋スタイル） */}
+      <div className="flex flex-none items-center justify-between px-4 pb-1 pl-6 pt-[18px]">
+        <span className="text-[12px] tracking-[0.08em] text-ink-tertiary">MindWind 相談</span>
+        <div className="flex gap-2">
+          <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={startNewChat}>
+            <PlusIcon className="h-[18px] w-[18px]" />
+          </button>
+          <button
+            type="button"
+            aria-label="相談履歴"
+            className={iconButtonClass}
+            onClick={async () => {
+              setDrawerOpen(true);
+              if (user) setChats(await fetchChats(user));
+            }}
+          >
+            <ClockIcon className="h-[18px] w-[18px]" />
+          </button>
+        </div>
       </div>
 
-      {/* チャットエリア */}
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4">
+      {/* 便箋（往復書簡）エリア */}
+      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6">
         {messages.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
             <SpiralIcon className="h-10 w-[72px] text-accent" />
@@ -180,30 +198,41 @@ export default function SearchPage() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 py-3">
+          <div className="flex flex-col gap-6 py-3">
+            <p className="text-center text-[11px] tracking-[0.2em] text-ink-tertiary">
+              — {threadDateLabel(threadDate)}の相談 —
+            </p>
             {messages.map((msg, i) =>
               msg.role === "user" ? (
-                <div
-                  key={i}
-                  className="ml-auto max-w-[80%] whitespace-pre-wrap rounded-xl rounded-br-[4px] bg-house px-4 py-3 text-[15px] leading-relaxed text-white"
-                >
-                  {msg.text}
+                <div key={i} className="relative ml-[42px]">
+                  <span className="absolute -left-[42px] top-[5px] text-[10px] tracking-[0.14em] text-ink-tertiary">
+                    あなた
+                  </span>
+                  <p className="whitespace-pre-wrap border-l-2 border-house/25 pl-3 font-serif text-[15.5px] leading-[1.85] text-ink">
+                    {msg.text}
+                  </p>
                 </div>
               ) : (
-                <div key={i} className="flex max-w-[92%] items-start gap-2">
-                  <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-accent">
-                    <SpiralIcon className="h-3 w-5 text-white" />
-                  </span>
-                  <div>
-                    <div className="whitespace-pre-wrap rounded-xl rounded-tl-[4px] bg-white px-4 py-3 text-[15px] leading-[1.6] text-ink shadow-card">
-                      {msg.text}
-                    </div>
-                    {msg.refs && <RefThoughts refs={msg.refs} />}
-                  </div>
+                <div key={i} className="relative pl-[26px]">
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-[6px] h-[18px] w-[18px] rounded-[50%_50%_50%_4px] border-[1.6px] border-accent opacity-85"
+                  />
+                  <p className="whitespace-pre-wrap font-serif text-[15px] leading-[1.9] text-[#0f5132]">
+                    {msg.text}
+                  </p>
+                  <p className="mt-1.5 text-[10.5px] tracking-[0.14em] text-ink-tertiary">
+                    メンターの返事
+                  </p>
+                  {msg.refs && <RefThoughts refs={msg.refs} />}
                 </div>
               )
             )}
-            {thinking && <ThinkingBubble tone="consult" />}
+            {thinking && (
+              <p className="animate-pulse pl-[26px] font-serif text-[14.5px] leading-[1.9] text-accent">
+                記録を読み返している…
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -226,8 +255,10 @@ export default function SearchPage() {
           ))}
         <ChatInputBar
           mic
+          serif
+          paper
           disabled={thinking || limitReached}
-          placeholder={messages.length === 0 ? "なんでも聞いてみよう" : "過去の自分に相談しよう"}
+          placeholder={messages.length === 0 ? "なんでも聞いてみよう" : "続きを話す…"}
           maxLength={MAX_CONSULT_MESSAGE}
           onSend={send}
           actionIcon={<SendIcon className="h-[18px] w-[18px]" />}
@@ -242,6 +273,8 @@ export default function SearchPage() {
           currentChatId={chatId}
           onSelect={(id) => {
             if (user) void openChat(user, id);
+            const summary = chats.find((c) => c.id === id);
+            if (summary?.updatedAt) setThreadDate(summary.updatedAt);
             setDrawerOpen(false);
           }}
           onDelete={(id) => void deleteChat(id)}
