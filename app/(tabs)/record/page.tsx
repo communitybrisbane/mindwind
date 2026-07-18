@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import AutoGrowTextarea from "@/components/AutoGrowTextarea";
+import EditThoughtModal from "@/components/EditThoughtModal";
 import FairCopy from "@/components/FairCopy";
 import MicButton from "@/components/MicButton";
 import SavedRecordChips from "@/components/SavedRecordChips";
@@ -111,6 +112,10 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  // しおり（保存済み記録）の編集
+  const [editing, setEditing] = useState<{ thoughtId: string; shaped: ShapedRecord } | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 日付はクライアントで確定（サーバーとのハイドレーション差異を避ける）
@@ -283,6 +288,28 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
     }
   }
 
+  // しおりの編集を保存：サーバーが embedding と recordChat のカードを更新する
+  async function saveEdit(shaped: ShapedRecord) {
+    if (!user || !editing || editSaving) return;
+    setEditSaving(true);
+    setEditError("");
+    try {
+      const res = await authedJson(user, "PUT", `/api/thoughts/${editing.thoughtId}`, { shaped });
+      if (!res.ok) throw new Error(`update ${res.status}`);
+      setCards((c) =>
+        c.map((m) =>
+          m.kind === "card" && m.thoughtId === editing.thoughtId ? { ...m, shaped } : m
+        )
+      );
+      setEditing(null);
+      requestToast("記録を更新しました");
+    } catch {
+      setEditError("保存できませんでした。少し待ってからもう一度試してください。");
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
   async function deleteRecord(thoughtId: string) {
     if (!user || !thoughtId) return;
     if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。")) return;
@@ -347,7 +374,14 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
         <div className="notebook-paper min-h-full pl-[46px] pr-6">
           {/* 保存済み記録のしおり */}
-          <SavedRecordChips records={cards} onDelete={(id) => void deleteRecord(id)} />
+          <SavedRecordChips
+            records={cards}
+            onDelete={(id) => void deleteRecord(id)}
+            onEdit={(thoughtId, shaped) => {
+              setEditError("");
+              setEditing({ thoughtId, shaped });
+            }}
+          />
 
           {/* 送信済みの日記本文（深掘り以降はページに固定） */}
           {phase >= 2 && (
@@ -423,6 +457,16 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
           )}
         </div>
       </div>
+
+      {editing && (
+        <EditThoughtModal
+          initial={editing.shaped}
+          saving={editSaving}
+          error={editError}
+          onClose={() => setEditing(null)}
+          onSave={(shaped) => void saveEdit(shaped)}
+        />
+      )}
 
       {/* 文具トレー（タブバーの直上・紙の上に置く） */}
       <div className="flex-none px-5 pb-4 pt-3">

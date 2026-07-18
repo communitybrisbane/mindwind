@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Calendar from "@/components/Calendar";
 import DayRecordsModal from "@/components/DayRecordsModal";
+import EditThoughtModal from "@/components/EditThoughtModal";
 import Header from "@/components/Header";
 import RecentThoughts from "@/components/RecentThoughts";
-import Toast from "@/components/Toast";
+import Toast, { requestToast } from "@/components/Toast";
 import { FlameIcon, GearIcon, SpiralIcon } from "@/components/icons";
-import { authedFetch, useUser } from "@/lib/db/useUser";
+import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import type { Profile, ShapedRecord } from "@/lib/db/types";
 import { formatDateHeading, greeting, tokyoDateKey, tokyoHour } from "@/lib/logic/date";
 import { calcStreak } from "@/lib/logic/streak";
@@ -20,6 +21,10 @@ export default function HomePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [thoughts, setThoughts] = useState<Thought[] | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  // 保存済み記録の編集（最近の記録・カレンダーの両方からここに集約）
+  const [editing, setEditing] = useState<Thought | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState("");
 
   // 日付・挨拶はクライアントで確定（ハイドレーション差異を避ける）
   const now = useSyncExternalStore(
@@ -42,6 +47,26 @@ export default function HomePage() {
 
   const streak = thoughts ? calcStreak(thoughts.map((t) => t.date), now) : 0;
   const hasRecords = (thoughts?.length ?? 0) > 0;
+
+  // 編集を保存：サーバーが embedding を作り直す。ローカルの thoughts も更新
+  async function saveEdit(shaped: ShapedRecord) {
+    if (!user || !editing || editSaving) return;
+    setEditSaving(true);
+    setEditError("");
+    try {
+      const res = await authedJson(user, "PUT", `/api/thoughts/${editing.id}`, { shaped });
+      if (!res.ok) throw new Error(`update ${res.status}`);
+      setThoughts((t) =>
+        t?.map((thought) => (thought.id === editing.id ? { ...thought, ...shaped } : thought)) ?? t
+      );
+      setEditing(null);
+      requestToast("記録を更新しました");
+    } catch {
+      setEditError("保存できませんでした。少し待ってからもう一度試してください。");
+    } finally {
+      setEditSaving(false);
+    }
+  }
 
   // 削除するとカレンダーの点灯・ストリークも state 経由で自動再計算される
   async function deleteThought(id: string) {
@@ -119,7 +144,14 @@ export default function HomePage() {
               todayKey={now}
               onSelectDate={setSelectedDate}
             />
-            <RecentThoughts thoughts={thoughts} onDelete={(id) => void deleteThought(id)} />
+            <RecentThoughts
+              thoughts={thoughts}
+              onDelete={(id) => void deleteThought(id)}
+              onEdit={(thought) => {
+                setEditError("");
+                setEditing(thought);
+              }}
+            />
           </div>
         )}
 
@@ -130,6 +162,20 @@ export default function HomePage() {
             thoughts={thoughts.filter((t) => t.date === selectedDate)}
             onClose={() => setSelectedDate(null)}
             onDelete={(id) => void deleteThought(id)}
+            onEdit={(thought) => {
+              setEditError("");
+              setEditing(thought);
+            }}
+          />
+        )}
+
+        {editing && (
+          <EditThoughtModal
+            initial={editing}
+            saving={editSaving}
+            error={editError}
+            onClose={() => setEditing(null)}
+            onSave={(shaped) => void saveEdit(shaped)}
           />
         )}
       </main>

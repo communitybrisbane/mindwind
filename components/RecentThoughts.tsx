@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import ThoughtFields from "./ThoughtFields";
-import { BlocksIcon, ChevronDownIcon, TrashIcon } from "./icons";
+import { BlocksIcon, ChevronDownIcon, PencilIcon, TrashIcon } from "./icons";
 import type { ShapedRecord } from "@/lib/db/types";
 
 export type ThoughtItem = ShapedRecord & { id: string; date: string };
@@ -11,6 +11,7 @@ export type ThoughtItem = ShapedRecord & { id: string; date: string };
 type Props = {
   thoughts: ThoughtItem[];
   onDelete: (id: string) => void;
+  onEdit: (thought: ThoughtItem) => void;
 };
 
 /** "2026-07-15" → "7/15" */
@@ -21,7 +22,7 @@ function shortDate(dateKey: string): string {
 
 const MAX_ITEMS = 5;
 
-export default function RecentThoughts({ thoughts, onDelete }: Props) {
+export default function RecentThoughts({ thoughts, onDelete, onEdit }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const items = thoughts.slice(0, MAX_ITEMS);
 
@@ -69,7 +70,15 @@ export default function RecentThoughts({ thoughts, onDelete }: Props) {
                 {expanded && (
                   <div className="pb-4">
                     <ThoughtFields thought={thought} />
-                    <div className="mt-3 flex justify-end">
+                    <div className="mt-3 flex justify-end gap-1">
+                      <button
+                        type="button"
+                        aria-label="この記録を編集"
+                        onClick={() => onEdit(thought)}
+                        className="flex h-8 w-8 items-center justify-center text-ink-tertiary"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
                       <button
                         type="button"
                         aria-label="この記録を削除"
