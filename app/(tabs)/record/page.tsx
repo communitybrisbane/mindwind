@@ -359,13 +359,19 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
           {/* 短文のうながし・言い換えのお願い */}
           {gentleNote && <MentorNote text={gentleNote} />}
 
-          {/* 深掘り：メンターの書き込み＋続きの罫線に回答を書く */}
-          {phase === 2 && deepDiveQuestion && (
+          {/* 深掘り：メンターの書き込み＋続きの罫線に回答を書く。
+              清書フェーズでも質問と回答はページに残す（スキップした場合は質問ごと畳む） */}
+          {deepDiveQuestion && (phase === 2 || (phase === 3 && deepDiveAnswer)) && (
             <MentorNote
               text={deepDiveQuestion}
               sig="メンターの書き込み"
-              onSkip={sending ? undefined : skipDeepDive}
+              onSkip={phase === 2 && !sending ? skipDeepDive : undefined}
             />
+          )}
+          {phase === 3 && deepDiveAnswer && (
+            <p className="whitespace-pre-wrap font-serif text-base leading-[34px] text-ink">
+              {deepDiveAnswer}
+            </p>
           )}
 
           {(phase === 1 || phase === 2) && (
