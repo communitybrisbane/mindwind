@@ -10,7 +10,7 @@ type Props = {
   /** 記録がある日の日付キー（"YYYY-MM-DD"） */
   recordedDates: Set<string>;
   todayKey: string;
-  /** 記録がある日をタップしたとき（その日の記録を表示する） */
+  /** 今日以前の日をタップしたとき（その日のモーダルを開く。未来日はタップ不可） */
   onSelectDate?: (dateKey: string) => void;
 };
 
@@ -61,13 +61,15 @@ export default function Calendar({ recordedDates, todayKey, onSelectDate }: Prop
                   ? "border border-accent text-accent"
                   : "text-ink-secondary"
             }`;
-            // 記録がある日はタップでその日の記録を開ける
-            if (recorded && onSelectDate) {
+            // 今日以前の日はタップでその日のモーダルを開ける（過去日の日記を書く入口。未来日は不可）
+            if (dateKey <= todayKey && onSelectDate) {
               return (
                 <button
                   key={i}
                   type="button"
-                  aria-label={`${month}月${day}日の記録を見る`}
+                  aria-label={
+                    recorded ? `${month}月${day}日の記録を見る` : `${month}月${day}日を開く`
+                  }
                   onClick={() => onSelectDate(dateKey)}
                   className={cellClass}
                 >

@@ -126,8 +126,10 @@ export default function HomePage() {
         {selectedDate && thoughts && (
           <DayRecordsModal
             dateKey={selectedDate}
+            todayKey={now}
             thoughts={thoughts.filter((t) => t.date === selectedDate)}
             onClose={() => setSelectedDate(null)}
+            onDelete={(id) => void deleteThought(id)}
           />
         )}
       </main>
