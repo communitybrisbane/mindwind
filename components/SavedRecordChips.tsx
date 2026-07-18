@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import ShapedCard from "./ShapedCard";
-import { CheckIcon, ChevronDownIcon } from "./icons";
+import ThoughtFields from "./ThoughtFields";
+import { ChevronDownIcon } from "./icons";
 import type { RecordMessage } from "@/lib/logic/recordChatMessages";
 
 type Props = {
@@ -11,40 +11,44 @@ type Props = {
   onDelete: (thoughtId: string) => void;
 };
 
-/** 保存済み記録のチップ列（タップで展開→読み取り専用カード＋削除リンク） */
+const CIRCLED = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
+
+/** 保存済み記録の「しおり」列（罫線ノートスタイル。タップで展開→読み取り専用＋削除リンク） */
 export default function SavedRecordChips({ records, onDelete }: Props) {
   const [expanded, setExpanded] = useState<number | null>(null);
 
   if (records.length === 0) return null;
 
   return (
-    <div className="flex flex-none flex-col gap-2 pt-3">
+    <div className="flex flex-none flex-col pt-[6px]">
       {records.map((record, i) => {
         if (record.kind !== "card") return null;
         const isOpen = expanded === i;
         return (
-          <div key={i}>
+          <div key={i} className={isOpen ? "" : "h-[34px]"}>
             <button
               type="button"
               aria-expanded={isOpen}
               onClick={() => setExpanded(isOpen ? null : i)}
-              className="flex w-full items-center gap-2 rounded-lg bg-white px-3 py-2.5 text-left shadow-card"
+              className="flex h-[30px] max-w-full items-center gap-2 rounded-r-lg border border-l-[3px] border-[rgba(107,92,63,0.2)] border-l-accent bg-white/65 pl-2.5 pr-3 text-left"
             >
-              <CheckIcon className="h-4 w-4 flex-none text-accent" />
-              <span className="flex-1 truncate text-sm font-medium text-ink">
+              <span className="flex-none font-serif text-[12px] text-ink-tertiary">
+                {CIRCLED[i] ?? `${i + 1}.`}
+              </span>
+              <span className="min-w-0 truncate font-serif text-[14px] text-ink">
                 {record.shaped.title}
               </span>
               <ChevronDownIcon
-                className={`h-4 w-4 flex-none text-ink-tertiary transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`h-3.5 w-3.5 flex-none text-ink-tertiary transition-transform ${isOpen ? "rotate-180" : ""}`}
               />
             </button>
             {isOpen && (
-              <div className="mt-2">
-                <ShapedCard value={record.shaped} readOnly />
+              <div className="py-2 pl-1">
+                <ThoughtFields thought={record.shaped} />
                 <button
                   type="button"
                   onClick={() => onDelete(record.thoughtId)}
-                  className="mx-auto mt-2 block text-[13px] text-error underline"
+                  className="mt-3 block text-[13px] text-error underline"
                 >
                   この記録を削除する
                 </button>
