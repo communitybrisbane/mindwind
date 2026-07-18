@@ -39,10 +39,12 @@ type Props = {
   /** マイクが使えず録音を停止したとき（許可拒否・認識サービスエラー。呼び出し側で案内を出す） */
   onError?: () => void;
   disabled?: boolean;
+  /** 記録ページの文具トレー用の大きめサイズ（44px。既定は 32px） */
+  large?: boolean;
 };
 
 /** 音声入力ボタン（32px 丸形）。ブラウザ非対応時は何も描画しない */
-export default function MicButton({ onFinal, onInterim, onRecordingChange, onError, disabled }: Props) {
+export default function MicButton({ onFinal, onInterim, onRecordingChange, onError, disabled, large }: Props) {
   // SSR では false、クライアントで対応可否を判定（非対応ならボタン自体を出さない）
   const supported = useSyncExternalStore(
     () => () => {},
@@ -128,11 +130,11 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, onErr
       aria-pressed={recording}
       disabled={disabled}
       onClick={recording ? stop : start}
-      className={`flex h-8 w-8 items-center justify-center rounded-full text-white disabled:bg-ink-tertiary ${
-        recording ? "animate-mic-pulse bg-error" : "bg-accent"
-      }`}
+      className={`flex items-center justify-center rounded-full text-white disabled:bg-ink-tertiary ${
+        large ? "h-11 w-11" : "h-8 w-8"
+      } ${recording ? "animate-mic-pulse bg-error" : "bg-accent"}`}
     >
-      <MicIcon className="h-[18px] w-[18px]" />
+      <MicIcon className={large ? "h-5 w-5" : "h-[18px] w-[18px]"} />
     </button>
   );
 }

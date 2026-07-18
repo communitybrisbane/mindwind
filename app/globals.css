@@ -63,6 +63,26 @@ body {
   touch-action: manipulation;
 }
 
+/* 記録ページ（罫線ノート）。罫線と赤の余白線は「テキストとスクロールを共有する
+   内容コンテナ」の背景として描く（DESIGN §Recording Page リデザイン：整列ルール）。
+   行送りはすべて 34px（.notebook-line）に固定し、文字が罫線から外れない構造にする */
+.notebook-paper {
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 33px,
+      rgba(200, 32, 20, 0.28) 33px,
+      rgba(200, 32, 20, 0.28) 34px,
+      transparent 34px
+    ),
+    repeating-linear-gradient(
+      transparent,
+      transparent 33px,
+      rgba(107, 92, 63, 0.16) 33px,
+      rgba(107, 92, 63, 0.16) 34px
+    );
+}
+
 /* 音声入力中のマイクボタン：赤い波紋が外側に広がるパルス（DESIGN §Recording Pulse） */
 @keyframes mic-pulse {
   0% {
