@@ -1,15 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
-import AutoGrowTextarea from "@/components/AutoGrowTextarea";
-import EditThoughtModal from "@/components/EditThoughtModal";
-import FairCopy from "@/components/FairCopy";
-import MentorNote from "@/components/MentorNote";
-import RecordHeader from "@/components/RecordHeader";
-import RecordToolTray from "@/components/RecordToolTray";
-import SavedRecordChips from "@/components/SavedRecordChips";
-import { MAX_DIARY_LENGTH } from "@/lib/logic/limits";
+import { Suspense, useState, type ReactNode } from "react";
+import RecordSheet from "@/components/record/RecordSheet";
+import { SealHoldButton, SealStamp } from "@/components/record/SealHold";
+import styles from "@/components/record/record.module.css";
+import ThoughtModal from "@/components/thought/ThoughtModal";
+import { Desk } from "@/components/ui/Desk";
+import { RoundButton } from "@/components/ui/RoundButton";
+import { sound, vibrate } from "@/lib/ui/feedback";
 import { useRecordSession } from "./useRecordSession";
 
 /** ?date= の読み取りに useSearchParams が必要なため Suspense で包み、
@@ -29,138 +29,146 @@ function RecordPageBody() {
 
 function RecordSession({ dateParam }: { dateParam: string | null }) {
   const s = useRecordSession(dateParam);
-  const {
-    phase, cards, diaryText, deepDiveQuestion, deepDiveAnswer, gentleNote, setGentleNote,
-    shaped, setShaped, streamingShaped, recording, sending, saving, error, setError,
-    editing, setEditing, editSaving, editError, setEditError, scrollRef, pageWord,
-    skipDeepDive, saveEdit, deleteRecord, inputDisabled, setActiveInput, displayValue,
-  } = s;
+  const [openId, setOpenId] = useState<string | null>(null);
+  const { step, mic } = s;
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [scrollRef, phase, shaped, sending, streamingShaped, gentleNote]);
+  const counter = step === 1 ? s.diary.counter : s.answer.counter;
+
+  let hint: ReactNode;
+  if (s.limitReached) {
+    hint = s.isGuest ? (
+      <>
+        今日のゲストの上限です。<Link href="/settings">Googleでつなぐ</Link>ともっと書けるよ
+      </>
+    ) : (
+      `今日の記録は上限（${s.dailyLimit}件）に達しました`
+    );
+  } else if (s.dateTaken) {
+    hint = "この日はもう書いてあるよ。しおりから読み返せるよ";
+  } else if (mic.recording) {
+    hint = "聞き取り中…話してみて";
+  } else if (step === 1) {
+    hint = s.asking ? "メンターが読んでいるよ…" : "書き終えたら、右の矢印をタップ";
+  } else if (step === 2) {
+    hint = "答えを書いて、右の印を長押し（とばしてもいいよ）";
+  }
+
+  const marks =
+    s.cards.length > 0 ? (
+      <div className={styles.marks} aria-label="保存した記録">
+        {s.cards.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            className={styles.mark}
+            aria-label={`保存した記録「${c.title || c.rawText.slice(0, 20)}」を開く`}
+            onClick={() => {
+              vibrate(8);
+              sound("rub");
+              setOpenId(c.id);
+            }}
+          >
+            {c.title || c.rawText.slice(0, 20)}
+          </button>
+        ))}
+      </div>
+    ) : null;
 
   return (
-    <main className="flex min-h-0 flex-1 flex-col bg-[#f7f4ec]">
-      <RecordHeader phase={phase} heading={s.heading} targetDate={s.targetDate} pageWord={s.pageWord} />
-      {/* ノートのページ（罫線はこのコンテナの背景。中の文字はすべて行送り34px） */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
-        <div className="notebook-paper min-h-full pl-[46px] pr-6">
-          {/* 保存済み記録のしおり */}
-          <SavedRecordChips
-            records={cards}
-            onDelete={(id) => void deleteRecord(id)}
-            onEdit={(thoughtId, shaped) => {
-              setEditError("");
-              setEditing({ thoughtId, shaped });
-            }}
-          />
-
-          {/* 送信済みの日記本文（深掘り以降はページに固定） */}
-          {phase >= 2 && (
-            <p className="whitespace-pre-wrap font-serif text-base leading-[34px] text-ink">
-              {diaryText}
-            </p>
+    <Desk stitch={false} className={styles.screen}>
+      <div className={styles.top}>
+        <div>
+          <div className={styles.date}>{s.heading ? `${s.heading.day} ${s.heading.weekday}` : " "}</div>
+          <div className={styles.title}>{s.pageWord}の1ページ</div>
+          {s.targetDate && (
+            <Link href="/record" className={styles.back}>
+              今日に戻る
+            </Link>
           )}
+        </div>
+        <div className={styles.steps} aria-label="日記・深掘り・保存" role="img">
+          <i className={styles.on} />
+          <i className={step >= 2 ? styles.on : undefined} />
+          <i className={step >= 3 ? styles.on : undefined} />
+        </div>
+      </div>
 
-          {/* 短文のうながし・言い換えのお願い */}
-          {gentleNote && <MentorNote text={gentleNote} />}
+      <RecordSheet
+        step={step}
+        diary={{ value: s.displayDiary, onChange: s.diary.onChange, shaking: s.diary.shaking }}
+        answer={{ value: s.displayAnswer, onChange: s.answer.onChange, shaking: s.answer.shaking }}
+        question={s.question}
+        note={s.note}
+        error={s.error}
+        onDismissError={() => s.setError("")}
+        readOnly={s.blocked || s.asking || s.sealing || mic.recording}
+        placeholder={`${s.pageWord}は何があった？ 思いつくままに…`}
+        answerPlaceholder="ここに答えを書いてね…"
+        counter={counter}
+        sunk={s.sealing}
+        top={marks}
+        overlay={<SealStamp mood={s.sealMood} playing={s.sealing} />}
+      />
 
-          {/* 深掘り：メンターの書き込み＋続きの罫線に回答を書く。
-              清書フェーズでも質問と回答はページに残す（スキップした場合は質問ごと畳む） */}
-          {deepDiveQuestion && (phase === 2 || (phase === 3 && deepDiveAnswer)) && (
-            <MentorNote
-              text={deepDiveQuestion}
-              sig="メンターの書き込み"
-              onSkip={phase === 2 && !sending ? skipDeepDive : undefined}
+      <div className={styles.tray}>
+        <div className={styles.hint} aria-live="polite">
+          {hint}
+        </div>
+        {mic.supported && step !== 3 && (
+          <div className={[styles.mic, mic.recording ? styles.recording : ""].filter(Boolean).join(" ")}>
+            <RoundButton
+              variant="chalk"
+              icon="mic"
+              size={66}
+              aria-label={mic.recording ? "録音を止める" : "音声で書く"}
+              onClick={mic.toggle}
+              disabled={s.blocked || s.asking || s.sealing}
             />
-          )}
-          {phase === 3 && deepDiveAnswer && (
-            <p className="whitespace-pre-wrap font-serif text-base leading-[34px] text-ink">
-              {deepDiveAnswer}
-            </p>
-          )}
-
-          {(phase === 1 || phase === 2) && (
-            <AutoGrowTextarea
-              value={displayValue}
-              onChange={(text) => {
-                setActiveInput(text.slice(0, MAX_DIARY_LENGTH));
-                if (gentleNote) setGentleNote("");
+          </div>
+        )}
+        {step >= 2 && (
+          <div className={styles.skip}>
+            <RoundButton
+              variant="chalk"
+              icon="arrow"
+              size={58}
+              label="とばす"
+              aria-label="質問をとばす"
+              onClick={() => {
+                sound("tick");
+                void s.seal(true);
               }}
-              readOnly={inputDisabled}
-              placeholder={
-                recording
-                  ? "聞き取り中…話してみて"
-                  : phase === 1
-                    ? `${pageWord}は何があった？ 思いつくままに…`
-                    : "ここに続きを書いてね…"
-              }
-              className="min-h-[170px] bg-transparent font-serif text-base leading-[34px] text-ink placeholder:text-ink-tertiary focus:outline-none"
+              disabled={s.sealing}
             />
-          )}
-
-          {/* 成形を待つあいだの書き込み */}
-          {sending && phase === 3 && !streamingShaped && (
-            <p className="animate-pulse pl-[26px] font-serif text-[14.5px] leading-[34px] text-accent">
-              清書しているよ…
-            </p>
-          )}
-
-          {/* 清書（ストリーミング中→部分表示、完成後→編集可） */}
-          {streamingShaped && !shaped && <FairCopy value={streamingShaped} />}
-          {shaped && <FairCopy value={shaped} editable onChange={setShaped} />}
-
-          {/* 赤インクの書き込み（エラー） */}
-          {error && (
-            <p className="font-serif text-[14px] leading-[34px] text-error">
-              ※ {error}
-              <button
-                type="button"
-                aria-label="エラーを閉じる"
-                onClick={() => setError("")}
-                className="ml-2 font-sans text-[12px] underline"
-              >
-                閉じる
-              </button>
-            </p>
-          )}
-          {saving && (
-            <p className="font-serif text-[14px] leading-[34px] text-ink-secondary">保存中…</p>
+          </div>
+        )}
+        <div className={styles.main}>
+          {step === 1 ? (
+            <RoundButton
+              variant="green"
+              icon="arrow"
+              size={98}
+              label="書き終えた"
+              aria-label="書き終えた"
+              onClick={() => void s.finishDiary()}
+              disabled={s.blocked || s.asking}
+            />
+          ) : (
+            <SealHoldButton onSeal={() => void s.seal(false)} disabled={s.sealing} />
           )}
         </div>
       </div>
 
-      {editing && (
-        <EditThoughtModal
-          initial={editing.shaped}
-          saving={editSaving}
-          error={editError}
-          onClose={() => setEditing(null)}
-          onSave={(shaped) => void saveEdit(shaped)}
-        />
-      )}
-
-      <RecordToolTray
-        phase={phase}
-        isGuest={s.user?.isGuest ?? false}
-        limitReached={s.limitReached}
-        dailyLimit={s.dailyLimit}
-        micError={s.micError}
-        inputDisabled={s.inputDisabled}
-        doneDisabled={s.doneDisabled}
-        setActiveInput={s.setActiveInput}
-        onInterim={s.setInterim}
-        onRecordingChange={(r) => {
-          s.setRecording(r);
-          if (r) s.setMicError(false);
+      <ThoughtModal
+        open={openId !== null}
+        thoughts={s.cards}
+        initialId={openId ?? undefined}
+        onClose={() => setOpenId(null)}
+        onUpdated={s.onCardUpdated}
+        onDeleted={(id) => {
+          s.onCardDeleted(id);
         }}
-        onMicError={() => s.setMicError(true)}
-        onDone={s.done}
       />
-    </main>
+    </Desk>
   );
 }

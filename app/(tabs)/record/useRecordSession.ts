@@ -1,52 +1,156 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { requestToast } from "@/components/Toast";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { requestToast, showToast } from "@/components/ui/Toast";
+import type { ApiError, CreateThoughtRequest, ThoughtsListResponse } from "@/lib/api/contracts";
+import type { ThoughtSummary } from "@/lib/db/types";
 import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
-import type { ShapedRecord } from "@/lib/db/types";
 import { resolveRecordDate } from "@/lib/logic/backdate";
 import { splitDateHeading, tokyoDateKey, tokyoDayStart } from "@/lib/logic/date";
-import { MIN_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
-import { readNdjson } from "@/lib/logic/ndjson";
-import { parsePartialShaped } from "@/lib/logic/partialShaped";
+import { draftKey, type DraftData } from "@/lib/logic/draft";
 import {
-  fromStored,
-  savedCards,
-  type RecordMessage as Message,
-} from "@/lib/logic/recordChatMessages";
+  DIARY_TOO_SHORT_MESSAGE,
+  MAX_DIARY_LENGTH,
+  MIN_DIARY_LENGTH,
+  recordLimitFor,
+} from "@/lib/logic/limits";
+import { loadDraft, saveDraft } from "@/lib/ui/draftStore";
+import { sound, vibrate } from "@/lib/ui/feedback";
+import { useDraft } from "@/lib/ui/useDraft";
+import { useLimitedInput } from "@/lib/ui/useLimitedInput";
+import { useTodayMood } from "@/lib/ui/useTodayMood";
 
-// 記録フェーズ：1=日記 2=深掘り 3=清書（成形）
-export type Phase = 1 | 2 | 3;
+/** 記録の段階：1=日記 2=深掘り 3=封をしている（保存中） */
+export type RecordStep = 1 | 2 | 3;
 
-/** 記録セッションの状態機械（日記 → 深掘り → 清書 → 保存）と、しおりの復元・編集・削除 */
+/** 封蝋の演出の長さ（プロトタイプ recSave の 1100ms） */
+const SEAL_MS = 1100;
+
+const AI_LIMIT_MESSAGE = "今日の AI の利用上限に達しました。また明日書こう";
+const RETRY_NOTE = "申し訳ない、もう一度詳しく説明してもらえますか？";
+
+/* ---------- 音声入力（Web Speech API。TS の dom 型に無いので最小限を自前定義） ---------- */
+
+type Recognition = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start(): void;
+  stop(): void;
+  onresult: ((e: RecognitionEvent) => void) | null;
+  onend: (() => void) | null;
+  onerror: ((e: { error?: string }) => void) | null;
+};
+type RecognitionEvent = {
+  resultIndex: number;
+  results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }>;
+};
+type RecognitionCtor = new () => Recognition;
+
+function getRecognitionCtor(): RecognitionCtor | undefined {
+  if (typeof window === "undefined") return undefined;
+  const w = window as unknown as {
+    SpeechRecognition?: RecognitionCtor;
+    webkitSpeechRecognition?: RecognitionCtor;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition;
+}
+
+/** 音声入力（既存 MicButton と同じ挙動：iOS で止まったら再開・許可拒否などは onError） */
+function useSpeech(handlers: {
+  onFinal: (text: string) => void;
+  onInterim: (text: string) => void;
+  onError: () => void;
+}) {
+  const supported = useSyncExternalStore(
+    () => () => {},
+    () => !!getRecognitionCtor(),
+    () => false,
+  );
+  const [recording, setRecording] = useState(false);
+  const recRef = useRef<Recognition | null>(null);
+  const recordingRef = useRef(false);
+  const fatalRef = useRef(false);
+  const handlersRef = useRef(handlers);
+  useEffect(() => {
+    handlersRef.current = handlers;
+  });
+
+  const setRec = useCallback((v: boolean) => {
+    recordingRef.current = v;
+    setRecording(v);
+  }, []);
+
+  const stop = useCallback(() => {
+    setRec(false);
+    handlersRef.current.onInterim("");
+    recRef.current?.stop();
+  }, [setRec]);
+
+  const start = useCallback(() => {
+    const Ctor = getRecognitionCtor();
+    if (!Ctor || recordingRef.current) return;
+    const rec = new Ctor();
+    rec.lang = "ja-JP";
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const r = e.results[i];
+        if (r.isFinal) handlersRef.current.onFinal(r[0].transcript);
+        else interim += r[0].transcript;
+      }
+      handlersRef.current.onInterim(interim);
+    };
+    rec.onerror = (e) => {
+      const code = e?.error ?? "";
+      if (code === "no-speech" || code === "aborted") return;
+      fatalRef.current = true;
+    };
+    rec.onend = () => {
+      if (fatalRef.current) {
+        fatalRef.current = false;
+        setRec(false);
+        handlersRef.current.onInterim("");
+        handlersRef.current.onError();
+        return;
+      }
+      if (!recordingRef.current) return;
+      try {
+        rec.start();
+      } catch {
+        setRec(false);
+      }
+    };
+    recRef.current = rec;
+    try {
+      rec.start();
+      setRec(true);
+    } catch {
+      handlersRef.current.onError();
+    }
+  }, [setRec]);
+
+  useEffect(
+    () => () => {
+      recordingRef.current = false;
+      recRef.current?.stop();
+    },
+    [],
+  );
+
+  return { supported, recording, start, stop };
+}
+
+/* ---------- 記録セッション ---------- */
+
+/** 記録タブの状態機械（日記 → 深掘りの1問 → 長押しで封をして保存）と、しおり・下書き */
 export function useRecordSession(dateParam: string | null) {
   const router = useRouter();
   const { user } = useUser();
-  const [phase, setPhase] = useState<Phase>(1);
-  // 保存済みカード（しおり）。進行中セッションのテキストは recordChat に保存されない
-  const [cards, setCards] = useState<Message[]>([]);
-  const [diaryInput, setDiaryInput] = useState("");
-  const [diaryText, setDiaryText] = useState(""); // 送信済みの日記本文（ページに固定表示）
-  const [deepDiveQuestion, setDeepDiveQuestion] = useState("");
-  const [answerInput, setAnswerInput] = useState("");
-  const [deepDiveAnswer, setDeepDiveAnswer] = useState("");
-  // 深掘り以外の一言（短文のうながし・言い換えのお願い）もメンターの書き込みとして出す
-  const [gentleNote, setGentleNote] = useState("");
-  const [shaped, setShaped] = useState<ShapedRecord | null>(null);
-  // 成形ストリーミング中のプレビュー（最終値はサーバーがパースした shaped で置き換える）
-  const [streamingShaped, setStreamingShaped] = useState<Partial<ShapedRecord> | null>(null);
-  const [interim, setInterim] = useState("");
-  const [recording, setRecording] = useState(false);
-  const [micError, setMicError] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  // しおり（保存済み記録）の編集
-  const [editing, setEditing] = useState<{ thoughtId: string; shaped: ShapedRecord } | null>(null);
-  const [editSaving, setEditSaving] = useState(false);
-  const [editError, setEditError] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const { mood: todayMood } = useTodayMood();
 
   // 日付はクライアントで確定（サーバーとのハイドレーション差異を避ける）
   const todayKey = useSyncExternalStore(
@@ -54,234 +158,247 @@ export function useRecordSession(dateParam: string | null) {
     () => tokyoDateKey(new Date()),
     () => "",
   );
-
-  // 過去日付モード：?date= が有効な過去日のときだけ。今日・不正・未来は通常モード（サーバー側でも検証）
+  // 過去日モード：?date= が有効な過去日のときだけ。今日・不正・未来は通常モード（サーバー側でも検証）
   const resolved = todayKey ? resolveRecordDate(dateParam, todayKey) : null;
   const targetDate = resolved?.ok && resolved.isPast ? resolved.date : null;
-  const heading = todayKey
-    ? splitDateHeading(targetDate ? tokyoDayStart(targetDate) : new Date())
-    : null;
+  const dateKey = targetDate ?? todayKey;
+  const heading = todayKey ? splitDateHeading(tokyoDayStart(dateKey)) : null;
   const pageWord = targetDate ? "この日" : "今日";
+  const key = todayKey ? draftKey(targetDate ? "past" : "today", dateKey) : "";
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [phase, shaped, sending, streamingShaped, gentleNote]);
+  const [step, setStep] = useState<RecordStep>(1);
+  const diary = useLimitedInput({ max: MAX_DIARY_LENGTH, label: "日記は" });
+  const answer = useLimitedInput({ max: MAX_DIARY_LENGTH, label: "答えは" });
+  const [question, setQuestion] = useState("");
+  // 深掘り以外のメンターの一言（言い換えのお願い）
+  const [note, setNote] = useState("");
+  const [interim, setInterim] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [sealing, setSealing] = useState(false);
+  const [error, setError] = useState("");
+  const [cards, setCards] = useState<ThoughtSummary[]>([]);
 
-  // 当日の保存済みカード（しおり）を復元。過去日付モードは復元対象外
+  /* ---- 下書き（端末内だけ） ---- */
+  const draft = useDraft(key);
+  const restoredRef = useRef("");
+  const setDiaryValue = diary.setValue;
+  const setAnswerValue = answer.setValue;
   useEffect(() => {
-    if (!user || dateParam) return;
-    authedFetch(user, "/api/record-chat")
-      .then((res) => (res.ok ? res.json() : null))
+    if (!key) return;
+    // localStorage は SSR に無いので、マウント後に読む
+    const t = setTimeout(() => {
+      const d = loadDraft(key);
+      restoredRef.current = key;
+      if (!d) return;
+      setDiaryValue(d.rawText);
+      if (d.step === 2 && d.deepDiveQuestion) {
+        setQuestion(d.deepDiveQuestion);
+        setAnswerValue(d.deepDiveAnswer);
+        setStep(2);
+      }
+    }, 0);
+    return () => clearTimeout(t);
+  }, [key, setDiaryValue, setAnswerValue]);
+
+  const currentDraft = useCallback(
+    (over?: Partial<DraftData>): DraftData => ({
+      rawText: diary.value,
+      deepDiveQuestion: step === 2 ? question : "",
+      deepDiveAnswer: step === 2 ? answer.value : "",
+      step: step === 2 ? 2 : 1,
+      savedAt: Date.now(),
+      ...over,
+    }),
+    [diary.value, answer.value, question, step],
+  );
+
+  const saveDraftDebounced = draft.save;
+  useEffect(() => {
+    // 復元が済むまで・封をしている間は書かない（空で上書きしない）
+    if (!key || restoredRef.current !== key || step === 3) return;
+    saveDraftDebounced(currentDraft());
+  }, [key, step, currentDraft, saveDraftDebounced]);
+
+  /* ---- しおり（その日にすでに保存した記録） ---- */
+  useEffect(() => {
+    if (!user || !dateKey) return;
+    let alive = true;
+    authedFetch(user, `/api/thoughts?date=${dateKey}`)
+      .then((res) => (res.ok ? (res.json() as Promise<ThoughtsListResponse>) : null))
       .then((data) => {
-        if (data?.recordChat?.messages)
-          setCards(savedCards(fromStored(data.recordChat.messages)));
+        if (alive && data?.thoughts) setCards([...data.thoughts].reverse());
       })
       .catch(() => {});
-  }, [user, dateParam]);
+    return () => {
+      alive = false;
+    };
+  }, [user, dateKey]);
 
-  const dailyLimit = recordLimitFor(user?.isGuest ?? false);
-  const limitReached = cards.length >= dailyLimit;
+  const isGuest = user?.isGuest ?? false;
+  const dailyLimit = recordLimitFor(isGuest);
+  const limitReached = !targetDate && cards.length >= dailyLimit;
+  // 過去日は1日1件まで
+  const dateTaken = !!targetDate && cards.length > 0;
+  const blocked = limitReached || dateTaken;
 
-  async function sendDiary() {
-    if (!user || sending) return;
-    const text = (diaryInput + interim).trim();
-    if (!text) return;
-    // 超短文は AI を呼ばずにやさしく促す（「疲れた。しんどい。」程度の短い日記は通す）
+  /* ---- 音声 ---- */
+  const valuesRef = useRef({ diary: diary.value, answer: answer.value, step, key, currentDraft });
+  useEffect(() => {
+    valuesRef.current = { diary: diary.value, answer: answer.value, step, key, currentDraft };
+  });
+  const speech = useSpeech({
+    onInterim: setInterim,
+    onFinal: (t) => {
+      const v = valuesRef.current;
+      if (v.step === 3) return;
+      if (v.step === 1) {
+        const next = (v.diary + t).slice(0, MAX_DIARY_LENGTH);
+        setDiaryValue(next);
+        if (v.key) saveDraft(v.key, v.currentDraft({ rawText: next }));
+      } else {
+        const next = (v.answer + t).slice(0, MAX_DIARY_LENGTH);
+        setAnswerValue(next);
+        if (v.key) saveDraft(v.key, v.currentDraft({ deepDiveAnswer: next }));
+      }
+    },
+    onError: () => showToast("マイクを使えませんでした。ブラウザのマイク許可を確認してね"),
+  });
+
+  function toggleMic() {
+    if (speech.recording) {
+      speech.stop();
+    } else {
+      sound("pop");
+      speech.start();
+    }
+  }
+
+  /* ---- 1 → 2：深掘りの1問 ---- */
+  async function finishDiary() {
+    if (!user || asking || step !== 1 || blocked) return;
+    if (speech.recording) speech.stop();
+    const text = (diary.value + interim).trim();
     if (text.length < MIN_DIARY_LENGTH) {
-      setGentleNote("もう少しだけ聞かせて。一言でも、何があったかだけでも大丈夫だよ。");
+      showToast(DIARY_TOO_SHORT_MESSAGE);
+      vibrate(30);
       return;
     }
-    setGentleNote("");
+    if (interim) setDiaryValue((diary.value + interim).slice(0, MAX_DIARY_LENGTH));
+    setNote("");
     setError("");
-    setSending(true);
+    setAsking(true);
     try {
       const res = await authedJson(user, "POST", "/api/deepdive", { diary: text });
       if (res.status === 422) {
-        // refusal 等の異常応答：書き込みで言い換えをお願いする
-        setGentleNote("申し訳ない、もう一度詳しく説明してもらえますか？");
+        setNote(RETRY_NOTE);
         return;
       }
       if (res.status === 429) {
-        setError("今日の AI の利用上限に達しました。また明日書こう");
+        // 質問は出せないが、日記はそのまま封をして残せるようにする
+        setError(AI_LIMIT_MESSAGE);
+        setQuestion("");
+        setStep(2);
         return;
       }
       if (!res.ok) throw new Error(`deepdive ${res.status}`);
-      const { question } = await res.json();
-      setDiaryText(text);
-      setDiaryInput("");
-      setDeepDiveQuestion(question);
-      setPhase(2);
+      const { question: q } = (await res.json()) as { question: string };
+      vibrate([10, 20, 14]);
+      sound("rub");
+      setQuestion(q);
+      setStep(2);
     } catch {
       setError("質問を用意できませんでした。少し待ってからもう一度送ってみてください。");
     } finally {
-      setSending(false);
+      setAsking(false);
     }
   }
 
-  function sendAnswer() {
-    const text = (answerInput + interim).trim();
-    // 何も書かずに「書き終えた」＝スキップと同じ扱い
-    void startShaping(text);
-  }
-
-  function skipDeepDive() {
-    setAnswerInput("");
-    void startShaping("");
-  }
-
-  async function startShaping(answer: string) {
-    if (!user || sending) return;
-    setDeepDiveAnswer(answer);
-    setPhase(3);
+  /* ---- 2 → 3：封をして保存 ---- */
+  async function seal(skipped: boolean) {
+    if (!user || step !== 2 || sealing) return;
+    if (speech.recording) speech.stop();
+    const rawText = diary.value.trim();
+    const ans = skipped ? "" : (answer.value + interim).trim();
+    const body: CreateThoughtRequest = {
+      rawText,
+      deepDiveQuestion: ans ? question : "",
+      deepDiveAnswer: ans,
+      kind: "full",
+      ...(targetDate ? { date: targetDate } : {}),
+    };
+    if (skipped) answer.setValue("");
     setError("");
-    setSending(true);
-    setStreamingShaped(null);
+    setSealing(true);
+    setStep(3);
+    sound("seal");
+    vibrate([20, 40, 36]);
+
+    const wait = new Promise((r) => setTimeout(r, SEAL_MS));
     try {
-      const res = await authedJson(user, "POST", "/api/shape", {
-        diary: diaryText,
-        deepDiveQuestion: answer ? deepDiveQuestion : "",
-        deepDiveAnswer: answer,
-      });
-      if (res.status === 429) {
-        setStreamingShaped(null);
-        setError("今日の AI の利用上限に達しました。また明日書こう");
-        setPhase(2);
-        return;
-      }
-      if (!res.ok || !res.body) throw new Error(`shape ${res.status}`);
-
-      // JSON の生成をストリームで受け、項目ができたそばから清書に埋めていく
-      let jsonText = "";
-      let finalShaped: ShapedRecord | null = null;
-      let incomplete = false;
-      let failed = false;
-      await readNdjson(res.body, (event) => {
-        const data = event as
-          | { type: "delta"; text: string }
-          | { type: "shaped"; shaped: ShapedRecord }
-          | { type: "incomplete" }
-          | { type: "done" }
-          | { type: "error" };
-        if (data.type === "delta") {
-          jsonText += data.text;
-          setStreamingShaped(parsePartialShaped(jsonText));
-        } else if (data.type === "shaped") {
-          finalShaped = data.shaped;
-        } else if (data.type === "incomplete") {
-          incomplete = true;
-        } else if (data.type === "error") {
-          failed = true;
+      const res = await authedJson(user, "POST", "/api/thoughts", body);
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as ApiError | null;
+        if (res.status === 409 && data?.error === "date_taken") {
+          throw new Error("この日はすでに記録があります。書き直すには、風の記録からこの日の記録を消してね");
         }
-      });
-
-      if (incomplete) {
-        // refusal 等の異常応答：言い換えをお願いして深掘りに戻す
-        setStreamingShaped(null);
-        setGentleNote("申し訳ない、もう一度詳しく説明してもらえますか？");
-        setPhase(2);
-        return;
+        if (res.status === 409) throw new Error(`今日の記録は上限（${dailyLimit}件）に達しました`);
+        if (data?.error === "too_short") throw new Error(DIARY_TOO_SHORT_MESSAGE);
+        throw new Error("保存できませんでした。少し待ってからもう一度試してください。");
       }
-      if (failed || !finalShaped) throw new Error("shape stream error");
-      setShaped(finalShaped);
-      setStreamingShaped(null);
-    } catch {
-      setStreamingShaped(null);
-      setError("記録を整理できませんでした。少し待ってからもう一度試してください。");
-      setPhase(2);
-    } finally {
-      setSending(false);
-    }
-  }
-
-  async function saveRecord() {
-    if (!user || !shaped || saving) return;
-    setSaving(true);
-    setError("");
-    try {
-      const res = await authedJson(user, "POST", "/api/thoughts", {
-        shaped,
-        rawText: diaryText,
-        deepDiveQuestion: deepDiveAnswer ? deepDiveQuestion : "",
-        deepDiveAnswer,
-        ...(targetDate ? { date: targetDate } : {}),
-      });
-      if (res.status === 409) {
-        const data = await res.json().catch(() => null);
-        // 過去日は1日1件まで（別端末等で先に保存されていた場合）
-        if (data?.error === "date_taken") {
-          setError("この日はすでに記録があります。書き直すには、カレンダーからこの日の記録を削除してね");
-        } else {
-          setError(`今日の記録は上限（${dailyLimit}件）に達しました`);
-        }
-        return;
-      }
-      if (!res.ok) throw new Error(`thoughts ${res.status}`);
-      requestToast("記録しました");
+      draft.clear();
+      await wait;
+      requestToast("記録したよ。");
       router.push("/home");
-    } catch {
-      setError("保存できませんでした。少し待ってからもう一度試してください。");
-    } finally {
-      setSaving(false);
+    } catch (e) {
+      await wait;
+      setSealing(false);
+      setStep(2);
+      setError(e instanceof Error && e.message ? e.message : "保存できませんでした。");
     }
   }
 
-  // しおりの編集を保存：サーバーが embedding と recordChat のカードを更新する
-  async function saveEdit(shaped: ShapedRecord) {
-    if (!user || !editing || editSaving) return;
-    setEditSaving(true);
-    setEditError("");
-    try {
-      const res = await authedJson(user, "PUT", `/api/thoughts/${editing.thoughtId}`, { shaped });
-      if (!res.ok) throw new Error(`update ${res.status}`);
-      setCards((c) =>
-        c.map((m) =>
-          m.kind === "card" && m.thoughtId === editing.thoughtId ? { ...m, shaped } : m
-        )
-      );
-      setEditing(null);
-      requestToast("記録を更新しました");
-    } catch {
-      setEditError("保存できませんでした。少し待ってからもう一度試してください。");
-    } finally {
-      setEditSaving(false);
-    }
+  /* ---- しおりの更新（ThoughtModal から） ---- */
+  function onCardUpdated(t: ThoughtSummary) {
+    setCards((c) => c.map((x) => (x.id === t.id ? t : x)));
+  }
+  function onCardDeleted(id: string) {
+    setCards((c) => c.filter((x) => x.id !== id));
   }
 
-  async function deleteRecord(thoughtId: string) {
-    if (!user || !thoughtId) return;
-    if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。")) return;
-    setError("");
-    try {
-      const res = await authedFetch(user, `/api/thoughts/${thoughtId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`delete ${res.status}`);
-      setCards((c) => c.filter((m) => m.kind !== "card" || m.thoughtId !== thoughtId));
-    } catch {
-      setError("削除できませんでした。少し待ってからもう一度試してください。");
-    }
-  }
-  // 「書き終えた ✦」（phase 3 では「保存する ✦」）
-  function done() {
-    if (phase === 1) void sendDiary();
-    else if (phase === 2) sendAnswer();
-    else void saveRecord();
-  }
-
-  const inputDisabled = sending || limitReached;
-  const activeInput = phase === 1 ? diaryInput : answerInput;
-  const setActiveInput = phase === 1 ? setDiaryInput : setAnswerInput;
-  const displayValue = interim ? activeInput + interim : activeInput;
-  const doneDisabled =
-    sending || saving || limitReached || (phase === 3 && !shaped) || (phase === 1 && !displayValue.trim());
+  const activeValue = step === 1 ? diary.value : answer.value;
+  const displayDiary = step === 1 && interim ? diary.value + interim : diary.value;
+  const displayAnswer = step === 2 && interim ? answer.value + interim : answer.value;
 
   return {
-    user, phase, cards, diaryText, deepDiveQuestion, deepDiveAnswer, gentleNote, setGentleNote,
-    shaped, setShaped, streamingShaped, setInterim, recording, setRecording, micError, setMicError,
-    sending, saving, error, setError, editing, setEditing, editSaving, editError, setEditError,
-    scrollRef, targetDate, heading, pageWord, dailyLimit, limitReached,
-    skipDeepDive, saveEdit, deleteRecord, done,
-    inputDisabled, setActiveInput, displayValue, doneDisabled,
+    user,
+    isGuest,
+    step,
+    diary,
+    answer,
+    displayDiary,
+    displayAnswer,
+    activeValue,
+    question,
+    note,
+    setNote,
+    error,
+    setError,
+    asking,
+    sealing,
+    cards,
+    onCardUpdated,
+    onCardDeleted,
+    todayKey,
+    targetDate,
+    heading,
+    pageWord,
+    dailyLimit,
+    limitReached,
+    dateTaken,
+    blocked,
+    sealMood: targetDate ? null : todayMood,
+    mic: { supported: speech.supported, recording: speech.recording, toggle: toggleMic },
+    finishDiary,
+    seal,
   };
 }

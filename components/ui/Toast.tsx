@@ -78,7 +78,8 @@ export function ToastHost() {
         left: 30,
         right: 30,
         top: 94,
-        zIndex: 40,
+        // 記録のモーダル（46）・ダイアログ（48）の上にも出す
+        zIndex: 60,
         pointerEvents: "none",
         padding: "10px 14px",
         borderRadius: 6,
