@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { formatDateHeading, greeting, tokyoDateKey, tokyoDayStart, tokyoHour } from "./date";
+import {
+  formatDateHeading,
+  formatMonthDay,
+  greeting,
+  splitDateHeading,
+  tokyoDateKey,
+  tokyoDayStart,
+  tokyoHour,
+} from "./date";
 
 describe("formatDateHeading", () => {
   it("東京時間の月日と曜日を返す", () => {
@@ -47,5 +55,20 @@ describe("tokyoDayStart", () => {
 
   it("tokyoDateKey と往復して一致する（0時ちょうどはその日）", () => {
     expect(tokyoDateKey(tokyoDayStart("2026-07-18"))).toBe("2026-07-18");
+  });
+});
+
+describe("splitDateHeading", () => {
+  it("月日と曜日（長い表記）を分けて返す", () => {
+    expect(splitDateHeading(new Date("2026-07-14T03:00:00+09:00"))).toEqual({
+      day: "7月14日",
+      weekday: "火曜日",
+    });
+  });
+});
+
+describe("formatMonthDay", () => {
+  it("東京の月日を返す（UTC では前日でも東京の日付）", () => {
+    expect(formatMonthDay(new Date("2026-07-14T15:30:00Z"))).toBe("7月15日");
   });
 });

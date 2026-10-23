@@ -46,3 +46,26 @@ export function tokyoDateKey(date: Date): string {
 export function tokyoDayStart(dateKey: string): Date {
   return new Date(`${dateKey}T00:00:00+09:00`);
 }
+
+/** "7月18日" と曜日（"火曜日"）に分けた日付見出し（記録ページのセリフ大見出し用） */
+export function splitDateHeading(date: Date): { day: string; weekday: string } {
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: TOKYO,
+    month: "numeric",
+    day: "numeric",
+    weekday: "long",
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return { day: `${get("month")}月${get("day")}日`, weekday: get("weekday") };
+}
+
+/** "7月18日"（相談スレッドの日付見出し用） */
+export function formatMonthDay(date: Date): string {
+  const parts = new Intl.DateTimeFormat("ja-JP", {
+    timeZone: TOKYO,
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("month")}月${get("day")}日`;
+}
