@@ -277,93 +277,41 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
 #hMode button.on{background:#2f7a5c;color:#f4ecd8}
 
 
-/* ---------- 起動画面（ロゴ） ---------- */
-#s-splash .sp-card{position:absolute;left:42px;top:244px;width:306px;padding:20px 12px 18px;transform:rotate(-1.4deg)}
-#s-splash .sp-card svg{width:100%;display:block}
-#s-splash .sp-tag{font-family:var(--hand);font-size:14.5px;color:rgba(13,90,60,.82);text-align:center;margin-top:8px}
-.play .sp-card{animation:spCard 1s cubic-bezier(.3,.8,.3,1) both}
+/* ---------- 起動画面（ロゴ・タップしてスタート） ---------- */
+#s-splash .sp-card{position:absolute;left:36px;top:236px;width:318px;padding:22px 10px 20px;transform:rotate(-1.4deg)}
+#s-splash .sp-card svg{width:100%;display:block;overflow:visible}
+#s-splash .sp-tag{font-family:var(--hand);font-size:14.5px;color:rgba(13,90,60,.82);text-align:center;margin-top:20px}
+.lt{transform-box:fill-box;transform-origin:50% 100%}
+.play .sp-card{animation:spCard 1s .15s cubic-bezier(.3,.8,.3,1) both}
 @keyframes spCard{0%{transform:translateY(-440px) rotate(-10deg) scale(1.15);opacity:0}45%{opacity:1}72%{transform:translateY(10px) rotate(-.6deg) scale(1)}100%{transform:translateY(0) rotate(-1.4deg)}}
-.play .sp-mind{animation:spMind .9s .8s ease-out both}
-@keyframes spMind{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.play .sp-wind{animation:spWind 1.2s 1.55s ease-in-out both}
+.play .lt{animation:spInk .7s ease-out both}
+.play .lt1{animation-delay:1.0s}.play .lt2{animation-delay:1.22s}.play .lt3{animation-delay:1.44s}.play .lt4{animation-delay:1.66s}
+@keyframes spInk{0%{opacity:0;transform:scale(1.16)}60%{opacity:1}100%{opacity:1;transform:scale(1)}}
+.play .sp-wind{animation:spWind 1.25s 2.4s ease-in-out both}
 @keyframes spWind{from{transform:translateY(-310px)}to{transform:none}}
-.play .sp-tag{opacity:0;animation:spTag .9s 2.8s ease both}
+.play .sp-tag{opacity:0;animation:spTag .9s 3.8s ease both}
 @keyframes spTag{to{opacity:1}}
 .rm .sp-tag{opacity:1!important}
-.sp-br{position:absolute;left:0;width:90px;height:90px;color:rgba(244,236,216,.55);opacity:0;pointer-events:none;filter:url(#pencil)}
-.play .sp-br{animation:spBreeze 2.8s ease-in-out both}
-@keyframes spBreeze{0%{transform:translateX(-110px);opacity:0}25%{opacity:.6}70%{opacity:.6}100%{transform:translateX(470px);opacity:0}}
-#spGo{left:155px;top:700px;width:80px;height:80px;font-size:36px;opacity:0;pointer-events:none;transition:opacity .7s}
-#s-splash.done #spGo{opacity:1;pointer-events:auto;animation:spPulse 2.2s ease-in-out infinite}
-@keyframes spPulse{50%{transform:scale(1.07)}}
+.sp-br{position:absolute;left:0;width:90px;height:90px;color:rgba(244,236,216,.5);opacity:0;pointer-events:none;filter:url(#pencil)}
+.play .sp-br{animation:spBreeze 3s ease-in-out both}
+@keyframes spBreeze{0%{transform:translateX(-110px);opacity:0}25%{opacity:.55}70%{opacity:.55}100%{transform:translateX(470px);opacity:0}}
+#spTap{position:absolute;left:0;right:0;top:632px;text-align:center;opacity:0;pointer-events:none;transition:opacity .9s}
+#s-splash.done #spTap{opacity:1}
+#spTap .tx{position:relative;font-family:var(--mincho);font-size:22px;letter-spacing:.34em;padding-left:.34em;color:#f4ecd8;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+#s-splash.done #spTap .tx{animation:spBlink 1.9s ease-in-out infinite}
+@keyframes spBlink{0%,100%{opacity:.32}50%{opacity:1}}
+#spTap .rg{position:relative;width:60px;height:60px;margin:0 auto 20px}
+#spTap .rg i{position:absolute;inset:0;border:1.8px solid rgba(244,236,216,.7);border-radius:50%;filter:url(#pencil)}
+#spTap .rg b{position:absolute;left:50%;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:rgba(244,236,216,.9)}
+#s-splash.done #spTap .rg i{animation:spRing 2.1s ease-out infinite}
+#s-splash.done #spTap .rg i:nth-child(2){animation-delay:1.05s}
+@keyframes spRing{0%{transform:scale(.25);opacity:.9}100%{transform:scale(1.25);opacity:0}}
 #s-splash.skip *{animation-duration:.01s!important;animation-delay:0s!important}
+#s-splash.skip.done #spTap .tx{animation-duration:1.9s!important}
+#s-splash.skip.done #spTap .rg i{animation-duration:2.1s!important}
 #s-splash.leaving .sp-card{animation:none;transition:transform .75s cubic-bezier(.5,0,.8,.4),opacity .5s .15s;transform:translateY(-135%) rotate(6deg);opacity:0}
-#s-splash.leaving #spGo{opacity:0;animation:none}
+#s-splash.leaving #spTap{opacity:0;transition:opacity .25s}
 #s-splash.leaving .sp-br{display:none}
-
-
-/* ---------- 設定・ログイン ---------- */
-#s-home .count{margin-right:50px}
-#homeGear{left:338px;top:52px;width:40px;height:40px;font-size:19px;z-index:6}
-#linkNudge{position:absolute;left:18px;right:18px;top:690px;height:54px;display:flex;align-items:center;gap:10px;padding:0 6px 0 14px;cursor:pointer;z-index:4;transform:rotate(.4deg)}
-#linkNudge.off{display:none}
-#linkNudge .ni{font-size:25px;color:#0d5a3c;flex:none}
-#linkNudge .nt{flex:1;font-family:var(--hand);font-size:13.5px;line-height:1.45;color:#2c2a26}
-#linkNudge .nx{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:19px;color:rgba(52,50,45,.5);flex:none}
-#s-settings .top{position:absolute;top:58px;left:24px}
-#setTitle{font-family:var(--mincho);font-size:25px;letter-spacing:.03em;margin-top:6px}
-#setArea{position:absolute;left:12px;right:12px;top:112px;bottom:128px;overflow-y:auto;overflow-x:hidden;padding:6px 4px 34px;scrollbar-width:none}
-#setArea::-webkit-scrollbar{display:none}
-.scard{position:relative;margin:0 0 22px;padding:18px 18px 12px;transform:rotate(-.25deg)}
-.scard:nth-child(even){transform:rotate(.25deg)}
-.scard h3{font-family:var(--mincho);font-weight:500;font-size:14px;margin:0 0 10px;color:rgba(52,50,45,.7);letter-spacing:.08em}
-.acct{display:flex;gap:14px;align-items:center;padding-bottom:6px}
-.acct .badge{width:58px;height:58px;border-radius:50%;border:2px dashed rgba(52,50,45,.45);display:flex;align-items:center;justify-content:center;font-size:30px;flex:none;color:#34322d;transition:all .4s}
-.acct.linked .badge{border:2px solid #0d5a3c;color:#0d5a3c;background:rgba(13,90,60,.1)}
-.acct .tx{flex:1;font-family:var(--hand);font-size:14.5px;line-height:1.7;color:#2c2a26}
-.acct .tx b{font-family:var(--mincho);font-weight:500;font-size:17px;display:block;margin-bottom:2px}
-.acct .tx small{display:block;font-family:var(--hand2);font-size:12.5px;color:rgba(52,50,45,.66);line-height:1.65;margin-top:3px}
-.rb.inline{position:relative;flex:none}
-#linkBtn{width:68px;height:68px;font-size:30px}
-#nameIn{width:100%;border:0;border-bottom:1.8px dashed rgba(52,50,45,.4);background:transparent;font-family:var(--hand);font-size:20px;color:#2c2a26;padding:4px 0 6px;outline:none;caret-color:#0d5a3c}
-#nameIn::placeholder{color:rgba(52,50,45,.45)}
-#nameHint{font-family:var(--hand2);font-size:12px;color:rgba(52,50,45,.6);margin:8px 0 6px;line-height:1.6}
-.trow,.lrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px dashed rgba(52,50,45,.2);font-family:var(--hand);font-size:17px;color:#2c2a26}
-.trow:first-of-type,.lrow:first-of-type{border-top:0}
-.trow span.l{flex:1}
-.trow svg,.lrow svg{font-size:22px;flex:none}
-.sw{width:54px;height:30px;border-radius:15px;border:1.8px solid rgba(52,50,45,.5);position:relative;transition:background .2s,border-color .2s;cursor:pointer;flex:none}
-.sw::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#34322d;transition:transform .2s cubic-bezier(.3,1.5,.5,1),background .2s}
-.sw.on{background:#2f7a5c;border-color:#2f7a5c}
-.sw.on::after{transform:translateX(24px);background:#f4ecd8}
-.lrow{cursor:pointer}
-.lrow .ar{margin-left:auto;font-size:18px;color:rgba(52,50,45,.4)}
-.lrow.danger{color:#a8321e}
-#setNav{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(transparent,rgba(29,41,29,.88) 55%);pointer-events:none}
-#setBack{left:26px;top:34px;width:64px;height:64px;font-size:28px;pointer-events:auto}
-#dlg{position:absolute;inset:0;z-index:48;background:rgba(12,20,14,.62);opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:center;justify-content:center}
-#dlg.show{opacity:1;pointer-events:auto}
-#dlgBox{width:322px;padding:26px 24px 22px;transform:rotate(-.8deg) scale(.92);transition:transform .4s cubic-bezier(.2,1.3,.4,1)}
-#dlg.show #dlgBox{transform:rotate(-.8deg)}
-#dlgT{font-family:var(--mincho);font-size:19px;color:#2b2a26;margin-bottom:10px}
-#dlgX{font-family:var(--hand);font-size:15.5px;line-height:1.85;color:#2c2a26}
-#dlgBtns{display:flex;justify-content:center;gap:20px;margin-top:22px;padding-bottom:16px}
-#dlgBtns .rb{width:62px;height:62px;font-size:27px}
-#dlgBtns .rb .cap,#linkBtn .cap{color:#3a362f}
-#dlgBtns{gap:26px}
-#dlgBtns .rb.warn{background-color:#b8402c;background-image:var(--tex2),var(--tex1);background-blend-mode:multiply;color:#f7e9e0}
-#dlgBtns .rb.holding{background:conic-gradient(#f0dca0 calc(var(--p,0)*1%),rgba(184,64,44,.35) 0)}
-#gsheet{position:absolute;left:0;right:0;bottom:0;z-index:47;background:#fbfaf6;color:#2c2a26;border-radius:22px 22px 0 0;padding:20px 20px 32px;transform:translateY(105%);transition:transform .45s cubic-bezier(.2,1,.3,1);box-shadow:0 -10px 30px rgba(0,0,0,.4)}
-#gsheet.show{transform:none}
-#gsheet .gh{font-family:var(--ui);font-size:15px;font-weight:700;margin-bottom:4px}
-#gsheet .gs{font-family:var(--ui);font-size:12.5px;color:#666;margin-bottom:12px}
-#gsheet .ga{display:flex;align-items:center;gap:12px;padding:12px 6px;border-top:1px solid #e6e3da;cursor:pointer;font-family:var(--ui)}
-#gsheet .ga:active{background:#f1efe8}
-#gsheet .gav{width:38px;height:38px;border-radius:50%;background:#2f7a5c;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
-#gsheet .ga:nth-of-type(2) .gav{background:#b0623a}
-#gsheet .gn{font-size:14.5px;font-weight:700;line-height:1.3}
-#gsheet .ge{font-size:12.5px;color:#666}
-#gsheet .gnote{font-size:11.5px;color:#888;margin-top:12px;line-height:1.6}
 
 /* ---------- 3タブ共通 ---------- */
 #tabs{transition:transform .35s ease}
@@ -473,8 +421,8 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <feTurbulence type="fractalNoise" baseFrequency=".05 .05" numOctaves="3" seed="6" result="n"/>
       <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
     </filter>
-    <clipPath id="sp-reveal" clipPathUnits="userSpaceOnUse"><rect x="0" y="450" width="1200" height="450"/></clipPath><g id="mind"><path transform="translate(0 0)" d="M370 1022Q366 981 363.0 942.5Q360 904 359 865Q495 951 571.0 980.5Q647 1010 717 1010Q802 1010 861.5 971.0Q921 932 963 848Q1097 937 1182.0 973.5Q1267 1010 1335 1010Q1481 1010 1547.5 921.0Q1614 832 1614 633V612L1610 283Q1610 233 1608 192Q1608 189 1608 188Q1608 116 1630.0 93.0Q1652 70 1718 70H1741V0Q1644 6 1596.0 8.0Q1548 10 1518 10Q1486 10 1438.5 8.0Q1391 6 1303 0V70Q1309 69 1318.0 68.5Q1327 68 1343 68Q1407 68 1428.5 109.5Q1450 151 1450 311V457Q1450 493 1451.0 552.0Q1452 611 1452 635Q1452 763 1405.5 823.0Q1359 883 1262 883Q1215 883 1150.0 858.0Q1085 833 989 778L981 285V203Q981 113 1003.5 91.5Q1026 70 1096 70H1108V1Q1029 5 976.0 7.5Q923 10 885 10Q847 10 796.0 7.5Q745 5 689 0L688 70Q758 70 779.0 81.5Q800 93 809 135Q816 168 819.5 302.0Q823 436 823 645Q823 770 778.5 826.5Q734 883 637 883Q590 883 524.5 858.5Q459 834 367 782Q361 619 358.5 499.0Q356 379 356 281Q356 128 376.5 98.0Q397 68 463 68Q468 68 478.5 69.0Q489 70 496 70L495 0Q433 5 375.0 7.5Q317 10 266 10Q222 10 168.0 7.5Q114 5 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q146 946 221.0 970.0Q296 994 370 1022Z"/><path transform="translate(1802 0)" d="M395 1022Q394 984 392 914Q379 512 379 348V242Q379 126 401.0 96.0Q423 66 487 66Q493 66 503.0 67.0Q513 68 518 68V0Q433 6 381.0 8.0Q329 10 293 10Q261 10 211.5 8.0Q162 6 63 0V70H88Q212 70 213 314Q213 349 213 369L217 616Q217 643 218.0 684.0Q219 725 219 739Q219 820 203.5 846.0Q188 872 147 872Q139 872 123.5 870.5Q108 869 90 867L80 930Q159 945 237.5 968.0Q316 991 395 1022ZM287 1493 358 1440Q386 1419 399.0 1398.0Q412 1377 412 1354Q412 1331 401.5 1314.5Q391 1298 362 1276L287 1219L217 1274Q188 1297 175.0 1316.5Q162 1336 162 1358Q162 1380 172.0 1396.5Q182 1413 213 1436Z"/><path transform="translate(2410 0)" d="M377 1022 365 854Q478 936 561.5 973.0Q645 1010 715 1010Q862 1010 936.0 927.0Q1010 844 1010 678Q1010 677 1009.0 590.0Q1008 503 1008 416Q1008 379 1007.0 323.5Q1006 268 1006 248Q1006 136 1026.0 102.0Q1046 68 1102 68Q1105 68 1113.5 69.0Q1122 70 1126 70V0Q1036 6 990.0 8.0Q944 10 913 10Q865 10 809.0 7.5Q753 5 695 0L694 70H709Q837 70 839 304Q840 317 840 324L842 539V575Q842 760 799.0 820.5Q756 881 651 881Q593 881 522.5 853.5Q452 826 373 772Q369 668 367.0 575.5Q365 483 365 408V270Q365 138 384.5 103.0Q404 68 461 68Q465 68 473.5 69.0Q482 70 487 70V0Q401 6 351.5 8.0Q302 10 270 10Q240 10 191.0 8.0Q142 6 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q147 940 222.5 964.0Q298 988 377 1022Z"/><path transform="translate(3606 0)" d="M799 821Q732 859 672.0 877.0Q612 895 551 895Q397 895 313.0 799.0Q229 703 229 528Q229 342 311.5 232.5Q394 123 532 123Q587 123 650.5 144.0Q714 165 793 209ZM983 1550 982 1532Q970 1177 963 846L961 690Q959 635 957.5 543.5Q956 452 956 342V303Q956 147 967.0 109.5Q978 72 1010 72Q1029 72 1049.5 76.0Q1070 80 1092 88L1108 25Q1038 -2 971.0 -15.5Q904 -29 836 -29L807 -28Q800 15 796.5 51.5Q793 88 793 121Q679 48 605.0 20.0Q531 -8 461 -8Q286 -8 176.0 124.5Q66 257 66 469Q66 705 207.0 850.0Q348 995 573 995Q624 995 680.5 985.5Q737 976 803 956Q803 965 804 983Q809 1158 809 1298Q809 1361 789.5 1387.0Q770 1413 725 1413Q715 1413 700.0 1410.5Q685 1408 659 1403L647 1468Q721 1481 804.0 1501.5Q887 1522 983 1550Z"/></g>
-    <filter id="logoink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="1" seed="9" result="s"/><feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.72" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>
+    <clipPath id="sp-reveal" clipPathUnits="userSpaceOnUse"><rect x="0" y="450" width="1200" height="450"/></clipPath><g id="mind"><path transform="translate(0 0)" d="M370 1022Q366 981 363.0 942.5Q360 904 359 865Q495 951 571.0 980.5Q647 1010 717 1010Q802 1010 861.5 971.0Q921 932 963 848Q1097 937 1182.0 973.5Q1267 1010 1335 1010Q1481 1010 1547.5 921.0Q1614 832 1614 633V612L1610 283Q1610 233 1608 192Q1608 189 1608 188Q1608 116 1630.0 93.0Q1652 70 1718 70H1741V0Q1644 6 1596.0 8.0Q1548 10 1518 10Q1486 10 1438.5 8.0Q1391 6 1303 0V70Q1309 69 1318.0 68.5Q1327 68 1343 68Q1407 68 1428.5 109.5Q1450 151 1450 311V457Q1450 493 1451.0 552.0Q1452 611 1452 635Q1452 763 1405.5 823.0Q1359 883 1262 883Q1215 883 1150.0 858.0Q1085 833 989 778L981 285V203Q981 113 1003.5 91.5Q1026 70 1096 70H1108V1Q1029 5 976.0 7.5Q923 10 885 10Q847 10 796.0 7.5Q745 5 689 0L688 70Q758 70 779.0 81.5Q800 93 809 135Q816 168 819.5 302.0Q823 436 823 645Q823 770 778.5 826.5Q734 883 637 883Q590 883 524.5 858.5Q459 834 367 782Q361 619 358.5 499.0Q356 379 356 281Q356 128 376.5 98.0Q397 68 463 68Q468 68 478.5 69.0Q489 70 496 70L495 0Q433 5 375.0 7.5Q317 10 266 10Q222 10 168.0 7.5Q114 5 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q146 946 221.0 970.0Q296 994 370 1022Z"/><path transform="translate(1802 0)" d="M395 1022Q394 984 392 914Q379 512 379 348V242Q379 126 401.0 96.0Q423 66 487 66Q493 66 503.0 67.0Q513 68 518 68V0Q433 6 381.0 8.0Q329 10 293 10Q261 10 211.5 8.0Q162 6 63 0V70H88Q212 70 213 314Q213 349 213 369L217 616Q217 643 218.0 684.0Q219 725 219 739Q219 820 203.5 846.0Q188 872 147 872Q139 872 123.5 870.5Q108 869 90 867L80 930Q159 945 237.5 968.0Q316 991 395 1022ZM287 1493 358 1440Q386 1419 399.0 1398.0Q412 1377 412 1354Q412 1331 401.5 1314.5Q391 1298 362 1276L287 1219L217 1274Q188 1297 175.0 1316.5Q162 1336 162 1358Q162 1380 172.0 1396.5Q182 1413 213 1436Z"/><path transform="translate(2410 0)" d="M377 1022 365 854Q478 936 561.5 973.0Q645 1010 715 1010Q862 1010 936.0 927.0Q1010 844 1010 678Q1010 677 1009.0 590.0Q1008 503 1008 416Q1008 379 1007.0 323.5Q1006 268 1006 248Q1006 136 1026.0 102.0Q1046 68 1102 68Q1105 68 1113.5 69.0Q1122 70 1126 70V0Q1036 6 990.0 8.0Q944 10 913 10Q865 10 809.0 7.5Q753 5 695 0L694 70H709Q837 70 839 304Q840 317 840 324L842 539V575Q842 760 799.0 820.5Q756 881 651 881Q593 881 522.5 853.5Q452 826 373 772Q369 668 367.0 575.5Q365 483 365 408V270Q365 138 384.5 103.0Q404 68 461 68Q465 68 473.5 69.0Q482 70 487 70V0Q401 6 351.5 8.0Q302 10 270 10Q240 10 191.0 8.0Q142 6 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q147 940 222.5 964.0Q298 988 377 1022Z"/><path transform="translate(3606 0)" d="M799 821Q732 859 672.0 877.0Q612 895 551 895Q397 895 313.0 799.0Q229 703 229 528Q229 342 311.5 232.5Q394 123 532 123Q587 123 650.5 144.0Q714 165 793 209ZM983 1550 982 1532Q970 1177 963 846L961 690Q959 635 957.5 543.5Q956 452 956 342V303Q956 147 967.0 109.5Q978 72 1010 72Q1029 72 1049.5 76.0Q1070 80 1092 88L1108 25Q1038 -2 971.0 -15.5Q904 -29 836 -29L807 -28Q800 15 796.5 51.5Q793 88 793 121Q679 48 605.0 20.0Q531 -8 461 -8Q286 -8 176.0 124.5Q66 257 66 469Q66 705 207.0 850.0Q348 995 573 995Q624 995 680.5 985.5Q737 976 803 956Q803 965 804 983Q809 1158 809 1298Q809 1361 789.5 1387.0Q770 1413 725 1413Q715 1413 700.0 1410.5Q685 1408 659 1403L647 1468Q721 1481 804.0 1501.5Q887 1522 983 1550Z"/></g><g id="lt1"><path transform="translate(0 0)" d="M370 1022Q366 981 363.0 942.5Q360 904 359 865Q495 951 571.0 980.5Q647 1010 717 1010Q802 1010 861.5 971.0Q921 932 963 848Q1097 937 1182.0 973.5Q1267 1010 1335 1010Q1481 1010 1547.5 921.0Q1614 832 1614 633V612L1610 283Q1610 233 1608 192Q1608 189 1608 188Q1608 116 1630.0 93.0Q1652 70 1718 70H1741V0Q1644 6 1596.0 8.0Q1548 10 1518 10Q1486 10 1438.5 8.0Q1391 6 1303 0V70Q1309 69 1318.0 68.5Q1327 68 1343 68Q1407 68 1428.5 109.5Q1450 151 1450 311V457Q1450 493 1451.0 552.0Q1452 611 1452 635Q1452 763 1405.5 823.0Q1359 883 1262 883Q1215 883 1150.0 858.0Q1085 833 989 778L981 285V203Q981 113 1003.5 91.5Q1026 70 1096 70H1108V1Q1029 5 976.0 7.5Q923 10 885 10Q847 10 796.0 7.5Q745 5 689 0L688 70Q758 70 779.0 81.5Q800 93 809 135Q816 168 819.5 302.0Q823 436 823 645Q823 770 778.5 826.5Q734 883 637 883Q590 883 524.5 858.5Q459 834 367 782Q361 619 358.5 499.0Q356 379 356 281Q356 128 376.5 98.0Q397 68 463 68Q468 68 478.5 69.0Q489 70 496 70L495 0Q433 5 375.0 7.5Q317 10 266 10Q222 10 168.0 7.5Q114 5 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q146 946 221.0 970.0Q296 994 370 1022Z"/></g><g id="lt2"><path transform="translate(1802 0)" d="M395 1022Q394 984 392 914Q379 512 379 348V242Q379 126 401.0 96.0Q423 66 487 66Q493 66 503.0 67.0Q513 68 518 68V0Q433 6 381.0 8.0Q329 10 293 10Q261 10 211.5 8.0Q162 6 63 0V70H88Q212 70 213 314Q213 349 213 369L217 616Q217 643 218.0 684.0Q219 725 219 739Q219 820 203.5 846.0Q188 872 147 872Q139 872 123.5 870.5Q108 869 90 867L80 930Q159 945 237.5 968.0Q316 991 395 1022ZM287 1493 358 1440Q386 1419 399.0 1398.0Q412 1377 412 1354Q412 1331 401.5 1314.5Q391 1298 362 1276L287 1219L217 1274Q188 1297 175.0 1316.5Q162 1336 162 1358Q162 1380 172.0 1396.5Q182 1413 213 1436Z"/></g><g id="lt3"><path transform="translate(2410 0)" d="M377 1022 365 854Q478 936 561.5 973.0Q645 1010 715 1010Q862 1010 936.0 927.0Q1010 844 1010 678Q1010 677 1009.0 590.0Q1008 503 1008 416Q1008 379 1007.0 323.5Q1006 268 1006 248Q1006 136 1026.0 102.0Q1046 68 1102 68Q1105 68 1113.5 69.0Q1122 70 1126 70V0Q1036 6 990.0 8.0Q944 10 913 10Q865 10 809.0 7.5Q753 5 695 0L694 70H709Q837 70 839 304Q840 317 840 324L842 539V575Q842 760 799.0 820.5Q756 881 651 881Q593 881 522.5 853.5Q452 826 373 772Q369 668 367.0 575.5Q365 483 365 408V270Q365 138 384.5 103.0Q404 68 461 68Q465 68 473.5 69.0Q482 70 487 70V0Q401 6 351.5 8.0Q302 10 270 10Q240 10 191.0 8.0Q142 6 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q147 940 222.5 964.0Q298 988 377 1022Z"/></g><g id="lt4"><path transform="translate(3606 0)" d="M799 821Q732 859 672.0 877.0Q612 895 551 895Q397 895 313.0 799.0Q229 703 229 528Q229 342 311.5 232.5Q394 123 532 123Q587 123 650.5 144.0Q714 165 793 209ZM983 1550 982 1532Q970 1177 963 846L961 690Q959 635 957.5 543.5Q956 452 956 342V303Q956 147 967.0 109.5Q978 72 1010 72Q1029 72 1049.5 76.0Q1070 80 1092 88L1108 25Q1038 -2 971.0 -15.5Q904 -29 836 -29L807 -28Q800 15 796.5 51.5Q793 88 793 121Q679 48 605.0 20.0Q531 -8 461 -8Q286 -8 176.0 124.5Q66 257 66 469Q66 705 207.0 850.0Q348 995 573 995Q624 995 680.5 985.5Q737 976 803 956Q803 965 804 983Q809 1158 809 1298Q809 1361 789.5 1387.0Q770 1413 725 1413Q715 1413 700.0 1410.5Q685 1408 659 1403L647 1468Q721 1481 804.0 1501.5Q887 1522 983 1550Z"/></g>
+    <filter id="logoink" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="1" seed="9" result="s"/><feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.72" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>
     <symbol id="g1" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17 C16 17 22 8 31 12 C38 15 35 24 29 21"/><path d="M5 26 H35 C42 26 44 34 38 36"/><path d="M5 35 C14 35 18 42 27 40"/></g></symbol>
     <symbol id="g2" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 C18 20 24 12 33 16 C38 18 36 25 31 24"/><path d="M7 30 C16 30 22 26 29 28"/></g></symbol>
     <symbol id="g3" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M8 18 H40"/><path d="M12 26 H36"/><path d="M17 34 H31"/></g></symbol>
@@ -492,19 +440,21 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <!-- ① 回転盤 -->
       <!-- 起動画面 -->
       <section class="scr show" id="s-splash">
-        <svg class="sp-br" viewBox="0 0 48 48" style="top:190px"><use href="#g2" width="48" height="48"/></svg>
-        <svg class="sp-br" viewBox="0 0 48 48" style="top:520px;animation-delay:.25s!important"><use href="#g1" width="48" height="48"/></svg>
-        <svg class="sp-br" viewBox="0 0 48 48" style="top:600px;animation-delay:.55s!important;width:70px;height:70px"><use href="#g3" width="48" height="48"/></svg>
+        <svg class="sp-br" viewBox="0 0 48 48" style="top:176px"><use href="#g2" width="48" height="48"/></svg>
+        <svg class="sp-br" viewBox="0 0 48 48" style="top:520px;animation-delay:.3s!important"><use href="#g1" width="48" height="48"/></svg>
+        <svg class="sp-br" viewBox="0 0 48 48" style="top:590px;animation-delay:.7s!important;width:70px;height:70px"><use href="#g3" width="48" height="48"/></svg>
         <div class="sp-card sheet" id="spCard">
-          <svg viewBox="150 232 900 440" role="img" aria-label="mindwind">
+          <svg viewBox="110 205 980 490" role="img" aria-label="mindwind">
             <g filter="url(#logoink)" fill="#0b5a3b">
-              <g class="sp-mind"><use href="#mind" transform="translate(170.448402 434) scale(0.180218837 -0.180218837)"/></g>
+              <g transform="translate(170.448402 434) scale(0.180218837 -0.180218837)">
+                <use href="#lt1" class="lt lt1"/><use href="#lt2" class="lt lt2"/><use href="#lt3" class="lt lt3"/><use href="#lt4" class="lt lt4"/>
+              </g>
               <g clip-path="url(#sp-reveal)"><g class="sp-wind"><use href="#mind" transform="translate(170.448402 466) scale(0.180218837 0.180218837)"/></g></g>
             </g>
           </svg>
           <div class="sp-tag">あなたが、自分のメンターになる</div>
         </div>
-        <button class="rb green" id="spGo" aria-label="はじめる"><svg class="i" data-ic="hanko"></svg><span class="cap">はじめる</span></button>
+        <div id="spTap" aria-hidden="true"><div class="rg"><i></i><i></i><b></b></div><div class="tx">タップしてスタート</div></div>
       </section>
 
       <section class="scr" id="s-stamp">
@@ -717,8 +667,8 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
     </ul>
     <h2>起動画面（ロゴ）</h2>
     <ul>
-      <li>アプリを開くと、革の机の上に<b>紙のカードが落ちてきて</b>、緑のインクで<b>「mind」</b>が現れ、そのあと鏡像の<b>「wind」が上から落ちてきます</b>（ロゴの動きそのまま）。最後に風が1本ずつ横切ります。</li>
-      <li>動きが終わると、下の判子の丸ボタンがゆっくり脈打ちます。<b>どこをタップしても</b>カードが上へ去り、気分の回転盤が始まります。動きの途中でタップすると、動きを飛ばします。</li>
+      <li>アプリを開くと、革の机の上に<b>紙のカードが落ちてきて</b>、緑のインクで<b>「mind」が1文字ずつにじんで現れ</b>、そのあと鏡像の<b>「wind」が上から落ちてきます</b>（ロゴの動きそのまま）。風が1本ずつ横切ります。</li>
+      <li>動きが終わると、下に<b>「タップしてスタート」</b>がゆっくり明滅し、その上で波紋が広がります。<b>どこをタップしても</b>カードが上へ去り、気分の回転盤が始まります。動きの途中でタップすると、動きを飛ばします。</li>
       <li>ロゴは <code>docs/brand/mindwind-opening.svg</code> をそのまま使用。カードの下の一行は、アプリのコンセプトの文です。</li>
     </ul>
     <h2>v5 で足したところ</h2>
@@ -1180,8 +1130,9 @@ function startSplash(){
   const sp=$('#s-splash');clearTimeout(spTimer);
   sp.classList.remove('done','leaving','skip','play');void sp.offsetWidth;sp.classList.add('play');
   spDone=false;
-  setTimeout(()=>snd.pon(),520);
-  spTimer=setTimeout(()=>{sp.classList.add('done');spDone=true},3500);
+  setTimeout(()=>snd.pon(),420);
+  setTimeout(()=>{if(!spDone)snd.chime()},3600);
+  spTimer=setTimeout(()=>{sp.classList.add('done');spDone=true},4700);
 }
 function splashTap(){
   const sp=$('#s-splash');if(sp.classList.contains('leaving'))return;
