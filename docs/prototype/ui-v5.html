@@ -491,7 +491,7 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
 
       <!-- ③ ホーム -->
       <section class="scr" id="s-home">
-        <div class="top"><div><div class="sm">10月25日 日曜日</div><div class="hi">おかえり、<span class="nm"></span></div></div><div class="count"><div class="sm" style="letter-spacing:.1em;margin-bottom:4px">今週</div><span class="n"><span class="roll" id="roll"><span>4</span><span>5</span></span></span></div></div>
+        <div class="top"><div><div class="sm">10月25日 日曜日</div><div class="hi">おかえり、<span class="uname"></span></div></div><div class="count"><div class="sm" style="letter-spacing:.1em;margin-bottom:4px">今週</div><span class="n"><span class="roll" id="roll"><span>4</span><span>5</span></span></span></div></div>
         <button class="rb chalk" id="homeGear" aria-label="設定"><svg class="i" data-ic="gear"></svg></button>
         <div id="week" class="sheet"></div>
         <div id="reunion" role="button" aria-label="1か月前のあなたの言葉をめくる"><div class="fl">
@@ -523,7 +523,7 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
           <div class="P P1"><div class="sh"></div>
             <div class="face fr" id="p1face">
               <p class="pen date">2026.10.25 日</p>
-              <p class="pen to"><span class="nm"></span>へ</p>
+              <p class="pen to"><span class="uname"></span>へ</p>
               <p class="pen">今週もおつかれさま。<br>今週は5日、ここに来てくれたね。</p>
               <div class="stamps" id="r5"></div>
             </div>
@@ -1147,7 +1147,7 @@ const AUTO_NAMES=['風見','風車','風鈴','渡り鳥','旅人','凧','羽根'
 const AUTO_NAME=AUTO_NAMES[Math.floor(Math.random()*AUTO_NAMES.length)]+'さん'; // 本番はユーザー番号から決める（同じ人はいつも同じ名前）
 let nick='',acct={linked:false,email:''},nudgeOff=false;
 const dispName=()=>nick?nick+'さん':AUTO_NAME;
-function updateNames(){$$('.nm').forEach(e=>e.textContent=dispName())}
+function updateNames(){$$('.uname').forEach(e=>e.textContent=dispName())}
 function updateNudge(){$('#linkNudge').classList.toggle('off',acct.linked||nudgeOff)}
 function dlg(title,text,btns){
   $('#dlgT').textContent=title;$('#dlgX').innerHTML=text;
