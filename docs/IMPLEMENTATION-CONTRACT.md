@@ -30,7 +30,7 @@
 | `/terms` `/privacy` | 静的ページ（既存のまま。紙の便箋の見た目は 81 で整える） | なし | 不要 | 既存 |
 | `/dev-login` | 開発専用（既存のまま） | なし | 不要 | 既存 |
 
-ディレクトリ：タブありは既存の `app/(tabs)/`、タブなしの認証ページは **`app/(full)/`**（`layout.tsx` は AuthGuard だけ）。`/mood` → `app/(full)/mood/page.tsx`、`/mood/write` → `app/(full)/mood/write/page.tsx`、`/letter` → `app/(full)/letter/page.tsx`、`/settings` → `app/(full)/settings/page.tsx`。
+ディレクトリ：タブありは既存の `app/(tabs)/`（`layout.tsx` が `Desk` → `AuthGuard` → `TabBar` を置く）。タブなしの認証ページは **`app/` 直下**で、各ページが自分で `Desk` と `AuthGuard` で包む（`app/(full)/` は作らない。作ると同じパスが二重になる）。`/mood` → `app/mood/page.tsx`、`/mood/write` → `app/mood/write/page.tsx`、`/letter` → `app/letter/page.tsx`、`/settings` → `app/settings/page.tsx`。`/` は AuthGuard の外なので、`Splash` の中で `useEnsureUser()` を呼ぶ。
 
 ### 遷移のルール
 
@@ -41,11 +41,13 @@
    - 一言（鉛筆・緑）→ `/mood/write`　／　しっかり（開いたノート・紙）→ `/record`　／　ここまで（眠る月・チョーク）→ `/home`
    - あとで（しおり・左下）→ `/home`（気分は保存しない）　／　選び直す（戻す）→ 回転盤に戻る（`PUT /api/mood` で上書き）
    - ホームの今週の便箋の「今日」の輪をタップ → `/mood?from=home`（選び直し。決定後は `/home` へ戻る。3択は出さない）
-3. **一言** `/mood/write`：長押しで `POST /api/thoughts { rawText, kind: "quick" }` → 封蝋の演出 → `/home`（玉が今週の便箋へ飛ぶ演出はホーム側〔72〕が `sessionStorage["mindwind:flyMood"]` を見て行う）。空・2文字未満ならトースト「一言だけ書いてから、長押ししてね」で保存しない。
+3. **一言** `/mood/write`：長押しで `POST /api/thoughts { rawText, kind: "quick" }` → 封蝋の演出 → `/home`（玉が今週の便箋へ飛ぶ演出はホーム側〔72〕が `sessionStorage["mindwind:flyMood"]` を見て行う。値は `String(mood)`＝`"0"`〜`"4"`。書くのは 3択の「ここまで」と一言の保存成功のとき。ホームは読んだら消す）。空・2文字未満ならトースト「一言だけ書いてから、長押ししてね」で保存しない。
 4. **記録** `/record`：日記 → 「書き終えた」（10文字未満はトースト「もう少し書いてみてね（10文字以上）」）→ `POST /api/deepdive` → 緑インクの1問 → 答える or とばす → 長押しで `POST /api/thoughts` → 封蝋 → `/home` ＋ トースト「記録したよ。」
 5. **手紙** `/letter`：ホームの手紙カードから。「とじる」→ `/home`、「相談する」→ `/search?draft=<文字列>`（相談の入力欄に下書きとして入れる。69 が `draft` を読む）。
 6. **設定** `/settings`：ホーム右上の歯車から。「もどる」→ `/home`。ログアウト → `/`。アカウント削除 → `/`。
-7. **風の記録**：ホームの今週の便箋の帯をタップ → **モーダル**（別ルートにしない。`z-index` でタブバーの上に重なる）。月の日付をタップ → その日の記録モーダル（67 の `ThoughtModal`）。過去日で記録0件 → 「この日の日記を書く」→ `/record?date=`。
+7. **風の記録**：ホームの今週の便箋の帯をタップ → **モーダル**（`components/hist/HistorySheet` `{ open, onClose }`。別ルートにしない。`z-index` でタブバーの上に重なる）。月の日付をタップ → その日の記録モーダル（`components/hist/DayModal` → 67 の `components/thought/ThoughtModal`）。過去日で記録0件 → 「この日の日記を書く」→ `/record?date=`。
+   - `ThoughtModal` の props：`{ open?, thought?, thoughts?, date?, initialId?, mood?, onClose, onUpdated?, onSaved?, onDeleted? }`（`onSaved` は `onUpdated` の別名。`thoughts` を省いて `date` だけ渡すと自分で取りに行く）。自分で全画面の幕（z-index 46）を描き、編集（PUT）と削除（確認 Dialog・長押し・DELETE）も中で行う。
+   - z-index の段：タブバー 5 ＜ 風の記録 35 ＜ 日のモーダル 45 ＜ 記録のモーダル 46 ＜ Dialog 48 ＜ トースト 60。背景の風（AmbienceLayer）は 30。
 8. `authedFetch` が 401 を受けたら `/` へ（既存どおり）。
 
 ### 画面の共通ルール
@@ -160,14 +162,15 @@ export const ICON_PATHS: Record<IconName, string>   // プロトタイプ ICONS 
 // components/ui/LimitCounter.tsx（45）「n / max」。warnAt 以上で赤字
 <LimitCounter length: number  max: number  warnAt?: number /* 既定 ceil(max*0.9) */  className? />
 
-// components/ui/Seal.tsx（64）封蝋（赤い蝋＋今日の玉の風）。保存の演出で使う（66 も使う）
-<Seal mood: MoodId|null  playing: boolean  size?: number /* 既定 116 */ onDone?: () => void />
+// components/mood/Postmark.tsx（64）封蝋（赤い蝋＋今日の玉の風）。保存の演出で使う（66 も使う。`components/ui/Seal.tsx` は作らない）
+export function WaxSeal({ mood: MoodId|null, playing: boolean, onAnimationEnd?: () => void }): JSX.Element
+//   ※ WaxSeal は top:300px を持つ。別の場所に置くときは親の CSS で位置を上書きする（record.module.css の .seal > div が例）
 
-// components/ui/TabBar.tsx（46）3タブ。(tabs)/layout.tsx だけが置く
-export default function TabBar(): JSX.Element   // ホーム=stack／記録=book／相談=swirl。pathname で選択
+// components/TabBar.tsx（46）3タブ。(tabs)/layout.tsx だけが置く。純粋なデータと判定は components/ui/tabIcons.tsx（TABS・TABBAR_HIDDEN_PREFIXES・isTabBarHidden・activeTabHref）
+export default function TabBar(): JSX.Element   // ホーム=stack／記録=book／相談=swirl。pathname で選択。80 で消す対象から外す
 
-// components/ui/WindAmbience.tsx（84）背景の風（色2枚・粒子 canvas・稲光・揺れ）。layout に1つ
-<WindAmbience />
+// components/fx/AmbienceLayer.tsx（84）背景の風（色2枚・粒子 canvas〔MoodFx.tsx〕・稲光・揺れ）。app/layout.tsx のシェル内、{children} の直後に1つ。画面の上に z-index 30 で重なり、触れない
+<AmbienceLayer />
 ```
 
 `Paper` は内側の文字色を `--color-graphite` にする。`RoundButton` の `variant="paper"` は机の上で使い、紙の上では `"ink"` を使う。
@@ -221,8 +224,10 @@ export function useEnsureUser(): { user: AppUser | null; loading: boolean; error
 // lib/ui/useDisplayName.ts（48）表示用の呼び名（「◯◯さん」）。AI には渡さない
 export function useDisplayName(): { name: string /* "風見さん" */; isAuto: boolean; reload(): void }
 
-// lib/ui/useNudge.ts（51）歯車の赤い点
-export function useNudge(): { show: boolean; dismiss(): void }   // ゲストだけ。dismiss で localStorage "mindwind:nudgeDismissedOn" = today
+// lib/ui/useSettingsSeen.ts（51）歯車の赤い点（旧名 useNudge。純粋ロジック shouldShowGearDot も同じファイル）
+export function shouldShowGearDot(isGuest: boolean, seenOn: string | null, todayKey: string): boolean   // 未 dismiss or 7日以上前
+export function useSettingsSeen(): { showDot: boolean; markSeen(): void }   // ゲストだけ。markSeen で localStorage "mindwind:nudgeDismissedOn" = today
+export function markSettingsSeen(): void                                     // 設定画面が開いたときに呼んでもよい
 
 // lib/ui/useDraft.ts（68）下書き（端末内だけ）
 export function useDraft(key: string /* draftKey() の戻り */): { draft: DraftData | null; save(d: DraftData): void /* デバウンス 500ms */; clear(): void }
@@ -230,7 +235,10 @@ export function useDraft(key: string /* draftKey() の戻り */): { draft: Draft
 // lib/ui/useMoodRange.ts（74）GET /api/moods のキャッシュつき取得
 export function useMoodRange(from: string, to: string): { days: DayEntry[] | null; reload(): void }
 
-// lib/ui/useLetter.ts（78）GET/POST /api/letters/current の状態機械（locked/none/generating/ready・ストリーム受信）
+// lib/db/useLetter.ts（78）GET/POST /api/letters/current の状態機械（locked/none/generating/ready・ストリーム受信）。lib/ui ではなく lib/db にある
+// lib/ui/usePullOut.ts（78）封筒から手紙を引っぱり出すドラッグ
+// lib/ui/wheelPhysics.ts（63）回転盤の物理（純粋関数。旧名 wheelMath）
+// lib/ui/fxParticles.ts（84）粒子・fxPlan・residualOpacity（純粋関数。旧名 windFx）
 ```
 
 純粋ロジック（`lib/logic/`、すべて Vitest つき）：
@@ -260,11 +268,10 @@ export function splitIntoChunks(input: ChunkInput): Array<{ text: string; source
 // lib/logic/title.ts（56）
 export function autoTitle(rawText: string): string   // 先頭の行を 。！？\n で区切り、trim、20文字まで（切るときは「…」を付けず 20 文字ちょうど）
 
-// lib/logic/quickNote.ts（64）
-export function validateQuickNote(text: string): { ok: true; text: string } | { ok: false; reason: "empty"|"too_short"|"too_long" }   // trim → 2〜60
+// lib/logic/quickRecord.ts（56）一言の検証。64 はこれを使う（lib/logic/quickNote.ts は作らない）
+export function validateQuickText(text: string): ...   // trim 後 2〜60（MIN_QUICK_LENGTH / MAX_QUICK_LENGTH）。サロゲートペアは1文字
 
-// lib/logic/nudge.ts（51）
-export function shouldShowNudge(isGuest: boolean, dismissedOn: string | null, todayKey: string): boolean   // 未 dismiss or 7日以上前
+// 歯車の赤い点の判定は lib/ui/useSettingsSeen.ts の shouldShowGearDot（§4）。lib/logic/nudge.ts は作らない
 
 // lib/logic/draft.ts（68）
 export type DraftData = { rawText: string; deepDiveQuestion: string; deepDiveAnswer: string; step: 1|2; savedAt: number }
@@ -283,8 +290,8 @@ export function weekRange(weekKey: string): { from: string; to: string }   // �
 export function letterWeekFor(todayKey: string): string             // 日曜ならその週、月〜土なら前の週（＝日曜に開けて翌土曜まで読める）
 export function weekDates(weekKey: string): string[]                // 7日分
 
-// lib/logic/windCalendar.ts（74）月曜はじまりの月グリッド（既存 calendar.ts は日曜はじまりなので新設）
-export function monthGridMonday(year: number, month: number): (number | null)[][]
+// 月曜はじまりの月グリッドは lib/logic/moodDay.ts の monthMatrix / yearMatrix を使う（lib/logic/windCalendar.ts は作らない）。
+// 月・年の表示の純粋な関数（initialView / viewRange / shiftView / canGoNext / viewTitle）は components/hist/MonthGrid.tsx にあり、MonthGrid.test.ts で検証する
 ```
 
 ---
@@ -356,12 +363,12 @@ IP レート制限（53）と App Check（52）は `proxy.ts`（Next 16。Node �
 | 43 | `components/ui/Icon.tsx`・`components/ui/iconPaths.ts`・`components/ui/Bead.tsx` |
 | 44 | `lib/ui/feedback.ts`・`lib/ui/preferences.ts`・`lib/ui/useReducedMotion.ts`・`lib/ui/fxBus.ts`・`components/ui/FeedbackBoot.tsx`（unlockAudio・rm クラスの付け外し。41 が layout に置く）・それらの `*.test.ts` |
 | 45 | `lib/logic/limits.ts`（§8 の定数を**全部**足す）・`lib/ui/useLimitedInput.ts`・`components/ui/LimitCounter.tsx`・`lib/logic/limits.test.ts` |
-| 46 | `components/ui/TabBar.tsx`・`app/(tabs)/layout.tsx`・`app/(full)/layout.tsx` |
+| 46 | `components/TabBar.tsx`・`components/ui/tabIcons.tsx`（+test）・`app/(tabs)/layout.tsx`（`app/(full)/layout.tsx` は作らない） |
 | 47 | `lib/logic/streak.ts`・`lib/logic/streak.test.ts` |
 | 48 | `components/AuthGuard.tsx`・`lib/ui/useEnsureUser.ts`・`lib/ui/useDisplayName.ts`・`lib/logic/autoName.ts`（+test）・`app/onboarding/page.tsx`（redirect）・`components/LoadingScreen.tsx` |
-| 49 | `app/(full)/settings/page.tsx`・`components/settings/AccountCard.tsx`・`NicknameCard.tsx`・`PrefsCard.tsx`・`OtherCard.tsx`・`app/api/profile/route.ts` |
-| 50 | `components/settings/useAccount.ts`（link / relogin / logout / delete の hook。§9）・`components/settings/GoogleButton.tsx`・`lib/db/firebase.ts`（provider 設定が要るとき） |
-| 51 | `lib/logic/nudge.ts`（+test）・`lib/ui/useNudge.ts` |
+| 49 | `app/settings/page.tsx`・`components/settings/AccountCard.tsx`・`NameCard.tsx`・`ToggleRows.tsx`・`ConfirmDialog.tsx`・`settings.module.css`・`app/terms/page.tsx`・`app/privacy/page.tsx`（紙の見た目）・`app/api/profile/route.ts` |
+| 50 | `components/settings/AccountCard.tsx` 内の `useAccount(user)` と `GoogleSheet`（公式 Google ボタン。§9）・`lib/auth/link.ts`（+test。純粋ロジック）・`lib/db/firebase.ts`（provider 設定が要るとき） |
+| 51 | `lib/ui/useSettingsSeen.ts`（+test。`shouldShowGearDot` も同居）・`components/home/GearButton.tsx` |
 | 52 | `proxy.ts`・`lib/db/appCheck.ts`（クライアント初期化）・`lib/api/appCheck.ts`（サーバー検証）・`lib/db/useUser.ts`（ヘッダー付与）・`docs/DEVELOPMENT.md`（環境変数） |
 | 53 | `lib/api/rateLimit.ts`・`proxy.ts`（**52 の後に**追記）・`docs/DEVELOPMENT.md`（Upstash の環境変数） |
 | 54 | `scripts/cleanup-guests.mjs`・`package.json`（scripts 追加）・`docs/DEVELOPMENT.md`（手順） |
@@ -373,28 +380,28 @@ IP レート制限（53）と App Check（52）は `proxy.ts`（Next 16。Node �
 | 60 | `app/api/account/route.ts`・`scripts/cleanup-legacy-fields.mjs`・`docs/ARCHITECTURE.md`（移行後の手順の節） |
 | 61 | `lib/logic/moodDay.ts`・`lib/logic/moodDay.test.ts` |
 | 62 | `app/api/mood/route.ts`・`lib/ui/useTodayMood.ts` |
-| 63 | `app/(full)/mood/page.tsx`・`components/mood/Wheel.tsx`・`Reel.tsx`・`useWheel.ts`・`InkStamp.tsx`・`wheelMath.ts`（+test） |
-| 64 | `app/(full)/mood/write/page.tsx`・`components/mood/Choices.tsx`・`components/mood/QuickWrite.tsx`・`components/ui/Seal.tsx`・`lib/logic/quickNote.ts`（+test） |
+| 63 | `app/mood/page.tsx`・`components/mood/MoodWheel.tsx`・`MoodReel.tsx`・`Postmark.tsx`（消印 `Postmark` と封蝋 `WaxSeal`）・`mood.module.css`・`lib/ui/wheelPhysics.ts`（+test） |
+| 64 | `app/mood/write/page.tsx`（一言の画面を内包）・`components/mood/MoodChoices.tsx`（`components/ui/Seal.tsx`・`lib/logic/quickNote.ts` は作らない。封蝋は `Postmark.tsx` の `WaxSeal`、検証は `lib/logic/quickRecord.ts`） |
 | 65 | `components/record/AddDeepDive.tsx`（quick に深掘りを足す。`/api/deepdive` → `PUT /api/thoughts/[id]`） |
-| 66 | `app/(tabs)/record/page.tsx`・`app/(tabs)/record/useRecordSession.ts`・`components/record/NotePaper.tsx`・`RecordTray.tsx`・`MentorInk.tsx`・`components/MicButton.tsx`（必要なら） |
-| 67 | `app/api/thoughts/[id]/route.ts`・`components/record/ThoughtView.tsx`・`ThoughtModal.tsx`・`SavedChips.tsx`（しおり）・`components/record/useThoughtActions.ts` |
+| 66 | `app/(tabs)/record/page.tsx`・`app/(tabs)/record/useRecordSession.ts`（音声認識 `useSpeech` も内包。`components/MicButton.tsx` は使わない）・`components/record/RecordSheet.tsx`・`MentorNote.tsx`・`SealHold.tsx`・`record.module.css` |
+| 67 | `app/api/thoughts/[id]/route.ts`・`components/thought/ThoughtModal.tsx`（しおり・風の記録の両方から開く。編集・削除も中で行う）・`SavedSheet.tsx`・`thought.module.css` |
 | 68 | `lib/logic/draft.ts`（+test）・`lib/ui/draftStore.ts`（localStorage の薄い層）・`lib/ui/useDraft.ts` |
-| 69 | `app/(tabs)/search/page.tsx`・`app/(tabs)/search/useConsultChat.ts`・`components/consult/QuestionSlip.tsx`・`ReplySheet.tsx`・`RefSlips.tsx`・`RefModal.tsx`・`HistoryDrawer.tsx`・`NewThreadDialog.tsx` |
+| 69 | `app/(tabs)/search/page.tsx`（履歴の引き出しはこの中のローカル部品）・`app/(tabs)/search/useConsultChat.ts`（`RefPage`・`ChatSummary` のローカル型）・`components/consult/ConsultThread.tsx`・`AskSlip.tsx`・`ReplyLetter.tsx`・`RefSlips.tsx`・`RefModal.tsx`・`consult.module.css`（`NewThreadDialog` は無し。新しい相談はすぐ始める） |
 | 70 | `components/consult/ConsultInput.tsx` |
 | 71 | `lib/logic/reunion.ts`・`lib/logic/reunion.test.ts` |
-| 72 | `app/(tabs)/home/page.tsx`・`app/(tabs)/home/useHomeData.ts`・`components/home/Greeting.tsx`・`WeekCount.tsx`・`WeekStrip.tsx`・`ReunionCard.tsx`・`LetterCard.tsx`（`app/(tabs)/home/useThoughtEditing.ts` は 80 が消す） |
+| 72 | `app/(tabs)/home/page.tsx`（データ取得もここ。`useHomeData.ts` は無し）・`components/home/Greeting.tsx`（今週◯日の数字も内包）・`WeekBand.tsx`・`ReunionNote.tsx`・`LetterCard.tsx`・`home.module.css`（`app/(tabs)/home/useThoughtEditing.ts` は 80 が消す。page.tsx の型だけの `Thought` export も一緒に消す） |
 | 73 | `app/api/moods/route.ts`・`lib/logic/moodRange.ts`（+test） |
-| 74 | `components/home/WindHistory.tsx`・`MonthGrid.tsx`・`YearGrid.tsx`・`lib/ui/useMoodRange.ts`・`lib/logic/windCalendar.ts`（+test） |
+| 74 | `components/hist/HistorySheet.tsx`・`MonthGrid.tsx`（+test）・`YearGrid.tsx`・`DayModal.tsx`・`hist.module.css`・`lib/ui/useMoodRange.ts`（`lib/logic/windCalendar.ts` は無し。`moodDay.ts` の `monthMatrix` を使う） |
 | 75 | `docs/mentor-prompt.md`・`lib/ai/mentorPrompt.ts`（LETTER_APPENDIX。**58 の後**） |
 | 76 | `lib/logic/week.ts`・`lib/logic/week.test.ts`・`lib/logic/letterKey.ts`（+test。`isWeekKey` / `letterDocId` / `isLetterDay` / `isLetterOpenable` / `hasEnoughForLetter`） |
 | 77 | `app/api/letters/current/route.ts`・`app/api/letters/route.ts`・`app/api/letters/[weekKey]/route.ts`・`lib/ai/letter.ts`・`lib/ai/anthropic.ts`（`MODELS.letter`）・`lib/db/usage.ts`（`"letter"` 追加）・`lib/logic/letterRefs.ts`（引用の検証。+test） |
-| 78 | `app/(full)/letter/page.tsx`・`components/letter/Envelope.tsx`・`PullOut.tsx`・`TriFold.tsx`・`LetterBody.tsx`・`LetterList.tsx`・`lib/ui/useLetter.ts` |
+| 78 | `app/letter/page.tsx`・`components/letter/Envelope.tsx`・`Letter3D.tsx`・`Slip.tsx`・`LetterList.tsx`・`letter.module.css`・`lib/ui/usePullOut.ts`（+test）・`lib/db/useLetter.ts`（+test） |
 | 79 | `lib/db/letterRefs.ts`（`maskLetterRefs(tx, uid, thoughtId)`）・`app/api/thoughts/[id]/route.ts`（**67 の後に** DELETE へ1行足す） |
-| 80 | 削除：`components/TabBar.tsx` `icons.tsx` `ShapedCard.tsx` `FairCopy.tsx` `ChatInputBar.tsx` `Calendar.tsx` `RecentThoughts.tsx` `DayRecordsModal.tsx` `EditThoughtModal.tsx` `ThoughtFields.tsx` `SavedRecordChips.tsx` `RecordHeader.tsx` `RecordToolTray.tsx` `MentorNote.tsx` `Header.tsx` `Toast.tsx` `CenterModal.tsx` `ChatHistoryDrawer.tsx` `ThinkingBubble.tsx` `RefThoughts.tsx` `AutoGrowTextarea.tsx`・`app/api/record-chat/`・`app/(tabs)/home/useThoughtEditing.ts`・`lib/logic/shapedRecord.ts` `partialShaped.ts` `recordText.ts`（+test）・`app/globals.css`（旧クラス）・`lib/db/types.ts`（ShapedRecord。**指揮官に依頼**）・`lib/db/usage.ts`（shape） |
+| 80 | 削除：`components/icons.tsx`（`components/TabBar.tsx` は新 UI の本体なので**消さない**） `ShapedCard.tsx` `FairCopy.tsx` `ChatInputBar.tsx` `Calendar.tsx` `RecentThoughts.tsx` `DayRecordsModal.tsx` `EditThoughtModal.tsx` `ThoughtFields.tsx` `SavedRecordChips.tsx` `RecordHeader.tsx` `RecordToolTray.tsx` `MentorNote.tsx` `Header.tsx` `Toast.tsx` `CenterModal.tsx` `ChatHistoryDrawer.tsx` `ThinkingBubble.tsx` `RefThoughts.tsx` `AutoGrowTextarea.tsx`・`app/api/record-chat/`・`app/(tabs)/home/useThoughtEditing.ts`・`lib/logic/shapedRecord.ts` `partialShaped.ts` `recordText.ts`（+test）・`app/globals.css`（旧クラス）・`lib/db/types.ts`（ShapedRecord。**指揮官に依頼**）・`lib/db/usage.ts`（shape） |
 | 81 | 全画面の軽微な修正（aria・最小サイズ・375px）。**他の全タスクが終わってから直列で** |
 | 82 | `scripts/retention.mjs`・`package.json`（scripts） |
-| 83 | `app/page.tsx`・`components/splash/Splash.tsx`・`components/splash/Logo.tsx`（`docs/brand/mindwind-opening.svg` から）・`app/icon.svg` 等は**変えない**（§8） |
-| 84 | `components/ui/WindAmbience.tsx`・`lib/ui/windFx.ts`（粒子）・`app/layout.tsx`（**41 の後に** `<WindAmbience />` を1行足す） |
+| 83 | `app/page.tsx`・`components/splash/Splash.tsx`・`Splash.module.css`・`components/splash/logo.ts`（+test。`docs/brand/mindwind-opening.svg` のパスと配置のデータ。描画は Splash.tsx）・`app/icon.svg` 等は**変えない**（§8） |
+| 84 | `components/fx/AmbienceLayer.tsx`・`MoodFx.tsx`・`fx.module.css`・`lib/ui/fxParticles.ts`（+test）・`app/layout.tsx`（**41 の後に** `<AmbienceLayer />` を1行足す） |
 
 ### 直列にする組（同じファイルに触る）
 
@@ -462,7 +469,7 @@ export function letterLimitFor(isGuest: boolean): number
 ## 9. 設定の hook（49 と 50 の境界）
 
 ```ts
-// components/settings/useAccount.ts（50）
+// components/settings/AccountCard.tsx から export（50。別ファイル useAccount.ts にはしなかった）
 export function useAccount(user: AppUser): {
   linked: boolean; email: string | null;
   link(): Promise<void>                // linkWithPopup。credential-already-in-use のときは state.conflict に積む
@@ -475,7 +482,7 @@ export function useAccount(user: AppUser): {
 }
 ```
 
-49 の `AccountCard` はこの hook を呼び、ダイアログ（`Dialog`）の文言はプロトタイプ `renderSettings` / `$('#rowOut')` / `$('#rowDel')` のとおり。
+49 の `AccountCard` はこの hook を呼び、ダイアログ（`Dialog`）の文言はプロトタイプ `renderSettings` / `$('#rowOut')` / `$('#rowDel')` のとおり。実装の補足：ログインし直しは「Google でログイン → 保存しておいたゲストのトークンで `DELETE /api/account`」の順（匿名ユーザーの `deleteUser` は新しいユーザーもサインアウトさせるため）。連携後は `getIdToken(true)` のあと `window.location.reload()`（`onAuthStateChanged` が発火しないため）。Google の削除で popup がブロックされたときは「本人確認」ダイアログからタップで再認証する。
 
 ---
 
