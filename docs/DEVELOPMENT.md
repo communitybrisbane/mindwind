@@ -73,17 +73,18 @@ RATE_LIMIT_DISABLED=
 
 3. サービスアカウントの秘密鍵を発行し、`FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` に設定
 
-4. **相談の RAG 検索をベクトル検索にする（初回のみ。この順番で行う）**。インデックスが無い間は自動で全件読みにフォールバックするので、途中で動作は止まらない
-   1. **デプロイする**（新しい記録からベクトル型で保存される）
-   2. **既存記録を移行する**：`node scripts/migrate-embeddings.mjs`（dry-run で件数確認）→ `node scripts/migrate-embeddings.mjs --apply`（`npm run migrate:embeddings -- --apply` でも可）。旧形式（number 配列）の embedding をベクトル型に書き換える。実行前に `npm run backup` を推奨
-   3. **ベクトルインデックスを作成する**。`gcloud` でプロジェクトを選択した状態で実行する：
+4. **相談の RAG 検索（チャンク検索・PLAN 58）のベクトルインデックスを作る**。インデックスが無い間は `chunks` を全件読んでメモリで類似度を計算するフォールバックが動くので、途中で動作は止まらない（件数が増えると遅くなる）
+   1. **既存記録を移行する**：`npm run backup` → `node scripts/backfill-chunks.mjs`（ドライラン）→ `--apply`。手順は `docs/OPS-backfill-chunks.md`。チャンクが1つも無い人は、移行が済むまで旧 `thoughts.embedding` の検索にフォールバックする
+   2. **`chunks` のベクトルインデックスを作成する**。`gcloud` でプロジェクトを選択した状態で実行する：
 
       ```bash
-      gcloud firestore indexes composite create --collection-group=thoughts --query-scope=COLLECTION --field-config=vector-config='{"dimension":"1536","flat": "{}"}',field-path=embedding --database="(default)"
+      gcloud firestore indexes composite create --collection-group=chunks --query-scope=COLLECTION --field-config=vector-config='{"dimension":"1536","flat": "{}"}',field-path=embedding --database="(default)"
       ```
 
-   - 移行より先にインデックスを作ると、旧形式の記録がベクトル検索の対象外になり、相談の参考記録が一部漏れる期間ができる
-   - インデックスが無い状態で最初に `findNearest` が失敗すると、サーバーログ（`[rag] findNearest に失敗…`）にインデックス作成用のコンソールリンクも出る。それでも作成できる
+   - インデックスが無い状態で最初に `findNearest` が失敗すると、サーバーログ（`[rag] chunks の findNearest に失敗…`）にインデックス作成用のコンソールリンクも出る。それでも作成できる
+   - 相談 API は `[consult] embed=…ms search=…ms source=chunks|chunks-scan|legacy|legacy-scan first_token=…ms` を出す。`source=chunks-scan` が続くならインデックスが無い
+   - 参考記録のしきい値（`RAG_MIN_SIMILARITY`＝0.3）と1記録あたりの文字数（800）は `lib/logic/ragChunks.ts`
+   - （旧）`thoughts` の `embedding` へのインデックスと `scripts/migrate-embeddings.mjs` は、移行前の人のフォールバックにだけ使う。全員の移行が済んだら不要
 
 ## エラーハンドリング（MVP）
 
