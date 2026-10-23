@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser } from "@/lib/db/admin";
-import type { ShapedRecord } from "@/lib/db/types";
-import { MAX_SHAPED_FIELD, MAX_TITLE_LENGTH } from "@/lib/logic/limits";
+import type { StoredMessage } from "@/lib/logic/recordChatMessages";
 import { buildEmbeddingText } from "@/lib/logic/recordText";
+import { parseShapedRecord } from "@/lib/logic/shapedRecord";
 
 export const maxDuration = 30;
-
-type StoredMessage = { role: string; type: string; content: string; thoughtId?: string };
-
-const shapedKeys = ["title", "event", "thinking", "action", "reason", "emotion", "values"] as const;
 
 /** 保存済み記録の編集（6項目＋タイトル）。編集後のテキストで embedding を作り直す。
  *  date / rawText / deepDive は変更しない（日付や原文は編集対象外） */
@@ -21,13 +17,8 @@ export async function PUT(
   if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
-  const shaped = body?.shaped as ShapedRecord | undefined;
-  const fieldValid = (key: (typeof shapedKeys)[number]) => {
-    const value = shaped?.[key];
-    if (typeof value !== "string" || !value.trim()) return false;
-    return value.length <= (key === "title" ? MAX_TITLE_LENGTH : MAX_SHAPED_FIELD);
-  };
-  if (!shaped || !shapedKeys.every(fieldValid)) {
+  const shaped = parseShapedRecord(body?.shaped);
+  if (!shaped) {
     return NextResponse.json({ error: "invalid shaped record" }, { status: 400 });
   }
 
@@ -43,13 +34,7 @@ export async function PUT(
     if (!snap.exists) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
     await docRef.update({
-      title: shaped.title,
-      event: shaped.event,
-      thinking: shaped.thinking,
-      action: shaped.action,
-      reason: shaped.reason,
-      emotion: shaped.emotion,
-      values: shaped.values,
+      ...shaped,
       embedding,
     });
 

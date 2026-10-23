@@ -5,6 +5,7 @@ import { embedText } from "./embedding";
 import { adminDb } from "@/lib/db/admin";
 import type { ShapedRecord } from "@/lib/db/types";
 import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
+import { omit } from "@/lib/logic/omit";
 import { topKSimilar } from "@/lib/logic/similarity";
 
 export { MIN_THOUGHTS_FOR_CONSULT };
@@ -23,8 +24,8 @@ export async function searchRelevantThoughts(
     .map((doc) => {
       const data = doc.data();
       if (!Array.isArray(data.embedding)) return null;
-      const { embedding, rawText: _r, deepDiveQuestion: _q, deepDiveAnswer: _a, createdAt: _c, tags: _t, ...rest } = data;
-      return { item: { id: doc.id, ...rest } as RagThought, embedding: embedding as number[] };
+      const rest = omit(data, ["embedding", "rawText", "deepDiveQuestion", "deepDiveAnswer", "createdAt", "tags"]);
+      return { item: { id: doc.id, ...rest } as RagThought, embedding: data.embedding as number[] };
     })
     .filter((x) => x !== null);
 

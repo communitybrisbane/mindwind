@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import LoadingScreen from "./LoadingScreen";
-import { authedFetch, useUser } from "@/lib/db/useUser";
+import { authedJsonOrNull, useUser } from "@/lib/db/useUser";
 import type { Profile } from "@/lib/db/types";
 
 // profile フィールドが「存在しない」＝初回ログインとみなす。
@@ -45,8 +45,7 @@ export default function AuthGuard({
         clearTimeout(t);
       };
     }
-    authedFetch(user, "/api/profile")
-      .then((res) => (res.ok ? res.json() : null))
+    authedJsonOrNull(user, "/api/profile")
       .then((data) => {
         if (cancelled) return;
         if (isFirstLogin(data?.profile)) router.replace("/onboarding");

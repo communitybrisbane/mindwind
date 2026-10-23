@@ -7,10 +7,11 @@ import DayRecordsModal from "@/components/DayRecordsModal";
 import EditThoughtModal from "@/components/EditThoughtModal";
 import Header from "@/components/Header";
 import RecentThoughts from "@/components/RecentThoughts";
-import Toast, { requestToast } from "@/components/Toast";
+import Toast from "@/components/Toast";
 import { FlameIcon, GearIcon, SpiralIcon } from "@/components/icons";
-import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
+import { authedJsonOrNull, useUser } from "@/lib/db/useUser";
 import type { Profile, ShapedRecord } from "@/lib/db/types";
+import { useThoughtEditing } from "./useThoughtEditing";
 import { formatDateHeading, greeting, tokyoDateKey, tokyoHour } from "@/lib/logic/date";
 import { calcStreak } from "@/lib/logic/streak";
 
@@ -21,10 +22,8 @@ export default function HomePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [thoughts, setThoughts] = useState<Thought[] | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  // 保存済み記録の編集（最近の記録・カレンダーの両方からここに集約）
-  const [editing, setEditing] = useState<Thought | null>(null);
-  const [editSaving, setEditSaving] = useState(false);
-  const [editError, setEditError] = useState("");
+  const { editing, editSaving, editError, startEdit, closeEdit, saveEdit, deleteThought } =
+    useThoughtEditing(user, setThoughts);
 
   // 日付・挨拶はクライアントで確定（ハイドレーション差異を避ける）
   const now = useSyncExternalStore(
@@ -35,51 +34,16 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!user) return;
-    authedFetch(user, "/api/profile")
-      .then((res) => (res.ok ? res.json() : null))
+    authedJsonOrNull(user, "/api/profile")
       .then((data) => setProfile(data?.profile ?? null))
       .catch(() => {});
-    authedFetch(user, "/api/thoughts")
-      .then((res) => (res.ok ? res.json() : null))
+    authedJsonOrNull(user, "/api/thoughts")
       .then((data) => setThoughts(data?.thoughts ?? []))
       .catch(() => setThoughts([]));
   }, [user]);
 
   const streak = thoughts ? calcStreak(thoughts.map((t) => t.date), now) : 0;
   const hasRecords = (thoughts?.length ?? 0) > 0;
-
-  // 編集を保存：サーバーが embedding を作り直す。ローカルの thoughts も更新
-  async function saveEdit(shaped: ShapedRecord) {
-    if (!user || !editing || editSaving) return;
-    setEditSaving(true);
-    setEditError("");
-    try {
-      const res = await authedJson(user, "PUT", `/api/thoughts/${editing.id}`, { shaped });
-      if (!res.ok) throw new Error(`update ${res.status}`);
-      setThoughts((t) =>
-        t?.map((thought) => (thought.id === editing.id ? { ...thought, ...shaped } : thought)) ?? t
-      );
-      setEditing(null);
-      requestToast("記録を更新しました");
-    } catch {
-      setEditError("保存できませんでした。少し待ってからもう一度試してください。");
-    } finally {
-      setEditSaving(false);
-    }
-  }
-
-  // 削除するとカレンダーの点灯・ストリークも state 経由で自動再計算される
-  async function deleteThought(id: string) {
-    if (!user) return;
-    if (!window.confirm("この記録を削除しますか？ 削除すると元に戻せません。")) return;
-    try {
-      const res = await authedFetch(user, `/api/thoughts/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`delete ${res.status}`);
-      setThoughts((t) => t?.filter((thought) => thought.id !== id) ?? t);
-    } catch {
-      window.alert("削除できませんでした。少し待ってからもう一度試してください。");
-    }
-  }
 
   return (
     <>
@@ -147,10 +111,7 @@ export default function HomePage() {
             <RecentThoughts
               thoughts={thoughts}
               onDelete={(id) => void deleteThought(id)}
-              onEdit={(thought) => {
-                setEditError("");
-                setEditing(thought);
-              }}
+              onEdit={startEdit}
             />
           </div>
         )}
@@ -162,10 +123,7 @@ export default function HomePage() {
             thoughts={thoughts.filter((t) => t.date === selectedDate)}
             onClose={() => setSelectedDate(null)}
             onDelete={(id) => void deleteThought(id)}
-            onEdit={(thought) => {
-              setEditError("");
-              setEditing(thought);
-            }}
+            onEdit={startEdit}
           />
         )}
 
@@ -174,7 +132,7 @@ export default function HomePage() {
             initial={editing}
             saving={editSaving}
             error={editError}
-            onClose={() => setEditing(null)}
+            onClose={closeEdit}
             onSave={(shaped) => void saveEdit(shaped)}
           />
         )}

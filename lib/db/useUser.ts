@@ -56,3 +56,9 @@ export function authedJson(
     body: JSON.stringify(body),
   });
 }
+
+/** 認証付き GET → JSON。!ok なら null（呼び出し側は null を「取得できなかった」として扱う） */
+export async function authedJsonOrNull(user: AppUser, url: string) {
+  const res = await authedFetch(user, url);
+  return res.ok ? res.json() : null;
+}

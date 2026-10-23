@@ -3,6 +3,7 @@ import { anthropic, MODELS } from "@/lib/ai/anthropic";
 import { buildSystemPrompt } from "@/lib/ai/mentorPrompt";
 import { adminDb, verifyUserInfo } from "@/lib/db/admin";
 import { consumeQuota } from "@/lib/db/usage";
+import { joinTextBlocks } from "@/lib/ai/text";
 import { deepdiveLimitFor, MAX_DIARY_LENGTH, MIN_DIARY_LENGTH } from "@/lib/logic/limits";
 
 export const maxDuration = 30;
@@ -40,11 +41,7 @@ export async function POST(req: NextRequest) {
       await quota.refund();
       return NextResponse.json({ error: "incomplete_response" }, { status: 422 });
     }
-    const question = response.content
-      .filter((block) => block.type === "text")
-      .map((block) => block.text)
-      .join("")
-      .trim();
+    const question = joinTextBlocks(response.content).trim();
     if (!question) throw new Error("empty response");
 
     return NextResponse.json({ question });

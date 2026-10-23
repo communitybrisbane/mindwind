@@ -2,20 +2,14 @@ import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
-import type { ShapedRecord } from "@/lib/db/types";
 import { resolveRecordDate } from "@/lib/logic/backdate";
 import { tokyoDateKey, tokyoDayStart } from "@/lib/logic/date";
-import {
-  MAX_DIARY_LENGTH,
-  MAX_SHAPED_FIELD,
-  MAX_TITLE_LENGTH,
-  recordLimitFor,
-} from "@/lib/logic/limits";
+import { MAX_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
+import { omit } from "@/lib/logic/omit";
 import { buildEmbeddingText } from "@/lib/logic/recordText";
+import { parseShapedRecord } from "@/lib/logic/shapedRecord";
 
 export const maxDuration = 30;
-
-const shapedKeys = ["title", "event", "thinking", "action", "reason", "emotion", "values"] as const;
 
 /** 記録一覧（新しい順・embedding は返さない）。ホームのストリーク/カレンダー/最近の記録で使う */
 export async function GET(req: NextRequest) {
@@ -30,8 +24,7 @@ export async function GET(req: NextRequest) {
     .get();
 
   const thoughts = snap.docs.map((doc) => {
-    const { embedding: _embedding, createdAt: _createdAt, ...rest } = doc.data();
-    return { id: doc.id, ...rest };
+    return { id: doc.id, ...omit(doc.data(), ["embedding", "createdAt"]) };
   });
   return NextResponse.json({ thoughts });
 }
@@ -42,13 +35,8 @@ export async function POST(req: NextRequest) {
   const { uid, isGuest } = authInfo;
 
   const body = await req.json().catch(() => null);
-  const shaped = body?.shaped as ShapedRecord | undefined;
-  const fieldValid = (key: (typeof shapedKeys)[number]) => {
-    const value = shaped?.[key];
-    if (typeof value !== "string" || !value.trim()) return false;
-    return value.length <= (key === "title" ? MAX_TITLE_LENGTH : MAX_SHAPED_FIELD);
-  };
-  if (!shaped || !shapedKeys.every(fieldValid)) {
+  const shaped = parseShapedRecord(body?.shaped);
+  if (!shaped) {
     return NextResponse.json({ error: "invalid shaped record" }, { status: 400 });
   }
   const text = (v: unknown, max: number) =>
@@ -113,13 +101,7 @@ export async function POST(req: NextRequest) {
     await Promise.all([
       docRef.set({
         date,
-        title: shaped.title,
-        event: shaped.event,
-        thinking: shaped.thinking,
-        action: shaped.action,
-        reason: shaped.reason,
-        emotion: shaped.emotion,
-        values: shaped.values,
+        ...shaped,
         rawText,
         deepDiveQuestion,
         deepDiveAnswer,

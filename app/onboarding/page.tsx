@@ -6,9 +6,10 @@ import { deleteUser, linkWithPopup, reauthenticateWithPopup, signOut } from "fir
 import AuthGuard from "@/components/AuthGuard";
 import AutoGrowTextarea from "@/components/AutoGrowTextarea";
 import Header from "@/components/Header";
+import { authErrorCode, isPopupDismissed } from "@/lib/db/authErrors";
 import { auth, googleProvider } from "@/lib/db/firebase";
 import { SpiralIcon } from "@/components/icons";
-import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
+import { authedFetch, authedJson, authedJsonOrNull, useUser } from "@/lib/db/useUser";
 import { emptyProfile, STAGES, type Profile, type Stage } from "@/lib/db/types";
 
 const stageLabels: Record<Stage, string> = {
@@ -43,8 +44,7 @@ function OnboardingForm() {
   // 保存済みの値があれば復元（編集し直して戻ってきた場合など）
   useEffect(() => {
     if (!user) return;
-    authedFetch(user, "/api/profile")
-      .then((res) => (res.ok ? res.json() : null))
+    authedJsonOrNull(user, "/api/profile")
       .then((data) => {
         if (data?.profile) setProfile({ ...emptyProfile, ...data.profile });
       })
@@ -76,12 +76,12 @@ function OnboardingForm() {
       window.alert("Google アカウントと連携しました。記録はそのまま引き継がれます。");
       window.location.reload();
     } catch (e) {
-      const code = (e as { code?: string }).code ?? "";
+      const code = authErrorCode(e);
       if (code === "auth/credential-already-in-use") {
         window.alert(
           "この Google アカウントは既に MindWind で使われています。一度ログアウトして、その Google アカウントでログインし直してください（ゲストの記録は引き継げません）。"
         );
-      } else if (code !== "auth/popup-closed-by-user" && code !== "auth/cancelled-popup-request") {
+      } else if (!isPopupDismissed(code)) {
         window.alert("連携できませんでした。少し待ってからもう一度試してください。");
       }
     }
@@ -105,8 +105,8 @@ function OnboardingForm() {
       await deleteUser(current);
       router.replace("/");
     } catch (e) {
-      const code = (e as { code?: string }).code ?? "";
-      if (code !== "auth/popup-closed-by-user" && code !== "auth/cancelled-popup-request") {
+      const code = authErrorCode(e);
+      if (!isPopupDismissed(code)) {
         window.alert("削除できませんでした。少し待ってからもう一度試してください。");
       }
     }

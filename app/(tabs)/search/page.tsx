@@ -2,177 +2,49 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import ChatHistoryDrawer, { type ChatSummary } from "@/components/ChatHistoryDrawer";
+import ChatHistoryDrawer from "@/components/ChatHistoryDrawer";
 import ChatInputBar from "@/components/ChatInputBar";
-import RefThoughts, { type RefThought } from "@/components/RefThoughts";
+import RefThoughts from "@/components/RefThoughts";
 import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
-import { authedFetch, authedJson, useUser, type AppUser } from "@/lib/db/useUser";
-import { MAX_CONSULT_MESSAGE, MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
-import { readNdjson } from "@/lib/logic/ndjson";
-
-type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
+import { useUser } from "@/lib/db/useUser";
+import { formatMonthDay } from "@/lib/logic/date";
+import { MAX_CONSULT_MESSAGE } from "@/lib/logic/limits";
+import { useConsultChat } from "./useConsultChat";
 
 const iconButtonClass =
   "flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[rgba(0,98,65,0.08)] text-primary";
 
-/** "2026-07-18" や ISO 文字列 → "7月18日" */
+/** "2026-07-18" や ISO 文字列 → "7月18日"（不正な日付は ""） */
 function threadDateLabel(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const parts = new Intl.DateTimeFormat("ja-JP", {
-    timeZone: "Asia/Tokyo",
-    month: "numeric",
-    day: "numeric",
-  }).formatToParts(d);
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  return `${get("month")}月${get("day")}日`;
+  return Number.isNaN(d.getTime()) ? "" : formatMonthDay(d);
 }
 
 export default function SearchPage() {
   const { user } = useUser();
-  const [chatId, setChatId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  // スレッド見出しの日付（新規=今日、履歴から開いたら最終更新日）
-  const [threadDate, setThreadDate] = useState<string>(() => new Date().toISOString());
-  const [chats, setChats] = useState<ChatSummary[]>([]);
-  const [thinking, setThinking] = useState(false);
+  const {
+    chatId,
+    messages,
+    threadDate,
+    chats,
+    thinking,
+    limitReached,
+    send,
+    loadChats,
+    selectChat,
+    startNewChat: resetChat,
+    deleteChat,
+  } = useConsultChat(user);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [limitReached, setLimitReached] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
 
-  // タブを開いたときは常に新規相談から始める（過去のスレッドは履歴ドロワーから開く）
-
-  async function fetchChats(u: AppUser): Promise<ChatSummary[]> {
-    const res = await authedFetch(u, "/api/chats");
-    if (!res.ok) return [];
-    return (await res.json()).chats;
-  }
-
-  async function openChat(u: AppUser, id: string) {
-    const res = await authedFetch(u, `/api/chats/${id}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    setChatId(id);
-    setMessages(
-      data.messages.map((m: { role: Message["role"]; content: string; refs: RefThought[] }) => ({
-        role: m.role,
-        text: m.content,
-        refs: m.refs?.length ? m.refs : undefined,
-      }))
-    );
-  }
-
   function startNewChat() {
-    setChatId(null);
-    setMessages([]);
-    setThreadDate(new Date().toISOString());
+    resetChat();
     setDrawerOpen(false);
-  }
-
-  async function deleteChat(id: string) {
-    if (!user) return;
-    if (!window.confirm("この相談履歴を削除しますか？ 削除すると元に戻せません。")) return;
-    try {
-      const res = await authedFetch(user, `/api/chats/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error(`delete ${res.status}`);
-      setChats((c) => c.filter((chat) => chat.id !== id));
-      if (chatId === id) {
-        setChatId(null);
-        setMessages([]);
-      }
-    } catch {
-      window.alert("削除できませんでした。少し待ってからもう一度試してください。");
-    }
-  }
-
-  /** 最後の assistant メッセージを更新するヘルパー（ストリーミング反映用） */
-  function updateLastAssistant(update: (msg: Message) => Message) {
-    setMessages((m) => {
-      const last = m[m.length - 1];
-      if (!last || last.role !== "assistant") return m;
-      return [...m.slice(0, -1), update(last)];
-    });
-  }
-
-  async function send(text: string) {
-    if (!user || thinking) return;
-    setMessages((m) => [...m, { role: "user", text }]);
-    setThinking(true);
-    try {
-      const res = await authedJson(user, "POST", "/api/consult", { message: text, chatId });
-      if (res.status === 429) {
-        setLimitReached(true);
-        setMessages((m) => m.slice(0, -1));
-        return;
-      }
-      if (res.status === 404) {
-        setChatId(null);
-        setMessages([
-          {
-            role: "assistant",
-            text: "このスレッドは削除されたみたい。新しい相談として、もう一度送ってね。",
-          },
-        ]);
-        return;
-      }
-      if (res.status === 409) {
-        const { count } = await res.json();
-        setMessages((m) => [
-          ...m,
-          {
-            role: "assistant",
-            text: `まずは${MIN_THOUGHTS_FOR_CONSULT}日分、記録してみましょう（いま${count}件）。記録がたまるほど、過去のあなたが力になれるよ。`,
-          },
-        ]);
-        return;
-      }
-      if (!res.ok || !res.body) throw new Error(`consult ${res.status}`);
-
-      // ndjson ストリームを読みながら AI バブルへ逐次反映する
-      let refs: RefThought[] = [];
-      let started = false;
-      let failed = false;
-      await readNdjson(res.body, (event) => {
-        const data = event as
-          | { type: "meta"; chatId: string }
-          | { type: "refs"; refs: RefThought[] }
-          | { type: "delta"; text: string }
-          | { type: "done" }
-          | { type: "error" };
-        if (data.type === "meta") setChatId(data.chatId);
-        else if (data.type === "refs") refs = data.refs;
-        else if (data.type === "delta") {
-          if (!started) {
-            started = true;
-            setThinking(false);
-            setMessages((m) => [...m, { role: "assistant", text: "" }]);
-          }
-          updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
-        } else if (data.type === "done") {
-          updateLastAssistant((msg) => ({ ...msg, refs: refs.length ? refs : undefined }));
-        } else if (data.type === "error") {
-          failed = true;
-        }
-      });
-      if (failed && !started) throw new Error("consult stream error");
-      if (failed) {
-        updateLastAssistant((msg) => ({ ...msg, text: msg.text + "\n\n（途中で途切れてしまいました）" }));
-      }
-    } catch {
-      setMessages((m) => [
-        ...m,
-        {
-          role: "assistant",
-          text: "ごめん、うまく応答できなかった。少し待ってからもう一度聞いてみて。",
-        },
-      ]);
-    } finally {
-      setThinking(false);
-    }
   }
 
   return (
@@ -190,7 +62,7 @@ export default function SearchPage() {
             className={iconButtonClass}
             onClick={async () => {
               setDrawerOpen(true);
-              if (user) setChats(await fetchChats(user));
+              await loadChats();
             }}
           >
             <ClockIcon className="h-[18px] w-[18px]" />
@@ -285,9 +157,7 @@ export default function SearchPage() {
           chats={chats}
           currentChatId={chatId}
           onSelect={(id) => {
-            if (user) void openChat(user, id);
-            const summary = chats.find((c) => c.id === id);
-            if (summary?.updatedAt) setThreadDate(summary.updatedAt);
+            selectChat(id);
             setDrawerOpen(false);
           }}
           onDelete={(id) => void deleteChat(id)}
