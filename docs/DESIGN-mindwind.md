@@ -1,812 +1,395 @@
-# MindWind - UI/UX Design Specification
+# MindWind - UI/UX 仕様（新 UI v5）
 
-Starbucks Design System を参考にした、新卒社会人向け AI メンターアプリの UI/UX 仕様書です。
+新卒社会人・学生向けの AI メンターアプリ「MindWind」の画面と動きの仕様。コンセプトは「あなたが、自分のメンターになる」。
 
----
-
-## 1. Visual Theme & Atmosphere
-
-MindWind は Starbucks のカフェの雰囲気を継承しながら、「**自分の思考を整理し、成長パターンを認識する**」というコンセプトを表現します。
-
-- **Warm, Introspective** - カフェで落ち着いて考え込む感じ
-- **Confidence in Self** - 自分の判断基準に気付く瞬間
-- **Continuity Visible** - 毎日の積み重ねが見える
-- **Mature & Professional** - 新卒社会人が毎日使うツールとしての落ち着き。幼稚さを排除し、信頼感のあるデザイン
-- **Minimal Text, Visual Communication** - テキストを最小限に抑え、アイコン・レイアウト・色で情報を伝える
-
-色は Starbucks Green（`#006241`）を中心に、クリーム背景でカフェの温もり感を保ちます。
-
-**Key Characteristics:**
-- Starbucks Green (`#006241` / `#00754A`) を brand color として統一
-- Warm-neutral canvas (`#f2f0eb` / `#edebe9`) で落ち着き感
-- 12px radius buttons（mature look）+ `scale(0.95)` active state
-- 12px card radius + whisper-soft shadows
-- SVG line icons（stroke-width: 1.5〜2px）を使用。絵文字(emoji)はUIアイコンとして使わない
-- Rem-based spacing (1rem = 10px)
-- カレンダーと連続日数で「継続」を可視化
+- **見た目と動きの正**：`docs/prototype/ui-v5.html`（ブラウザで開くと、スマホ枠の中で触れる）。この文書はその要点を文章にしたもの。食い違ったらプロトタイプが正
+- **名前・型・API・ファイルの持ち主の正**：`docs/IMPLEMENTATION-CONTRACT.md`
+- **タスクの正**：`docs/PLAN.md` Phase 12〜19
+- **AI の正**：`docs/AI-CONSTITUTION.md` と `docs/mentor-prompt.md`
+- 旧 UI（Starbucks 風のカード・チャットバブル・成形カード・カレンダーのホーム）は廃止。`mockups/` は凍結中で、新 UI の正ではない
 
 ---
 
-## 2. Color Palette
+## 1. 世界観
 
-### Primary Colors
+**革のデスクマットの上に、紙が置かれている。** 線は鉛筆、メンターの字は緑インクのペン。アプリ全体が「机に向かって、自分の紙に書く」場になる。
 
-| Color | Hex | Role |
-|-------|-----|------|
-| **Starbucks Green** | `#006241` | H1 headings, brand signal, primary brand moments |
-| **Green Accent** | `#00754A` | Primary CTA buttons, filled states |
-| **House Green** | `#1E3932` | Feature bands, footer, dark surfaces |
-| **Green Light** | `#d4e9e2` | Valid form states, light backgrounds |
+- **机（背景）**：緑の革のデスクマット。上から下へ `--color-felt` → `--color-felt2` のグラデ。革のしぼ（`--leather`）・紙の粒（`--tex1`）・ランプの明かり（上の暖かい光）・かすかなカップの輪じみ・四隅の影・ふちの縫い目（点線のステッチ）
+- **紙**：`Paper`（`.sheet`）。紙色 `--color-paper` に繊維（`--fib`）・ムラ（`--tex2`）・粒（`--tex1`）を重ね、ふちを `deckle` フィルターでゆらがせ、影を落とす。少しだけ傾けて置く（±0.3〜1.5°）
+- **付箋・テープ**：引用・問い・今日の1枚は付箋（黄 `--color-slip`）とマスキングテープ（緑の縞・桃色の縞）で貼る
+- **鉛筆**：アイコン・罫・輪は `pencil` フィルターでゆらぐ。二重のラフスケッチ（薄い線を少しずらして重ねる）
+- **緑インク**：メンターの字（深掘りの問い・手紙・相談の返事）とキャレットは `--color-pen`
+- **使わないもの**：光沢・ガラス（blur）・汎用の線画アイコン・絵文字・明朝体・角丸カードのフラットな UI
 
-### Surface & Background
+### 大事にする原則
 
-| Color | Hex | Role |
-|-------|-----|------|
-| **Neutral Warm** | `#f2f0eb` | Primary page canvas |
-| **Ceramic** | `#edebe9` | Section separators, soft washes |
-| **White** | `#ffffff` | Card surfaces, modals |
-| **Neutral Cool** | `#f9f9f9` | Dropdown menus, quiet utility |
-
-### Text Colors
-
-| Color | Role |
-|-------|------|
-| `rgba(0, 0, 0, 0.87)` | Primary text (headings, body on light) |
-| `rgba(0, 0, 0, 0.58)` | Secondary text (metadata, captions) |
-| `rgba(255, 255, 255, 1)` | Primary text on dark surfaces |
-| `rgba(255, 255, 255, 0.70)` | Secondary text on dark surfaces |
-
-### Semantic
-
-| Color | Role |
-|-------|------|
-| `#c82014` (Red) | Error, destructive states |
-| `#fbbc05` (Yellow) | Warning states |
+- **過去の自分に、今助けてもらう**（憲法 前文・第4条）。画面に出る本人の文章は AI が書き換えない。表示は常に `rawText` / `deepDiveAnswer` / `chunk.text` のまま
+- **書くハードルを下げる／続ける**。どちらにも効かない機能は足さない
+- **文字を減らし、絵と動きで伝える**。説明文のフッターは置かない
+- **責めない**。空いた日を責める文言・赤い警告で急かす演出はしない
 
 ---
 
-## 3. Typography
+## 2. 色
 
-### Font Family
+Tailwind v4 の `@theme`（`app/globals.css`）に置く。値は契約 §2 が正。
 
-- **Primary**: `Inter, Manrope, "Helvetica Neue", sans-serif`
-  - 理由：SoDoSans は proprietary。Inter / Manrope が最も近い humanist geometric
-  - Starbucks と同じ tight tracking `-0.01em` で自信を持った読み心地
-- **Reading Serif** (記録詳細の引用時): `"Iowan Old Style", Georgia, serif`
-- **Fallback**: `"Helvetica Neue", Helvetica, Arial, sans-serif`
+| 変数 | 値 | 用途 |
+|---|---|---|
+| `--color-felt` | `#34492f` | 革の机（上） |
+| `--color-felt2` | `#232f21` | 革の机（下）・グラデの終点 |
+| `--color-paper` | `#f1e9d6` | 紙 |
+| `--color-cream` | `#f4ecd8` | 机の上の文字 |
+| `--color-graphite` | `#34322d` | 紙の上の文字（鉛筆） |
+| `--color-pen` | `#0d5a3c` | 緑インク（メンターの字・キャレット・今日の輪） |
+| `--color-gold` | `#f0dca0` | 強調（今週の数字・長押しの進捗の輪・選択中のタブ・段階の点） |
+| `--color-moss` | `#2f7a5c` | 緑のボタン |
+| `--color-warn` | `#b8402c` | 赤いボタン（削除・ログインし直し） |
+| `--color-dot` | `#c8412c` | 歯車の赤い点・手紙の未読の点 |
+| `--color-slip` | `#f8f0c4` | 付箋（黄） |
+| `--color-tabbar` | `#1d291d` | タブバーの地 |
 
-### Hierarchy
+- 机の上の補助の文字は `--color-cream` を 60〜82% の不透明度で使う（日付・ヒント・ボタンの添え字）
+- 紙の上の補助の文字は `--color-graphite` を 45〜70% で使う
+- 赤い余白線（記録のノート）は `rgba(200,32,20,.28)`、罫線は `rgba(70,90,120,.26)`（書く紙）／`rgba(60,95,85,.17)`（便箋）・行送り 34px
+- スマホ幅の外側（PC で開いたとき）の色も革に合わせる
 
-| Role | Size | Weight | Line Height | Letter Spacing | Notes |
-|------|------|--------|-------------|----------------|-------|
-| Display (H0) | 4.5rem / 45px | 600 | 1.2 | -0.01em | Dashboard "ダッシュボード" など大見出し |
-| H1 | 24px | 600 | 36px | -0.01em | Starbucks-Green color, section headers |
-| H2 | 24px | 400 | 36px | -0.01em | Regular-weight section title |
-| Body Large | 19px | 400 | 33.25px | -0.01em | Hero intro, feature-band body |
-| Body | 16px | 400 | 24px | -0.01em | Default body copy |
-| Small | 14px | 400-600 | 21px | -0.01em | Button label, form labels, metadata |
-| Micro | 13px | 400 | 19.5px | -0.01em | Caption, helper text |
+### 気分の玉の色
 
-**Principles:**
-- Weight shifts carry hierarchy, not size shifts
-- Text never pure black -- `rgba(0,0,0,0.87)` for warmth
-- Rem-based scale anchored at `1rem = 10px`
-- Tight `-0.01em` tracking on all text
-
----
-
-## 4. Spacing System
-
-Rem-based semantic scale (1rem = 10px):
-
-| Token | Rem | Pixels | Use |
-|-------|-----|--------|-----|
-| `--space-1` | 0.4rem | 4px | Tightest inline padding |
-| `--space-2` | 0.8rem | 8px | Small gap, button vertical padding |
-| `--space-3` | 1.6rem | 16px | Default -- card padding, outer gutter xs |
-| `--space-4` | 2.4rem | 24px | Section inner spacing, outer gutter md |
-| `--space-5` | 3.2rem | 32px | Major between-section spacing |
-| `--space-6` | 4rem | 40px | Large gaps, outer gutter lg |
-| `--space-7` | 4.8rem | 48px | Section-to-section spacing |
-| `--space-9` | 6.4rem | 64px | Widest section padding |
-
-**基準フレーム:**
-- モック・デザインの基準サイズは **390×844**（iPhone 12〜16 標準の論理解像度）
-- アプリシェルの max-width は 430px（それ以上は中央寄せ）。検証最小幅は 375px（iPhone SE）
-
-**Gutter Tokens:**
-- Mobile (xs): `--outerGutter: 1.6rem` (16px)
-- Tablet (md): `--outerGutterMedium: 2.4rem` (24px)
-- Desktop (lg): `--outerGutterLarge: 4.0rem` (40px)
+`lib/logic/moods.ts` の `MOODS` が正（`--color-mood-0`〜`4` と `-deep`）。§4 を参照。
 
 ---
 
-## 5. Component Specifications
+## 3. 書体
 
-### Buttons
+`next/font/google` で読み込む（`app/fonts.ts`）。明朝は使わない。
 
-**1. Primary Filled CTA**
-- Background: `#00754A` (Green Accent)
-- Text: `#ffffff`, 14-16px, weight 600
-- Border: `1px solid #00754A`
-- Radius: `12px`
-- Padding: `12px 24px`
-- Active: `transform: scale(0.95)`
-- Transition: `all 0.2s ease`
-- Use: 記録の保存ボタン、成形カード下の保存、オンボーディングの「はじめる」など。**アクション系ボタンは原則テキストなしのアイコンのみ**（✨=AIに処理してもらう／✏=記録として保存／スパイラル=はじめる）+ `aria-label`
+| 役割 | 変数 | 書体 | 使う場所 |
+|---|---|---|---|
+| 見出し | `--font-mincho` | Kiwi Maru 400/500 | 画面の見出し・挨拶・回転盤の玉の名前・数字（名前は旧仕様の流用。明朝ではない） |
+| あなたの言葉 | `--font-hand` | Yomogi 400 | 日記・一言・相談の問い・引用・ヒント |
+| 補助 | `--font-hand2` | Klee One 400/600 | キャプション・日付・ボタンの添え字 |
+| メンターの字 | `--font-pen` | Zen Kurenaido 400 | 深掘りの問い・手紙・相談の返事（緑インク） |
+| UI | `--font-ui` | Zen Maru Gothic 500/700 | UI 全般・`html` の既定 |
 
-**2. Primary Outlined**
-- Background: transparent
-- Text: `#00754A`, 14-16px, weight 600
-- Border: `1px solid #00754A`
-- Same radius, padding, active, transition as Primary Filled
-- Use: Secondary actions on feature bands
-
-**3. Outlined on Dark (on House Green band)**
-- Background: transparent
-- Text: `#ffffff`, 14px, weight 600
-- Border: `1px solid #ffffff`
-- Use: Secondary actions on dark-green bands
-
-### Cards
-
-**Content Card (default)**
-- Background: `#ffffff`
-- Radius: `12px`
-- Shadow: `0 0 0.5px rgba(0,0,0,0.14), 0 1px 1px rgba(0,0,0,0.24)`
-- Padding: `16-24px` (`--space-3` to `--space-4`)
-- Use: 成形カード, 相談の AI 回答バブル, 参考記録リスト, ダッシュボード要素
-
-**Feature Band (House Green)**
-- Background: `#1E3932` (House Green)
-- Text: `#ffffff` (heading), `rgba(255,255,255,0.70)` (body)
-- Full-width section
-- Padding: `32px` vertical
-- Use: ストリークダッシュ, 記録完了メッセージ, パターン分析結果
-
-**Light Background Card**
-- Background: `#f2f0eb` (Neutral Warm) or `#edebe9` (Ceramic)
-- Use: Alert zones, utility sections, page canvas
-
-### Inputs & Forms
-
-**Text Input / Textarea**
-- Background: `#ffffff`
-- Border: `1px solid #d6dbde` (input border)
-- Radius: `4px`
-- Padding: `12px`
-- Focus: border -> `#00754A` (Green Accent), `box-shadow: 0 0 0 2px rgba(0, 117, 74, 0.1)`
-- Font: 16px, weight 400, `rgba(0,0,0,0.87)`
-- Placeholder: `rgba(0,0,0,0.38)`
-
-**Floating Label (optional)**
-- Label floats above input when focused/filled
-- Desktop: 19px -> 14px
-- Mobile: 16px -> 13px
-- Horizontal offset: 12px
-- Active translate: -12px Y with -50% transform
-- Font: weight 600, `rgba(0,0,0,0.87)`
-
-**Form Valid State**
-- Border: `1px solid #d4e9e2` (Green Light)
-- Background tint: `rgba(212, 233, 226, 0.33)`
-
-**Form Invalid State**
-- Border: `1px solid #c82014` (Red)
-- Background tint: `hsl(4 82% 43% / 5%)`
-
-### Icons
-
-**SVG Line Icons (全画面共通)**
-- Style: stroke-based line icons（塗りなし）
-- Stroke width: `1.5px`（ナビ）〜 `2px`（コンテンツ内）
-- Color: 親要素の `currentColor` を継承
-- Size: `24px`（ナビ・タブバー）、`16px`（インライン）、`32px` 丸ボタン内 `16-24px`
-- 絵文字(emoji)をUIアイコンとして使わない。全てSVGで統一
-
-**必要なアイコン一覧:**
-- ナビ: ホーム(ブランドのスパイラル)、記録(積み上がるブロック)、相談(message-circle)
-- ダッシュボード: 火(flame/streak)、カレンダー(calendar)、シェブロン(chevron-down/up)、設定(gear・Hero右上)
-- 記録: マイク(mic)、sparkles(AI処理)、鉛筆(保存)、ローディング(loader)
-- 相談: 送信(send)、マイク(mic)、時計(相談履歴)、プラス(新しい相談)、ペーパークリップ(参考にした記録チップ)、✕(モーダル閉じる)
-
-### Navigation
-
-**Top Header (fixed)**
-- Height: `48px`
-- Background: `rgba(255,255,255,0.8)` + `backdrop-filter: blur(10px)`
-- Content: スパイラルマーク + "MindWind" brand text（center）
-- Font: 16px, weight 600, Starbucks Green
-- **表示するのはホーム（`/home`）とオンボーディング（`/onboarding`）のみ**。スタート画面（`/`）・記録（`/record`）・相談（`/search`）では非表示（チャット系画面は縦のスペースを優先し、画面を無駄にしない）
-
-**Bottom Tab Bar (fixed)**
-- Height: `56px`
-- Background: `#ffffff`
-- Border-top: `1px solid #edebe9`
-- 3 tabs: ホーム / 記録 / 相談
-- Each tab: **SVG icon のみ（24px、ラベルなし）** — ホーム=家、記録=積み上がるブロック、相談=スパイラル（アプリアイコン）
-- Active state: Starbucks Green icon
-- Inactive state: `rgba(0,0,0,0.38)` icon
-- Touch target: minimum `44px` height per tab
-- スタート画面（`/`）では非表示
-
-### Elevation & Depth
-
-| Level | Shadow | Use |
-|-------|--------|-----|
-| Card | `0 0 0.5px rgba(0,0,0,0.14), 0 1px 1px rgba(0,0,0,0.24)` | Default cards |
-| Header | `backdrop-filter: blur(10px)` | Top header |
-| Tab Bar | `border-top: 1px solid #edebe9` | Bottom tab bar |
-| Floating CTA | `0 0 6px rgba(0,0,0,0.24), 0 8px 12px rgba(0,0,0,0.14)` | Floating buttons |
+目安の大きさ（390px 基準）：画面の見出し 21〜27px／回転盤の玉の名前 44px／書く紙 20px・行送り 34px／相談の問い 18.5px／メンターの字 17〜17.5px／日付の小見出し 12.5px（字間 .16em）／ボタンの添え字 12.5px。
 
 ---
 
-## 6. App Shell & Routing
+## 4. 気分の玉（5段階）
 
-### モバイルネイティブ設計
+風の強さで、その日の気分を表す。**今日の気分は1か所の値（`useTodayMood`）から**、今週の便箋の帯・手紙・風の記録・封蝋・一言の画面・背景の風のすべてに、同じ玉で出す。
 
-MindWind はモバイルファーストの Web アプリとして、PC でもスマホアプリのような体験を提供する。
+| id | 名前 | 段階 | 説明の2行目 | 決めたあとの一言 | 色 | ふち |
+|---|---|---|---|---|---|---|
+| 0 | 追い風 | とてもいい日。 | 背中を押されて、すっと進める。 | いい風が吹いてるね。 | `#3f9d78` | `#1f6a4c` |
+| 1 | そよ風 | いい日。 | おだやかで、心地いい。 | 穏やかな日だね。 | `#9fbf4f` | `#62802a` |
+| 2 | 凪 | ふつうの日。 | 静かで、ただそこにいる。 | 静かな日だね。 | `#cdbf9f` | `#8d7f5c` |
+| 3 | 向かい風 | つらい日。 | 進みにくくて、力が要る。 | 向かい風の日だね。 | `#e49b3d` | `#a2641a` |
+| 4 | 嵐 | とてもつらい日。 | 立っているだけで精いっぱい。 | 大変な日だったんだね。 | `#d9604d` | `#982f20` |
 
-**アプリシェル:**
-- `max-width: 430px` で固定、PC ブラウザでは中央配置
-- `body { display: flex; justify-content: center }` で中央寄せ
-- アプリシェルに `shadow` を付与してフレーム感を演出
-- `viewport-fit=cover` で iPhone ノッチ対応
-
-**ナビゲーション:**
-- 上部ヘッダー: 48px、`backdrop-blur`、ブランド名のみ
-- 下部タブバー: 56px、SVG アイコンのみ（ホーム=家/記録=ブロック/相談=スパイラル）
-- スタート画面（`/`）ではナビ非表示
-
-**ルーティング:**
-
-| パス | 画面 | ナビ | 説明 |
-|------|------|------|------|
-| `/` | スタート画面 | なし | ロゴ + タグライン + 「Google ではじめる」CTA（Google ログイン） |
-| `/home` | ダッシュボード | あり | ストリーク、カレンダー、最近の記録 |
-| `/record` | 記録 | あり | 3フェーズ記録フロー |
-| `/search` | 相談 | あり | パターン分析 + アドバイス |
+- **絵**：水彩の紙の玉（`wc` フィルターでにじむ塗り＋ふちの濃い線）に、鉛筆で風を描く（`MoodGlyph`。追い風＝3本の流れる線／そよ風＝2本／凪＝水平の3本／向かい風＝追い風の左右反転／嵐＝渦と飛ぶ線）。部品は `Bead`
+- **書かなかった日**：点線の空の輪（`BeadSlot`）。今日はまだ決めていなければ緑の輪で、ゆっくり呼吸する
+- **年のビュー**：玉の絵は描かず、色だけの点（記録なしは薄いグレー）
+- 段階の言葉（追い風〜嵐など、風の強さ・向きを表す言葉）は気分にだけ使う。自動の呼び名には使わない
+- 「決めたあとの一言」は固定文で、AI は使わない
 
 ---
 
-## 7. Screen Specifications
+## 5. 共通部品と操作
 
-### Start Page (`/`)
+### 丸いアイコンボタン（`RoundButton`）
 
-**Layout:**
-- ナビなし、全画面表示
-- 縦中央: ロゴアイコン + "MindWind"（タグラインは置かない）
-- 下部: 「Google ではじめる」ボタン（Primary Filled, 角丸 12px）+ 規約同意テキスト
-  - タップで Google ログイン（Firebase Authentication）→ 成功後 `/home` へ遷移
-  - ログイン失敗時はエラートーストを表示
-- **規約同意テキスト（ボタン直下）:**
-  - 文言: "利用規約・プライバシーポリシーに同意して続行"（最短の1行表現）
-  - Font: 12px, `rgba(255,255,255,0.65)`、中央揃え
-  - "利用規約" と "プライバシーポリシー" はリンク（`rgba(255,255,255,0.9)`, underline）。`/terms` と `/privacy` の静的ページへ遷移（ログイン不要で閲覧可能）
-  - ページの中身（規約本文）の作成は MVP スコープ外。プレースホルダーページを用意する
-- 余計なテキストは置かない
+ボタンは**文字ではなく丸いアイコン**。文字は下に小さく添えるだけ（`label`・Klee One 12.5px）。最小 54px。押すと少し沈む（`translateY(2px) scale(.92)`・影が浅くなる・ばねのような戻り）。
 
----
+| variant | 見た目 | 使う場所 |
+|---|---|---|
+| `paper` | 紙の札（紙の質感・下に影） | 机の上の主なボタン |
+| `green` | 緑（`--color-moss`）＋紙の質感 | いちばん進めたい操作（一言・書き終えた・相談する・守る） |
+| `chalk` | 机の上の点線の輪（チョーク風） | 控えめな操作（ここまで・あとで・戻す・マイク・歯車・前後） |
+| `ink` | 紙の上の点線の輪 | 紙の上・ダイアログの「やめる」 |
+| `warn` | 赤（`--color-warn`） | 削除・ログインし直し・ログアウト（ゲスト） |
 
-### Onboarding Page (`/onboarding`)
+**長押しで保存（封をする）**：一言・記録の保存は、緑の判子ボタンを**長押し**する。押している間、外側の金色の輪（`--color-gold` の conic-gradient）が進み、700ms で発火。途中で離すと輪は戻る。アカウント削除は赤いボタンを 1300ms 長押し。
 
-初回ログイン後に表示するプロフィール登録画面。**スキップ可**（「あとで入力する」リンク）。ホームの Hero カード右上の設定（歯車）アイコンから編集モードとして再表示できる。
+### アイコン（`Icon`・鉛筆の線・viewBox 32）
 
-**Layout:**
-- タイトル: "はじめまして"（24px, weight 600, Starbucks Green）
-- サブテキスト: "あなたに合った答えを返すために、少しだけ教えてください"（14px, secondary）
-- 4つのフィールド（縦積み、間隔 22px）:
-  1. **呼び名** — テキスト入力（例：ゆう）
-  2. **いましていること**（補足ラベル "仕事や学業など"）— テキスト入力（例：営業／大学生）
-  3. **いまのステージ** — 選択チップ：学生 / 社会人1年目 / 2年目 / 3年目以上（単一選択。選択中は Green Accent 塗り・白文字）
-  4. **いまの目標・課題**（補足ラベル "任意・あとからでOK"）— テキスト入力（例：仕事に早く慣れたい）
-- ラベル: 13px, weight 600。補足は tertiary の小さめテキスト
-- 下部: 進むボタン（**ブランドのスパイラル SVG**・Primary Filled・Full width, `aria-label="はじめる"`）+ "あとで入力する" テキストリンク（13px, secondary, underline, 中央）
+`gear`（歯車）・`shield`（守る）・`trash`・`exit`・`mic`・`pencil`（一言・新しい相談）・`book`（開いたノート＝記録・しっかり）・`moon`（眠る月＝ここまで）・`arrow`／`arrowL`・`plane`（紙飛行機＝送る・相談する）・`check`（とじる）・`env`／`envopen`（封筒）・`undo`（選び直す）・`bookmark`（しおり＝あとで）・`hanko`（判子＝保存）・`corner`（めくれた紙の角）・`swirl`（風の渦＝相談）・`stack`（束ねた紙＝ホーム・これまでの相談）・`cloud`。線は二重のラフスケッチ（薄い線を少しずらして重ねる）。
 
-**編集モード（Hero の歯車から表示。設定画面を兼ねる）:**
-- タイトルは "プロフィール"、サブテキストは "いつでも変更できます"。各フィールドは保存済みの値が入った状態
-- 「あとで入力する」リンクは表示しない
-- 保存ボタン（スパイラル・`aria-label="保存する"`）の下に区切り線を挟んで**アカウント管理**を表示:
-  - **ログアウト** — テキストリンク（14px, secondary, 中央）
-  - **アカウントを削除** — テキストリンク（14px, `#c82014`, 中央）。保存ボタンから最も遠い最下部に置き誤タップを防ぐ
-  - 削除タップ → 確認ダイアログ（"アカウントを削除しますか？ すべての記録・相談履歴が完全に削除され、元に戻せません" ＋ 赤の削除/キャンセル）→ Google 再認証 → 削除実行
-- 全項目任意。未入力のままでもアプリの全機能が使える（プロフィールは AI プロンプトへの注入にのみ使用）
+### そのほかの部品
 
-**プロフィールの利用先:**
-- 相談・深掘り質問のシステムプロンプトに固定文として注入（詳細は ARCHITECTURE.md）
-- ホームの挨拶: nickname があれば "こんにちは、{nickname}さん"
+- **紙**（`Paper`）・**付箋**（`Slip`・黄／クリーム・テープの位置）・**マスキングテープ**（`Tape`・緑／桃／紙）
+- **トースト**（`Toast`）：机の上の黒い札（半透明の黒・点線のふち・Yomogi 13px）。画面上部（上から約 94px）に 2.2 秒。遷移先で出すときは `requestToast`
+- **ダイアログ**（`Dialog`）：暗い幕の上に、少し傾いた紙。見出し（Kiwi Maru 19px）＋本文（Yomogi 15.5px）＋丸いボタンを横に並べる（左に「やめる」、右に実行）
+- **封蝋**（`Seal`）：赤い蝋の丸に、今日の玉の風の線。保存の演出で、大きく回りながら落ちて押される（火花と波紋）
+- **上限のカウンター**（`LimitCounter`）：「n / max」。上限の約9割（`LIMIT_WARN_RATIO`＝0.9）から赤字。上限を超える入力は入らず、入力欄（紙）が揺れて（`.shake`・320ms）トースト「{一言は／日記は／答えは／相談は}{max}文字までだよ」
+
+### 文字数の上限（`lib/logic/limits.ts`）
+
+| 入力 | 上限 | 最短 |
+|---|---|---|
+| 一言 | 60（`MAX_QUICK_LENGTH`） | 2（`MIN_QUICK_LENGTH`。空・2文字未満はトースト「一言だけ書いてから、長押ししてね」） |
+| 日記 | 5000 | 10（未満はトースト「もう少し書いてみてね（10文字以上）」。AI を呼ばない） |
+| 深掘りの答え | 5000 | なし（とばしてもよい） |
+| 相談 | 2000 | — |
+| 呼び名 | 12 | 空なら自動の呼び名 |
 
 ---
 
-### Dashboard / Home Page (`/home`)
+## 6. 画面の共通ルール
 
-**Layout:**
-- 時間帯に応じた挨拶（おはようございます / こんにちは / おつかれさまです）+ 日付
-- 3-section layout（全て1カラム、縦積み）:
-  1. Streak Display (コンパクトインラインカード)
-  2. Calendar (ミニマルグリッド)
-  3. Recent Thoughts (アコーディオン展開式)
+- **基準フレーム 390×844・最小 375px**。アプリシェルは `max-w-[430px] h-dvh overflow-hidden` で中央。プロトタイプは絶対配置だが、実装は flex と相対配置で組み、縦に収める
+- **親指の弧**：操作は画面の下3分の1に集める。上は見るだけ（日付・見出し・数字）。例外は小さな補助のボタン（歯車・相談の履歴と新規）だけ
+- **画面の下に説明文のフッターを置かない**。案内は短いヒント1行か、アイコンの合図（赤い点など）で
+- 上部の小見出しは「10月25日 日曜日」の形（Kiwi Maru 12.5px・字間 .16em）
+- 画面の切り替えはふわっと（不透明度＋わずかな拡大・0.45 秒）
+- `aria-label` はすべてのアイコンボタンに付ける（プロトタイプの文言のとおり）
 
-**Streak Display**
-- コンパクトなインラインカード（巨大ヒーローカードではない）
-- Background: `#ffffff` (白カード)
-- **右上に設定アイコン**: 歯車 SVG の丸ボタン（32px, `rgba(255,255,255,0.16)` bg, white icon, `aria-label="プロフィールを編集"`）→ `/onboarding`（編集モード）へ遷移
-- Content: flame SVG icon（20px、Green Accent）+ 数字（24px, weight 700）+ "日連続" テキスト（16px）
-- 1行に収まるインラインレイアウト: `[icon] [数字] 日連続`
-- Padding: `--space-3` (16px)
-- Radius: `12px`
-- Shadow: card shadow
+### 3タブ（`TabBar`）
 
-**Calendar View**
-- Title: "○年○月" (16px, weight 600)
-- Grid: 7 columns (日月火水木金土)
-- Weekday headers: 12px, weight 600, `rgba(0,0,0,0.58)`
-- Date cells: `36x36px`
-  - Recorded: `#00754A` (Green Accent) background, white text, `border-radius: 50%`
-  - Today (unrecorded): `1px solid #00754A` outline, no fill
-  - Empty: transparent background, `rgba(0,0,0,0.58)` text
-- Card container: white bg, 12px radius, card shadow
-- Padding: `--space-3` (16px)
-- 前月/次月ナビ: chevron SVG icons
-- **今日以前の日はタップ可能**（未来日はタップ不可）：タップでその日の中央モーダルを表示
-  - 記録ありの過去日：日付見出し＋タイトル＋6項目のラベル付き表示（複数件は縦に並べる）。**追記ボタンは出さない**（過去日は1日1件まで）。各記録の展開表示の末尾右に削除ボタン（ゴミ箱 SVG 16px, tertiary, `aria-label="この記録を削除"`。「最近の記録」と同じ確認ダイアログ→完全削除→カレンダー・ストリーク再計算。モーダル内の表示も更新）
-  - 記録なしの過去日：空状態の文言（"この日の記録はまだありません"、14px, secondary, 中央）＋「この日の日記を書く」ボタン（Primary Filled・コンパクト幅）→ `/record?date=YYYY-MM-DD`（過去日付モード）へ遷移
-  - 今日：記録の有無に関わらず「今日の日記を書く」ボタンを出し、遷移先は `?date=` なしの通常の記録タブ
-  - ✕/背景タップで閉じる
+| タブ | アイコン | パス |
+|---|---|---|
+| ホーム | 束ねた紙（`stack`） | `/home` |
+| 記録 | 開いたノート（`book`） | `/record` |
+| 相談 | 風の渦（`swirl`） | `/search` |
 
-**初期状態（記録0件・Empty State）**
-- Hero のストリーク行: 数字の代わりに "今日から記録を始めよう"（flame アイコンは共通）
-- Hero の挨拶: nickname があれば "こんにちは、{nickname}さん"
-- カレンダー: 記録ありの日なし。今日のみアウトライン表示
-- 最近の記録カード: 中央揃えの空状態を表示
-  - テキスト: "まだ記録がありません。今日のことを話してみよう"（14px, secondary, 中央）
-  - 記録ボタン（積み上がるブロック SVG＝記録タブと同じアイコン・Primary Filled・コンパクト幅、`aria-label="記録する"`）→ 記録タブへ遷移
+- 高さ 88px・地 `--color-tabbar`・上に薄い線。アイコンだけ（30px）。選択中は金色＋点線の角丸の枠、ほかは薄いクリーム
+- 起動画面・回転盤・一言・手紙・設定・風の記録（モーダル）では隠す（下へすべって消える）
 
-**Recent Thoughts (アコーディオン式)**
-- Title: "最近の記録" (16px, weight 600)
-- List of 3-5 thoughts
-- **閉じた状態（デフォルト）:**
-  - 日付（13px, `rgba(0,0,0,0.58)`）+ **タイトル**（成形時に AI 生成・15文字以内・体言止め。16px, weight 500, 1行）
-  - 右端に chevron-down SVG icon
-  - タップ領域: フル幅（44px minimum height）
-  - Divider between items: `1px solid #edebe9`
-- **開いた状態（タップで展開）:**
-  - chevron が上向きに回転（`rotate(180deg)`, transition 0.2s）
-  - **6項目（出来事/思考/行動/理由/感情/価値観）をラベル付きで縦に表示**（サマリーは廃止。深掘り回答をマージした最終値をそのまま見せる）
-    - Label: 13px, weight 600, Green Accent (`#00754A`)
-    - Value: 15px, weight 400, `rgba(0,0,0,0.87)`, line-height 1.5
-    - Field spacing: `--space-2` (8px) between label and value, `--space-3` (16px) between fields
-    - 記録フロー Phase 2 と同じレイアウト（読み取り専用）で、画面間の見え方を統一する
-  - **削除ボタン**: 展開表示の末尾右にゴミ箱 SVG（16px, tertiary, `aria-label="この記録を削除"`）。タップで確認ダイアログ（"この記録を削除しますか？ 削除すると元に戻せません" ＋ 削除〔赤〕/キャンセル）→ 削除で thought を完全削除し、カレンダー・ストリークを再計算
-  - テキストは省略せず全文表示
-  - Padding: `--space-3` (16px) for expanded content
-- Card container: white bg, 12px radius, card shadow
-- Padding: `--space-3` (16px)
-- **テキスト省略禁止**: `line-clamp` や `truncate` は使わない。展開時は全文を表示する
+### 画面遷移
 
----
+```
+起動 /  ──タップ──▶ 今日の気分が未設定 かつ 今日まだ回転盤を出していない ─▶ 回転盤 /mood
+                   └─ それ以外 ─────────────────────────────────────────▶ ホーム /home
 
-### Recording Page (`/record`)
+回転盤 ─決定─▶ 3択 ─ 一言 ─▶ /mood/write ─長押し─▶ /home（玉が今週の便箋へ飛ぶ）
+                 ├ しっかり ─▶ /record
+                 └ ここまで ─▶ /home
+        ─あとで─▶ /home（気分は保存しない）
 
-> **【2026-07 リデザイン：罫線ノートスタイル】** 相談とのUI類似を解消するため、記録ページは「チャット画面」から「**ノートのページに直接書く**」体験に変更する。**以下のブロックが本節の従来記述と矛盾する場合はこちらが優先**（フロー・ロジック・音声入力・上限・過去日モードの仕様は不変。変わるのは見た目と入力の器だけ）。
->
-> - **ページ＝紙**: 背景は紙色 `#f7f4ec`（上端にごく薄い緑のトーン）。本文領域に**罫線**（34px 間隔、`rgba(107,92,63,0.16)` 1px）と、左端に**赤の余白線**（`rgba(200,32,20,0.28)` 1px・left 34px）を敷く
-> - **ヘッダー**: 左上に小ラベル「MindWind 日記」（12px, tertiary, letter-spacing 0.08em）、右上に**ステップ3本線**（24×3px・角丸・active=Green Accent。従来の全幅ステップバーを小型化して移設）。日付見出しはセリフ 30px・Starbucks Green「7月18日」＋曜日（15px, secondary）。その下に「— 今日のページ —」（12px, tertiary。過去日モードは「— この日のページ —」＋「今日に戻る」リンクは従来仕様のまま）
-> - **チャットバブル全廃・入力バー全廃**: 日記本文は罫線の上に**直接書く**（ページ全体が1つのテキストエリア。セリフ 16px／行送り 34px で罫線と一致させる）。ユーザー吹き出し・AI 吹き出しは使わない
-> - **罫線と文字は必ず揃える（実装ルール）**: 罫線は独立したレイヤーに敷かず、**テキストと同じ要素（またはスクロールを共有するラッパー）の背景**として `repeating-linear-gradient`（34px 間隔）で描く。全テキスト（本文・書き込み・清書）の行送りを 34px の倍数に固定し、スクロールしても文字が罫線から外れない構造にする
-> - **下部タブバーは従来通り表示する**: リデザインは記録ページの中身のみ。タブバー（56px・ホーム/記録/相談）は現行のまま残し、ツールトレーはタブバーの直上に置く
-> - **深掘り＝「メンターの書き込み」**: AI の質問は本文の下に**緑インクの余白メモ**として現れる——スパイラルマーク（線画 18px）＋質問文（セリフ 14.5px・Green Accent・`rgba(0,117,74,0.45)` の下線）＋キャプション「メンターの書き込み ・ スキップできます」（11px, tertiary。「スキップできます」タップでスキップ）。**回答は同じページの続きの罫線に書く**（入力欄が分かれない）
-> - **成形＝「清書」**: 成形カードは同じ紙の上に罫線に沿って展開する（白カードにしない）。6項目のラベルは Green Accent 13px、値はセリフ 15px。項目タップでその場編集は従来通り。ストリーミングで項目が順に現れる挙動も従来通り
-> - **下部ツールトレー**: 白い浮きバーは廃止。紙の上にそのまま置く——左にマイク（44px 丸・Green Accent・波紋パルス等は従来仕様）＋「声でも書ける」（12px, tertiary）、右に**「書き終えた ✦」**ボタン（セリフ 15px・Starbucks Green 文字・`rgba(0,98,65,0.4)` 枠・丸ピル・半透明白地）。成形カード表示中は「保存する ✦」に変わる。トレー背景は紙色へのグラデーションで本文と溶かす
-> - **書くヒント**: チップをやめ、ツールトレー上に**鉛筆の覚え書き風**（セリフ 12px, tertiary, 点線下線）で1行表示（「何があった？ どう考えた？ なぜそうした？ 今の気持ちは？」）
-> - **保存済み記録（同日複数件）**: 従来のチップをページ上部の「しおり」風（タイトル＋ページ番号調）に置き換える。展開・編集・削除の挙動は従来通り。**しおりも罫線グリッドに揃える**：チップ行は 34px（ボタン本体 30px を中央寄せ）、展開内容は FairCopy（行送り 34px）で組み、前後にグリッド外の余白を入れない
-> - **過去ログの表示もノートの紙面にする**: カレンダーの日付モーダル（DayRecordsModal）は紙色背景＋罫線（赤の余白線なし・`.notebook-lines`）で、タイトル・6項目・操作行をすべて行送り 34px で罫線に揃える。複数件は空行1本（34px）で区切る。「日記を書く」ボタンはツールトレーの「書き終えた ✦」と同じピル様式
-> - **エラー・上限表示**: 文言は従来仕様のまま、赤インクの書き込み風（バナーではなく罫線上のテキスト）で表示する
-> - **相談ページは一切変更しない**（チャットのままにして対比を作る）
-> - 参照モック: 案A（罫線ノート）。承認済み比較モックは Artifact「MindWind 記録画面リデザイン 2案」
-
-**Layout:**
-- ページタイトルなし（タブバーのアクティブ状態で現在地が分かるため）
-- ステッププログレスインジケーター: 3つのバーのみ（**フェーズ名のテキストラベルは表示しない**）
-  - Phase 1: 日記 / Phase 2: 深掘り / Phase 3: 成形（確認・編集）
-  - Bar — Active: Green Accent fill / Inactive: `#edebe9` fill, Height: `4px`
-- **記録全体が1つのチャット画面**: 日記の送信・AIの質問・回答・成形カードがすべてチャットの流れとして積み上がる。3-phase flow: 日記 -> 深掘り -> 成形（確認・編集） -> Save
-- **「日記帳」の雰囲気で相談（対話）と差別化する:**
-  - **日付見出し**: ステップバーの下に今日の日付を大きく表示（例 "7月14日（火）"、22px, weight 600, Starbucks Green）。その下にフェーズの一言（"今日のこと" / "もう少しだけ"、13px, secondary）。日記帳のページをめくった感覚を作る（相談にはない要素）
-  - **過去日付モード（`?date=` 付きで開いた場合）**: 日付見出しが対象日を表示し、フェーズの一言は "この日のこと" に変わる。見出しの横に「今日に戻る」テキストリンク（13px, secondary, 下線）を置き、タップで通常の今日モードに戻る。書くヒント・フロー・入力バーは今日モードと共通
-  - **入力文字はセリフ体**: 記録画面のテキストエリア（日記本文・深掘りの回答）は Reading Serif（`"Iowan Old Style", Georgia, serif`）で表示し、「書き物」の質感を出す。相談はサンセリフのまま
-  - **AI 吹き出しは控えめ**: 記録の AI 質問バブルは `#f2f0eb` フラット＋ceramic ボーダー（影なし）で「余白のメモ」程度の存在感に。相談の AI バブルは白カード＋影の「会話」スタイルのまま
-  - ユーザー吹き出しの色分け（記録=Green Accent／相談=House Green）と合わせて、記録＝日記帳・相談＝対話の世界観を分ける
-
-**Phase 1: 日記（Input）**
-- **空状態（未入力・チャット0件）**: 画面中央に相談の Empty State と同トーンの案内を表示
-  - 積み上がるブロック SVG（記録タブと同じアイコン。64px, Green Accent, stroke 細め）
-  - タイトル: "今日のことを話してみよう"（18px, weight 600）
-  - サブテキスト: "うまくいった日も、そうでない日も。記録が積み重なるほどパターンが見えてきます"（14px, secondary, 中央揃え）
-  - 日記を送信したらこの案内は消え、チャットの流れに切り替わる
-- 見出し: 日付（"7月14日（火）"）+ "今日のこと"（日記帳スタイル、前述）
-- **入力はテキスト・音声の切替タブを持たない統合型**：1つのテキストエリアに、キーボード入力と音声入力（マイクボタン）の両方で書き込める
-  - **入力バーは画面下部（タブバー直上）に固定**。書くヒントはその直上に表示
-  - Textarea:
-    - Placeholder: "今日のことを自由に..."
-    - **初期高さは1行（48px）**。入力に応じて上方向に auto-grow
-    - **1行のとき**: 左右パディング 48px で、文字はアイコン（左マイク・右アクション）の間に入る
-    - **複数行になったら**: 本文は**全幅**（左右パディング 12px）で折り返し、下部にアイコン専用の段（bottom padding 52px）を確保する。アイコンの左右に無駄な空白列を作らない
-    - Font: 16px, weight 400
-  - **マイクボタン**: テキストエリアの**左下内側**に配置（全画面共通ルール：マイク＝左下、アクション＝右下）
-    - 32px 丸形、`#00754A` background、white mic SVG icon
-    - タップで録音開始 → 音声認識の文字起こしがテキストエリアに**追記**される（既存テキストは消さない）
-    - 録音中: ボタンが赤（`#c82014`）に変化 + 波紋パルス（§Recording Pulse）、プレースホルダーが「聞き取り中…話してみて」に変わる。`interimResults` でリアルタイムに文字表示
-    - もう一度タップで録音停止。文字起こし結果はそのまま手で編集できる
-    - マイクが使えないとき（許可拒否・マイク未接続・認識サービスエラー）: 録音を停止し、入力バーの上に「マイクを使えませんでした。ブラウザのマイク許可を確認してね」（13px, error 色）を表示する。無音（no-speech）・中断（aborted）は無害なので表示しない（自動再開に任せる）。非対応ブラウザでボタン自体を出さない挙動は従来通り
-- **書き方ヒント（サジェスト）:**
-  - 下部固定の入力バーの**直上**に常時表示。分類の6項目を意識した問いかけチップで、何を書けばよいか迷わせない
-  - チップ内容（6分類に対応）:
-    - "何があった？"（出来事）
-    - "どう考えた？"（思考）
-    - "どう動いた？"（行動）
-    - "なぜそうした？"（理由）
-    - "今どんな気持ち？"（感情）
-  - 見出し: "書くヒント"（13px, weight 600, `rgba(0,0,0,0.58)`）
-  - Chip style: 12px, `#d4e9e2` bg, `#006241` text, radius 4px, padding `3px 8px`（分類タグと同スタイル）
-  - あくまでガイド表示（タップ挿入などの機能は MVP では持たない）。全部に答える必要はなく、書けた分だけで AI 分類・深掘りが補う
-- **音声入力の実装: Web Speech API**
-  - **実装: `window.SpeechRecognition || window.webkitSpeechRecognition`**
-  - 言語設定: `lang = 'ja-JP'`
-  - `continuous = true`, `interimResults = true`（リアルタイム文字表示）
-  - **対応環境**: Chrome / Edge / PC Safari / iOS Safari 14.5+。iOS の Chrome・アプリ内ブラウザ（LINE 等の WKWebView）は API 非搭載
-  - ブラウザ非対応時: マイクボタンを非表示にし、テキスト入力のみ（エラーメッセージは出さない）
-  - **自動再開ループ（実装必須）**: iOS Safari では連続認識が数秒〜十数秒で勝手に停止する。録音中フラグが立っている間は `onend` 発火時に即 `start()` を再実行し、ユーザーが停止するまで録音を継続する。再開をまたいでも確定済みテキストを失わないこと（文字起こしは「追記」設計なので途切れても全損しない）
-  - 音声入力は独立コンポーネントに分離し、将来サーバー側 STT（Whisper 等）へ差し替え可能な構造にする
-  - 音声のプライバシー（ブラウザの音声認識サービスへ送信される旨）は画面には表示せず、**プライバシーポリシーに記載**する
-- **送信ボタン（テキストエリアの右下内側）:**
-  - Icon: sparkles SVG（AI に渡すことを示す。`aria-label="送信する"`）
-  - 32px 丸形、`#00754A` background、white icon（マイク＝左下と対になる配置。独立した全幅ボタンは置かない）
-  - 送信すると日記テキストがユーザーの吹き出しとしてチャットに積まれる
-  - **超短文ガード**：10文字未満の日記は AI を呼ばず、「もう少しだけ聞かせて。一言でも、何があったかだけでも大丈夫だよ。」と AI バブルで促す（サーバー側 API も同条件で 400 を返す）
-  - Loading state: 送信直後、チャットの流れの中（送ったバブルの直下）に AI の「考え中」バブル（3点バウンス・記録トーン）を表示する
-
-**Phase 2: 深掘り（Deep Dive・チャット）**
-- **Phase 1 で送信した日記がユーザーの吹き出し**（Green Accent・セリフ体）として画面に残り、AI の深掘り質問が**その返信**としてすぐ下に表示される（会話の文脈が一目で分かる）
-- 質問は**1回だけ**。冒頭に「書いてくれてありがとう」のような短い受け止めを添える
-- AI の質問:
-  - 左寄せバブル: `#f2f0eb` background, radius `4px 12px 12px 12px`
-  - バブルの左に AI アバター（32px 丸形・House Green 塗り・白のスパイラル SVG。モック 04/05 準拠）
-  - Question text: 15px, weight 400, line-height 1.5
-- ユーザーの回答: Phase 1 と同じ下部固定の入力バーから送信（音声可）。Placeholder: "答えを入力..."
-- **スキップ**: 質問バブルの下に "スキップ" テキストリンク（13px, `rgba(0,0,0,0.58)`, underline）。タップで回答せず分類へ進む
-
-**Phase 3: 成形（確認・編集・チャット内カード）**
-- 回答（またはスキップ）の後、AI が「今日の記録を整理したよ。違うところは直してね」の一言とともに**成形カードをチャット内に表示**する
-- **全フィールド編集可能**：AIの成形結果は確定ではなく、ユーザーが各フィールドをその場で修正・加筆できる（AIの解釈違いの修正、書き漏らした情報の追記を想定）
-- 成形は日記テキスト＋深掘り回答を統合した最終値（スキップ時は日記テキストのみから成形）
-- **1カラム全文表示（2カラムグリッドではない、テキスト省略なし）**
-- Card with bg: `#ffffff`, カードはチャットの流れの中に全幅で置く
-- 6 fields displayed in vertical list:
-  ```
-  出来事：[full text, no truncation]
-  思考：[full text]
-  行動：[full text]
-  理由：[full text]
-  感情：[full text]
-  価値観（AIの気づき）：[full text]
-  ```
-  - Label: 13px, weight 600, Green Accent (`#00754A`)
-  - **価値観のラベルは "価値観（AIの気づき）" と表記**：唯一の AI 推測フィールドであることを明示し、断定的な印象を避ける（値の末尾に "（推測）" は付けない。ホームの展開表示でも同じ表記）
-  - Value: 編集可能な textarea（auto-grow・1行から拡張）
-    - Font: 15px, weight 400, `rgba(0,0,0,0.87)`
-    - Background: `#ffffff`, Border: `1px solid #d6dbde`, Radius: 4px, Padding: `8px 10px`
-    - Focus: border `#00754A`
-  - テキストは省略せず全文表示（`line-clamp` 禁止）
-  - Row spacing: `--space-2` (8px) between label and value, `--space-3` (16px) between fields
-- Card padding: `--space-3` (16px)
-- Radius: 12px
-- **保存ボタン（カードの直下）:**
-  - Icon: 鉛筆 SVG（「記録する」を示す。テキストなし、`aria-label="保存する"`）
-  - Type: Primary Filled, Full width
-  - Loading state: アイコンを loader に差し替え + "保存中..."
-- 保存時の処理: 編集後の6項目を最終値として連結テキストをベクトル化し保存（見返したときに項目単体で意味が分かる状態にする）
-
-**Success State（保存後のライフサイクル）**
-- 保存成功 → トースト「記録しました」を表示しつつ **`/home` へ自動遷移**（ストリーク加算とカレンダー点灯が報酬として見える）
-- トースト通知（画面上部からスライドイン）:
-  - Background: `#d4e9e2` (Green Light)
-  - Text: check SVG icon + "記録しました"
-  - Font: 14px, weight 500, `#006241`
-  - Auto-dismiss: 2s + fade out
-  - Shadow: card shadow
-- **記録タブへ戻ったとき**: 保存が済んだやり取り（日記・質問・回答・カード）は**タイトルだけのチップに畳んで**チャット上部に表示する（✓アイコン＋タイトル＋シェブロン。白カード・タップで展開→読み取り専用の成形カード＋「保存済み」バッジ〔12px, `#d4e9e2` bg, `#006241` text〕）。チャット本体は空状態に戻り、前の文章に引きずられず**2件目の日記**を白紙の気分で書ける（同じフローで別の記録として保存）
-- **1日の上限は実質無制限（安全上限：会員30件/ゲスト3件）**: 上限に達した日は入力バーを無効化（マイク・送信ボタンを tertiary 色に）し、バーの上に "今日の記録は上限（n件）に達しました"（13px, secondary）を表示
-- **日付が変わったら**（Asia/Tokyo 0時）: チャットはリセットされ Phase 1 の空状態に戻る。過去分はホームの「最近の記録」で見る
-
-**Error State**
-- Alert card (top of form):
-  - Background: `hsl(4 82% 43% / 5%)`
-  - Border: `1px solid #c82014`
-  - Text: Error message
-  - Font: 14px, weight 400, `#c82014`
-  - Dismissible button (right side)
-
-**Spacing:**
-- Phase sections: `--space-4` (24px) between
-- Card internal padding: `--space-3` (16px)
-
----
-
-### Search / Consultation Page (`/search`)
-
-> **【2026-07 リデザイン：文通（往復書簡）スタイル】** 記録の罫線ノート化に合わせ、相談も「チャットバブル」から「**紙の便箋の上の往復書簡**」に変更する。**以下のブロックが本節の従来記述と矛盾する場合はこちらが優先**（スレッド管理・履歴ドロワー・RAG・streaming・30件/日などのロジックは不変。変わるのは見た目の器だけ）。
->
-> - **ページ＝便箋**: 背景は記録と同じ紙色 `#f7f4ec`（上端にごく薄い緑のトーン）。ただし**罫線・赤の余白線は敷かない**——「罫線がある＝一人で書く場所（記録）、無地＝話す場所（相談）」で2画面を区別する
-> - **ヘッダー行**: 左に小ラベル「MindWind 相談」（12px, tertiary, tracking 0.08em）。右に既存の「新しい相談（＋）」「相談履歴（時計）」を丸ボタン（34px、`rgba(0,98,65,0.08)` 地・アイコン Starbucks Green）で維持
-> - **スレッド見出し**: 中央揃え「— 7月18日の相談 —」（11px, tracking 0.2em, tertiary。スレッド作成日）
-> - **あなたの問い（バブル廃止）**: セリフ 15.5px / 行間1.85・インクの文字。左に2pxの縦罫（`rgba(30,57,50,0.25)`）を添え、その左外に「あなた」ラベル（10px, tracking 0.14em, tertiary）
-> - **メンターの返事（バブル廃止）**: 記録ページの深掘りと同じ**緑インクの書き込み**言語——スパイラルマーク（線画18px）＋セリフ 15px / 行間1.9・色 `#0f5132`。下にキャプション「メンターの返事」（10.5px, tertiary）。ストリーミングは同じテキスト位置に流し込む
-> - **参考記録＝「読み返したページ」**: キャプション「読み返したページ」の下に**紙片チップ**（ミニ罫線背景・左に緑の背表紙 3px・日付セリフ11px＋タイトルセリフ13px）。タップで従来の中央モーダル（ノート紙面化済み）を開く
-> - **入力バー**: 紙の上に置いた半透明白のピル（高さ48px・枠 `rgba(107,92,63,0.35)`・セリフ placeholder）。マイク・送信ボタンの機能は現行のまま。placeholder は新規「なんでも聞いてみよう」／継続「続きを話す…」
-> - **空状態・ガード・上限の文言は現行のまま**（スタイルだけ紙のトーンに合わせる）。履歴ドロワー・タブバーは現行のまま
-> - 参照モック: 案B（文通）。比較モックは Artifact「MindWind 相談画面リデザイン 2案」
-
-**Layout:**
-- **ページ見出しテキストなし**（タブバーのアクティブ状態で現在地が分かるため）。最上部はアイコンボタンの行のみ：
-  - **左上：相談履歴ボタン**（時計アイコンの丸型アウトラインボタン、`aria-label="相談履歴"`）: タップで**左からスライドインするドロワー**（幅78%、背景 dim）を表示。ドロワー上部に「＋ 新しい相談」ボタン、その下に "相談履歴" 見出し＋スレッド一覧（タイトル1行省略＋最終更新日、現在のスレッドは `#d4e9e2` でハイライト）。スレッドをタップで開いて閲覧・会話の再開ができる（コンテキストはそのスレッド内のみ）。背景タップで閉じる
-  - **右上：新しい相談ボタン**（＋アイコンの丸型アウトラインボタン、`aria-label="新しい相談"`）: タップで即座に新しいスレッドを開始する（確認ダイアログは出さない。以前のスレッドは履歴に残る）
-- **新規スレッドの空状態（Empty State）**：「新しい相談」直後・メッセージ0件のとき、画面中央に表示
-  - ブランドのスパイラル（72px, Green Accent）
-  - タイトル: "過去の自分に相談しよう"（18px, weight 600）
-  - サブテキスト: "あなたの記録をもとに、過去のあなたが一緒に考えます"（14px, secondary, 中央揃え）
-  - このとき入力バーの Placeholder は "なんでも聞いてみよう"
-- **スレッド単位のチャットインターフェース**：1つの相談（スレッド）の中では会話を続けられる（追い質問可）
-  - **タブを開いたときは常に新規相談（空状態）から始まる**。過去のスレッドは保存されており、履歴ドロワーから開いて閲覧・再開できる
-  - 履歴は上方向にスクロール。新しいメッセージが届いたら最下部へ自動スクロール
-  - 参考にした記録は**各 AI 回答の直下に小さな添付チップ**として表示（大きなカードで常時見せない）。タップで一覧展開 → 記録タップで中身を閲覧（詳細は Related Thoughts 参照）
-  - **記録への誘導**: チャット内容は学習・蓄積されないため、AI は相談の結論に気づきが含まれる場合、回答の締めで「この気づきは今日の記録に残しておこう」と自然に促す（システムプロンプトで指示）
-
-**Query Form（画面下部に常時固定）**
-- **入力欄は画面下部（タブバーの直上）に固定**。チャット・参考記録は入力欄の上でスクロールする（LINE 等のチャット UI と同じ構造）
-- Textarea:
-  - Placeholder: "過去の自分に相談しよう"
-  - **初期高さは1行（48px）**、入力に応じて auto-grow。左右パディング 48px でアイコンと文字が重ならない（Phase 1 と同じ入力バー仕様）
-  - **マイクボタンは左下内側、送信ボタンは右下内側**に配置:
-    - **マイクボタン**: mic SVG, Green Accent 丸形（Phase 1/3 と同じ音声入力。文字起こしは追記）
-    - **送信ボタン**: send SVG, Green Accent 丸形
-- 別立ての CTA ボタンは持たない（送信は textarea 内の send ボタン）
-- **1日の相談上限（30メッセージ）到達時**: 入力バーを無効化（マイク・送信を tertiary 色に）し、バーの上に "今日の相談はここまで。また明日話そう"（13px, secondary）を表示
-- Loading state: 送信後、AI バブル位置に loader（"分析中..."）
-
-**Advice Display (チャットバブル形式)**
-- **会話風出力（ダークカード + markdown ではない）:**
-- AI のアドバイス:
-  - 左寄せバブル: `#f2f0eb` background, radius `12px 12px 12px 4px`
-  - 小さな AI アイコン（16px, Green Accent）をバブルの左上に
-  - Text: 15px, weight 400, line-height 1.6
-  - テキストは自然な会話調（markdown 記法なし）
-  - **Claude system prompt で以下を指定:**
-    - markdown 記法（`**`, `##`, `-`, `>`等）を使わない
-    - 友人のように自然な口調で話す
-    - 箇条書きではなく文章で伝える
-    - 最終的に Yes/No の明確なアドバイスを含める
-- ユーザーの質問:
-  - 右寄せバブル: **`#1E3932`（House Green）** background, white text, radius `12px 12px 4px 12px`
-  - **モードの色分けルール**: ユーザー吹き出しは記録＝`#00754A`（Green Accent）／相談＝`#1E3932`（House Green）。同じチャット骨格の2画面を色で区別する（入力バーのアクションアイコンの違い〔記録=sparkles／相談=send〕と合わせて二重の手がかりにする）
-
-**Related Thoughts (参考記録・2段階開示)**
-- **段階1: 添付チップ（デフォルト表示）**
-  - AI 回答バブルの直下に、paperclip SVG + "参考にした記録 n件" のチップを表示
-  - Style: 12px, `rgba(0,0,0,0.58)` text, white bg, `1px solid #edebe9` border, radius 999px, padding `4px 10px`
-  - 回答本文の邪魔をしない控えめな表示
-- **段階2: 一覧展開（チップをタップ）**
-  - チップ直下に記録リストを展開
-  - 各記録: 日付（13px, `rgba(0,0,0,0.58)`）+ 出来事要約（14px, 1行）、Divider: `1px solid #edebe9`
-- **段階3: 記録の中身（リストの記録をタップ）**
-  - **中央モーダル**で記録の詳細を表示（画面中央にカード、fade-in + scale、背景は `rgba(0,0,0,0.4)` の dim）
-  - カード: white bg, radius 16px, 左右マージン 16px, 縦中央配置。内容が長い場合はカード内スクロール
-  - 内容: 日付 + タイトル + 6項目のラベル付き表示（ホームの展開表示と同じレイアウト・読み取り専用）
-  - 閉じる: 右上の ✕ ボタン / 背景タップ
-
-**Loading State**
-- ドットアニメーション（チャットの「入力中...」風）
-- 3つのドットが順番にバウンス
-- 左寄せバブル内に表示
-
-**Error State**
-- Alert card:
-  - Background: `hsl(4 82% 43% / 5%)`
-  - Border: `1px solid #c82014`
-  - Text: Error message
-  - Font: 14px, weight 400, `#c82014`
-
-**Spacing:**
-- Query form: margin-bottom `--space-4` (24px)
-- Bubbles: `--space-2` (8px) between
-
----
-
-## 8. Responsive Behavior
-
-### モバイルネイティブアプローチ
-
-アプリシェルが `max-width: 430px` に固定されているため、従来のレスポンシブブレイクポイントではなく、モバイル幅を前提とした単一レイアウトを採用。
-
-**全画面共通:**
-- 1カラムレイアウト
-- アプリシェル内は常にモバイル幅（430px以下）
-
-**PC表示:**
-- アプリシェルが中央に配置、周囲はグレー背景
-- shadow でデバイスフレーム感を演出
-
-### Touch Targets
-
-- ボトムタブバーアイコン: minimum 44px height
-- ボタン: minimum 44px height
-- アコーディオン項目: フルwidth タップ領域
-
----
-
-## 9. Micro-interactions
-
-### Button Active State
-- `transform: scale(0.95)` on click
-- Duration: `0.2s`
-- Timing: `ease`
-
-### Form Focus
-- Input border -> Green Accent (`#00754A`)
-- Box-shadow: `0 0 0 2px rgba(0, 117, 74, 0.1)` (soft glow)
-- Duration: `0.2s ease`
-
-### Alert Dismiss
-- Fade out: `opacity 0.3s ease-out`
-- Auto-dismiss: 2s for success, manual for error
-
-### Accordion Expand/Collapse
-- Chevron icon: `rotate(180deg)`, transition `0.2s ease`
-- Content: `max-height` transition or `grid-template-rows: 0fr -> 1fr`
-- Duration: `0.2s ease`
-
-### Calendar Hover (desktop)
-- Date cell: background brightness +5%
-- Cursor: pointer
-- Transition: `all 0.15s ease`
-
-### Chat Bubble Appear
-- New bubble: slide up + fade in
-- Duration: `0.3s ease-out`
-- Transform: `translateY(8px)` -> `translateY(0)`
-
-### Recording Pulse (音声入力中)
-- Mic button: `box-shadow` pulse animation
-- `@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(200,32,20,0.4) } 100% { box-shadow: 0 0 0 12px rgba(200,32,20,0) } }`
-- Duration: `1.5s infinite`
-
-### Loading Dots (相談ページ)
-- 3 dots bouncing sequentially
-- `@keyframes bounce { 0%,80%,100% { transform: translateY(0) } 40% { transform: translateY(-6px) } }`
-- Stagger: 0s, 0.15s, 0.3s delay
-- Duration: `1.4s infinite`
-
----
-
-## 10. Dark Mode (Future)
-
-現在は Light Mode のみ。Dark Mode 対応は MVP 後。
-
----
-
-## 11. Design Tokens Summary
-
-### Colors
-```css
---color-primary: #006241 (Starbucks Green)
---color-accent: #00754A (Green Accent)
---color-dark: #1E3932 (House Green)
---color-light: #d4e9e2 (Green Light)
---color-neutral-warm: #f2f0eb
---color-neutral-cool: #f9f9f9
---color-white: #ffffff
---color-text-primary: rgba(0, 0, 0, 0.87)
---color-text-secondary: rgba(0, 0, 0, 0.58)
---color-error: #c82014
+ホーム ─歯車─▶ /settings ─もどる─▶ /home
+      ─今週の便箋の帯─▶ 風の記録（モーダル）─日付─▶ その日の記録のモーダル
+      ─「今日」の輪─▶ /mood?from=home（選び直し。決定後は /home。3択は出さない）
+      ─手紙のカード─▶ /letter ─とじる─▶ /home ／ ─相談する─▶ /search?draft=…
 ```
 
-### Typography
-```css
---font-family: Inter, Manrope, sans-serif
---letter-spacing: -0.01em
---line-height-compact: 1.2
---line-height-normal: 1.5
-```
-
-### Spacing
-```css
---space-1: 0.4rem (4px)
---space-2: 0.8rem (8px)
---space-3: 1.6rem (16px)
---space-4: 2.4rem (24px)
---space-5: 3.2rem (32px)
---space-6: 4rem (40px)
---space-7: 4.8rem (48px)
---space-9: 6.4rem (64px)
-```
-
-### Shadows
-```css
---shadow-card: 0 0 0.5px rgba(0,0,0,0.14), 0 1px 1px rgba(0,0,0,0.24)
---shadow-elevated: 0 0 6px rgba(0,0,0,0.24), 0 8px 12px rgba(0,0,0,0.14)
-```
-
-### Radius
-```css
---radius-card: 12px
---radius-button: 12px
---radius-input: 4px
---radius-tab: 8px
---radius-bubble: 12px
-```
+`/onboarding` は廃止（`/settings` へ redirect）。詳細は契約 §1。
 
 ---
 
-## 12. Do's and Don'ts
+## 7. 各画面
 
-### Do
-- Use Starbucks Green for headings and primary brand moments
-- Apply Green Accent (`#00754A`) for primary CTAs
-- Use warm neutrals (`#f2f0eb` / `#edebe9`) as page canvas
-- Apply `scale(0.95)` active state on all buttons
-- Layer 2-3 low-alpha shadows for elevation
-- Keep letter-spacing tight at `-0.01em`
-- Use `12px` radius on buttons for mature, professional look
-- Let whitespace breathe between cards
-- Use rounded geometry (12px on cards)
-- Use SVG line icons (stroke-based, 1.5-2px) for all UI icons
-- Show full text in classification results and expanded records (no truncation)
-- Use chat bubble UI for AI conversations (deep dive, advice)
-- Output AI advice in natural conversational tone (no markdown formatting)
-- Use 1-column layout for classification results
-- Keep the UI text-light -- communicate with icons, color, and layout
+### 7.1 起動画面（`/`）
 
-### Don't
-- Don't use pure white as page canvas -- warm cream is essential
-- Don't use single heavy drop shadow -- layer soft shadows
-- Don't use emoji as UI icons (no fire emoji for streak, no face emoji for emotions) -- use SVG
-- Don't mix typefaces in the same surface
-- Don't introduce gradients -- color-block throughout
-- Don't forget `scale(0.95)` on button active states
-- Don't use pure black for body text -- use `rgba(0,0,0,0.87)`
-- Don't use `line-clamp` or text truncation on classification results or expanded records
-- Don't output AI responses in markdown format -- use conversational natural language
-- Don't use 2-column grid for classification results -- 1-column full-text only
-- Don't use radio buttons for input mode selection -- use tab-style toggle
-- Don't use giant hero cards for streak display -- keep it compact and inline
-- Don't place text directly on feature bands without sufficient contrast
+ログインを最初に求めない。裏でゲスト（匿名）として自動的に始める。
+
+1. 革の机の上に、紙のカードが上から落ちてきて少し弾んで止まる（約 1 秒）
+2. 緑のインクで **「mind」が1文字ずつにじんで現れる**（ロゴ `docs/brand/mindwind-opening.svg`・`logoink` フィルター）
+3. 鏡像の **「wind」が上から落ちてくる**
+4. 鉛筆の風の線が3本、左から右へ横切る
+5. カードの下にコンセプトの一行「あなたが、自分のメンターになる」（緑・Yomogi）
+6. 約 4.7 秒で、下に **「タップしてスタート」** がゆっくり明滅し（1.9 秒周期）、その上で波紋が広がる
+7. **どこをタップしても**カードが上へ去り、次の画面へ（§6 の遷移）。演出の途中のタップは、演出を飛ばして最後の状態にする
+
+- 毎回フルで流す。音はオンのときだけ（カードが落ちたときの「ぽん」・最後の鈴）
+- 「動きを減らす」では静止画（最初から最後の状態）
+- ロゴを切り出す枠に余白を取り、インクのにじみで `d` の右端が切れないようにする
+- アプリアイコン・起動画像は今回は作らない（既存のまま）
+
+### 7.2 気分の回転盤（`/mood`）
+
+その日の最初の起動で1回だけ（端末ごと）。スキップ・選び直しができる。
+
+**構成（上から）**
+- 小見出しの日付＋「今日の気分は？」（Kiwi Maru 27px）
+- **リール**：真ん中に、いまの玉の名前（44px）と説明2行（段階＋説明。例「とてもいい日。／背中を押されて、すっと進める。」）。回すとスロットのように縦に流れ、速いとぼやける。上下はフェードで消える
+- ヒント「まわして、まんなかの玉をタップ」
+- **盤**：画面の下にはみ出す大きな円盤（木のふち・目盛り）。上に15個の玉（5種×3）が円周に並び、真ん中の玉が大きくなる。盤の上には紙の三角の矢印（はじき）
+- 左下：あとで（しおり・`chalk`・44px）
+
+**動き**
+- 盤を**左右になぞって回す**。弾くと勢いで回り、だんだん止まって玉の位置にぴたっと合う
+- 玉が1つ通るたびに矢印がはじかれ、カラカラ（音オンのとき）・小さな振動
+- **止まった（セットした）とき**：真ん中の玉の風が背景に**うっすら**出る。回している間は静まる（§8）
+- **真ん中の玉をタップ**で決定。横の玉をタップすると、その玉が真ん中まで回ってくる
+- **決定**：盤が下へ沈んで消え、玉が上の真ん中へ飛んで大きくなり、インクの輪の消印（日付入りの文字がゆっくり回る輪）が描かれる・玉の色の波紋・背景の風が**グワッ**と出る。玉の下に「決めたあとの一言」が1文字ずつ書かれる。`PUT /api/mood` で保存
+- 決定後、**3択**が下から順に浮かぶ（親指の弧）：
+  - 左：ここまで（眠る月・`chalk`）→ `/home`
+  - 真ん中：一言（鉛筆・`green`・大きめ 90px）→ `/mood/write`
+  - 右：しっかり（開いたノート・`paper`）→ `/record`
+- 左下は「選び直す」（戻す・`chalk`）に変わる。押すと盤に戻る（もう一度決めると上書き）
+- あとで → トースト「あとで押せます。ホームへ」→ `/home`（気分は保存しない）
+- `?from=home`（ホームの「今日」の輪から）：決定後は 3択を出さず `/home` へ戻る
+
+### 7.3 一言（`/mood/write`）
+
+- 上：小さな今日の玉（46px）＋日付＋「決めたあとの一言」（例「向かい風の日だね。」）
+- 真ん中：紙（罫線 34px・Yomogi 20px・キャレットは緑）。右下に「n / 60」
+- 紙の下：左にヒント「いまの気持ちを、一言だけ。／書けたら、右の印を長押し。」、右に判子の長押しボタン（82px）
+- 開くと入力欄にフォーカス（キーボードが下に出る前提で、操作はキーボードの上に置く）
+- **長押しで封をして保存**：`POST /api/thoughts { kind: "quick" }` → 封蝋（今日の玉の風）が押され、紙が少し沈む → `/home`。ホームでは**玉が今週の便箋の「今日」へ飛んで収まり**、今週の数字が1つ回り、トースト（例「今週5日目。いい風だったね。」）
+- 空・2文字未満で長押し → トースト「一言だけ書いてから、長押ししてね」（保存しない）
+
+### 7.4 ホーム（`/home`）
+
+上は見るだけ、下に触るものを置く。**従来のカレンダーと最近の記録の一覧は置かない**（見返し・編集・削除・過去日の入口は風の記録と記録タブのしおりへ）。
+
+- **左上**：日付＋挨拶「◯◯さん」（Kiwi Maru 25px）。直近の記録から3日以上空いたら「おかえり、◯◯さん」（責めない）
+- **右上**：「今週」＋数字（金色・40px）。数字はスロットのように回って増える。`profile.hideStreak` で隠せる
+- **歯車**（右上・`chalk`・40px）→ 設定。ゲストのときだけ**小さな赤い点**が脈打つ（設定を開いたら消え、7日後にまた出る。Google 連携で消える）
+- **今週の便箋**：横長の紙に月〜日の7つの輪。記録のある日は玉、書かなかった日は点線、今日は緑の輪（呼吸）。右上に小さな矢印。**帯をタップで風の記録**、「今日」の輪のタップで気分の選び直し
+- **今日の1枚**（再会カード）：黄色の付箋（テープつき・めくれた紙の角のアイコン・「今日の1枚」）。タップで裏返り、過去の本人の文章を**そのまま引用**（マーカーの下線）＋ラベル「1か月前のあなた ・ 9/25」（緑の波線）。めくったらトースト「また明日、次の1枚が届くよ。」。1日1回・記録5件以上で出す。AI は使わない
+- **手紙のカード**：紙の上に、点線の輪の封筒（未読は赤い点が脈打つ）＋「手紙が届いたよ」＋「この1週間の、あなたの言葉」＋緑の矢印。タップで `/letter`
+- 背景には、今日の気分の風の色がうっすら残る（§8）
+
+### 7.5 記録（`/record`）
+
+罫線ノートに書く → メンターが余白に1問 → 答える（とばしてもよい）→ 長押しで封。**成形カード（6項目）は出さない**。画面に出るのは本人の文章＋深掘りの問いと答えだけ。
+
+**構成**
+- 上：日付＋「今日の1ページ」（Kiwi Maru 24px）。右上に**3つの点**で今の段階（日記・深掘り・保存。済んだ点は金色）
+- 紙：罫線ノート（34px）・左に赤い余白線。Yomogi 20px・キャレットは緑
+- 下のトレー（親指の弧）：ヒント1行・左にマイク（`chalk`）・右に大きな緑のボタン（98px）
+
+**流れ**
+1. **日記**：書く（音声入力も可）。ヒント「書き終えたら、右の矢印をタップ」。右は「書き終えた」（矢印・`green`）。10文字未満はトースト「もう少し書いてみてね（10文字以上）」
+2. **深掘り**：`POST /api/deepdive` → 日記の下に、メンターが**緑インクで1問**を書く（左に緑の縦線の余白メモ・下からふわっと）。その下に答えの欄。ヒント「答えを書いて、右の印を長押し（とばしてもいいよ）」。ボタンは「とばす」（矢印・`chalk`）と判子の長押し
+3. **保存**：長押し（または「とばす」）→ 3つめの点が灯り、封蝋（今日の玉）が押されて紙が沈む → `/home` ＋ トースト「記録したよ。」
+
+- **しおり**：今日すでに保存した記録は、紙の上にしおり（付箋の小片）で出す。タップで、その記録のモーダル（§7.7 と同じ）
+- **過去日モード**（`?date=YYYY-MM-DD`）：見出しをその日付にし、「今日に戻る」を添える。保存後はホームへ
+- **下書き**：端末内（localStorage）に自動保存。今日と過去日は別。保存に成功したら消す。サーバーには送らない
+- 上限：日記・答えとも 5000（カウンターは紙の右下）
+
+### 7.6 相談（`/search`）
+
+文通。あなたの問いは付箋、メンターの返事は便箋。
+
+- 上：スレッドの見出し（Kiwi Maru 21px）。右上に小さな丸（`chalk`・44px）：これまでの相談（束ねた紙）・新しい相談（鉛筆）
+- **あなたの問い**：右寄せの黄色の付箋（少し右に傾く・桃色のテープ・小さく「あなた」）
+- **メンターの返事**：紙の便箋に緑インク（Zen Kurenaido 17px・行送り 32px）。ストリーミングで1文字ずつ書かれていく。最後に右下へ署名「MindWind」
+- **読み返したページ**：返事の下に、ラベル「読み返したページ」と、過去の記録の付箋の小片（日付「10/23 金」＋本文の書き出し…・緑の縞のテープ）を横に並べる。タップで紙のモーダル（日付「10月23日（金）の記録」を緑の波線で＋本人の文章の全文を罫線の上に＋下にとじる〔チェック〕）
+- **入力欄**：画面下（タブの上）の紙。プレースホルダ「いま思っていること」。行が増えると**上へ大きくなる**（1〜5行。超えたら中でスクロール）・会話エリアの下の余白も追従。右下は1ボタン：**空＝マイク（点線）／文字あり＝紙飛行機（緑）**に切り替わる。Enter で送信・Shift+Enter で改行。上限 2000（約9割から赤字のカウンター）
+- `?draft=` で来たら、その文字列を入力欄に入れる（送らない）
+- スレッド・履歴ドロワー・スレッドの削除・1日30通の上限・記録3件未満のガード・新しい相談で記録へ案内するダイアログは、既存どおり新しい見た目に載せ替える
+- AI に渡すのは本人の言葉のチャンク＋日付。返事の中で本人の言葉を引くときも、書き換えずに引く
+
+### 7.7 風の記録（ホームのモーダル）
+
+今週の便箋の帯をタップすると、暗い幕の上に大きな紙がすべり上がる（別ルートにしない・タブバーの上に重なる）。
+
+- 紙の中：見出し（「2026年10月」／「2026年」・Kiwi Maru 21px）＋小さな説明「タップで月と年を行き来できます」
+- **月**：月曜はじまりの7列。日ごとの玉（36px）・書かなかった日は点線の輪・左上に小さく日付。今日は緑の輪で囲む
+- **年**：12か月を3列に。各月は小さな点の格子（1日＝1つぶ・玉の色だけ・記録なしは薄いグレー）。月をタップでその月へ
+- 下（親指の弧）：左にとじる（チェック・`paper`）・前へ／次へ（`chalk`）・真ん中に「月／年」の切り替え（点線の丸い枠・選択中は緑）。幕のタップでも閉じる
+- 「記録あり」は記録 ∪ 気分（玉だけの日も1日に数える）
+- **月の日付をタップ → その日の記録のモーダル**（`ThoughtModal`）：少し傾いた紙に、日付（緑の波線）・本人の文章（罫線の上・Yomogi）・深掘りの問い（緑インクの余白メモ）と答え。下に丸いボタン：とじる（チェック）・編集（鉛筆）・削除（ゴミ箱・確認ダイアログ）。一言だけの記録には「深掘りを足す」を添える。**過去日で記録0件**なら、玉と「この日の日記を書く」（開いたノート・`green`）→ `/record?date=`。※ この見た目はプロトタイプに無いので、上の部品の組み合わせで作る
+- 編集すると本文が変わればタイトル（先頭から自動・20文字）・チャンク・embedding も作り直す
+
+### 7.8 設定（`/settings`）
+
+ホーム右上の歯車から。紙のカードを縦に並べ、交互に少し傾ける。
+
+- 上：「アカウントと設定」＋「設定」（Kiwi Maru 25px）
+- **アカウント**
+  - ゲスト：点線の輪にしおり＋「**ゲスト**」「いまは、この端末のブラウザだけで使っています。」＋小さく「30日使わないと、記録が消えます。端末を変えたり、ブラウザのデータを消すと戻れません。」＋右に緑の「守る」（盾・68px）→ Google 連携（`linkWithPopup`。Google の公式の画面・ボタンの決まりに従う）。つながったらトースト「Googleとつながりました。記録はそのまま引き継がれます。」
+  - 連携済み：緑の実線の輪に盾＋「**Googleでつながっています**」＋メール＋「記録はこのアカウントに守られています。どの端末からでも続けられます。1日の上限も広がっています（記録30・相談30）。」
+  - すでに使われている Google アカウント：ダイアログ「このGoogleアカウントは使用中です」（いまのゲストの記録は引き継げない＝消える、と警告）・やめる（`ink`）／ログインし直す（`warn`）
+  - 信頼の文言（学習に使わない／会話は記録に入れない／Google 連携で記録を引き継げる）はこの欄に載せ、プライバシーポリシーと一致させる
+- **呼び名**：下線だけの入力（Yomogi 20px・最大12文字）。プレースホルダは自動の呼び名。下に「いまは自動の呼び名（風見さん）です。好きな呼び名を入れると、そう呼びます。」／入力後「「◯◯さん」と呼びます。空にすると、自動の呼び名（風見さん）に戻ります。」。入れると挨拶と手紙の宛名がすぐ変わる
+- **くらし**：音（初期オフ）・振動・動きをへらす のスイッチ（オンは緑）。今週◯日を隠すトグルもここ
+- **そのほか**：利用規約・プライバシー（矢印つき・紙の便箋の見た目のページへ）・ログアウト・アカウントを削除（赤字）
+  - ログアウト（ゲスト）：「ログアウトしますか？」「ゲストのまま出ると、この記録には戻れなくなります。残したいときは、先にGoogleでつないでください。」・やめる／つなぐ（緑）／ログアウト（赤）
+  - ログアウト（連携済み）：「また「Googleでデータを守る」から、同じアカウントで戻れます。記録は消えません。」・やめる／ログアウト（緑）
+  - 削除：「アカウントを削除しますか？」「日記・相談・手紙・気分を、すべて完全に消します。元に戻せません。」（Google は先に本人確認）・やめる／**長押しで削除**（赤・1300ms）→ `/`
+- 下（親指の弧）：もどる（左矢印・`chalk`）→ `/home`。下はグラデで机に溶ける
+
+**自動の呼び名**：風見・風車・風鈴・渡り鳥・旅人・凧・羽根・帆・風読み（＋さん）。uid から決めるので同じ人はいつも同じ名前。AI には渡さない。
+
+### 7.9 手紙（`/letter`）
+
+その週（月〜日）に記録が3日以上あるとき、日曜に開けられ、翌土曜まで読める。**開いたときに生成**する（通知なし）。
+
+**開く流れ**
+1. 机の上に封筒（少し傾く・内側は緑の水玉の裏紙・紙の質感）。フタをマスキングテープ「〆」が留めている。左下に小さく日付「10/25 日曜」
+2. 下の緑のボタン（開いた封筒・80px）か、テープ・封筒をタップで**テープがはがれ、フタが開く**。手紙が少し顔を出す
+3. 上向きの矢印が上下にゆれて誘う。**親指で手紙を上へ引っぱり出す**（指についてくる・途中で離すと戻る・タップでも出る・引くたびに小さな振動と紙のこすれ）
+4. 封筒は下へ落ちて消え、手紙はそのまま大きな便箋になって真ん中へ
+5. **三つ折りの便箋が折り目で1枚ずつ開く**（3D・奥から手前・約 1 秒ずつ）。開きながら今週の玉が1つずつぽんと押される
+6. 下へスクロールして読む。読み終えると下に操作が出る：左にとじる（チェック）→ `/home`、右に相談する（紙飛行機・`green`・90px）→ `/search?draft=…`
+
+**便箋の中身**（罫線 34px・緑インク Zen Kurenaido 17.5px）
+- 右上に日付「2026.10.25 日」・宛名「◯◯さんへ」
+- 書き出し（今週何日来てくれたか）＋今週の玉の列（7つ・書かなかった日は点線）
+- **本人の言葉の引用**：マスキングテープで貼った付箋の切れ端（「10/20 火曜の記録」＋本人の文章をそのまま・Yomogi 19.5px）。テープは緑の縞と桃色の縞を交互に
+- 次の一歩の提案にマーカーの下線
+- 署名「MindWind」＋手書きの線
+- 引用した記録が削除されたら、切れ端に「（消した記録）」と出す（手紙は残す）
+- 過去の手紙は `?week=` で開ける。一覧と削除も用意する
+- 生成中は緑インクが書かれていく見た目で待つ。記録が足りない週・上限のときの文言は 78 で決める（責めない）
 
 ---
 
-## 13. Implementation Checklist
+## 8. 風の強さで変わる雰囲気
 
-- [ ] Colors defined as CSS variables (Tailwind config)
-- [ ] Typography scale implemented (rem-based)
-- [ ] Spacing tokens created (--space-1 through --space-9)
-- [ ] Button components styled (primary filled, outlined, 12px radius)
-- [ ] Card components styled (default, feature-band, light-bg)
-- [ ] Input/form components styled (text, textarea, with validation)
-- [ ] SVG icon system set up (line icons, stroke-based)
-- [ ] App shell (430px max-width, centered on desktop)
-- [ ] Top header (48px, backdrop-blur) -- ホーム/オンボーディングのみ表示
-- [ ] Bottom tab bar (56px, 3 tabs with SVG icons)
-- [ ] Start page (`/`) -- logo, Google sign-in CTA, 規約同意リンク
-- [ ] Onboarding page (`/onboarding`) -- プロフィール4項目・チップ選択・スキップ可・編集モード
-- [ ] Dashboard page (`/home`) -- compact streak, calendar, accordion thoughts
-- [ ] Accordion expand/collapse with 6項目のラベル付き表示
-- [ ] Recording page (`/record`) -- チャット型フロー（日記→深掘り→成形）、ステップバー＋フェーズ名ラベル、日記帳スタイル（日付見出し・セリフ体）
-- [ ] Audio input with Web Speech API (recording, transcription, fallback)
-- [ ] 成形カード（チャット内・6項目編集可・保存ボタン）
-- [ ] Chat-style deep dive question UI
-- [ ] Search page (`/search`) -- スレッド型チャット、履歴ドロワー、新規相談、参考記録チップ→モーダル、Empty State
-- [ ] Conversational AI output (system prompt, no markdown)
-- [ ] Touch targets verified (44px+ minimum)
-- [ ] Micro-interactions implemented (button scale, accordion, chat bubbles, pulse, dots)
-- [ ] Accessibility: color contrast verified (WCAG AA minimum)
-- [ ] Accessibility: focus states visible
-- [ ] Performance: animations GPU-accelerated (transform/opacity)
+背景に、気分の風の雰囲気が出る（`WindAmbience`。色2枚を重ねてなめらかに入れ替える＋粒子の canvas）。
+
+| 場面 | 出方 |
+|---|---|
+| 回転盤で**止まった（セットした）とき** | 真ん中の玉の雰囲気が**うっすら**（色 6 割・粒子は少なめ） |
+| 回している間 | いったん静まる |
+| 玉をタップして**決めたとき** | **グワッと**全力（色が弾けて広がる・粒子が増える） |
+| 決めたあとの1日（Asia/Tokyo） | ホームなどの背景に、その風の色だけがうっすら残る（粒子は出さない） |
+
+| 気分 | 決めたときの「グワッ」 |
+|---|---|
+| 追い風 | 金色の光が弾け（暖かいフラッシュ）、光の筋と花びらが玉から放射状に広がる。やさしい鈴 |
+| そよ風 | 黄緑の光と葉が広がり、ゆらゆら漂う |
+| 凪 | **無風**。ふっと暗くなり、動きがすべて止まる。音なし |
+| 向かい風 | 突風が正面から吹きつける（風の筋・枯れ葉）。画面が暗くなり、ゆっくり揺れる。風の音 |
+| 嵐 | **暴風**。雨と風の筋が一気に襲い、画面が震え、稲光は**1回だけのやわらかい明るさ**。風の音。**約3秒で弱まる**（荒れたまま止めない・憲法第10条） |
+
+- **点滅はしない**（稲光も1回だけ・明るさは控えめ）
+- 「動きを減らす」では**色の変化だけ**（粒子・揺れ・光の筋なし）
+- 音は「音」オンのときだけ。振動は Android のみ
+- 粒子の数と負荷は実機で確かめ、重い端末では減らす
+
+---
+
+## 9. フィードバック（振動・音・動きをへらす）
+
+`lib/ui/feedback.ts`・`lib/ui/preferences.ts`。設定は端末ごと（localStorage）。
+
+- **振動**：既定オン。Android のみ（iOS Safari は振動しない）。最初のタップのあとだけ。軽い操作は 5〜12ms、決定・保存は「タ・タン」の短いパターン、上限・エラーは 25〜30ms
+- **音**：既定オフ。最初のタップで AudioContext を用意。`tick`（回転盤のカラカラ・タブ）・`pon`（決定・起動）・`seal`（封蝋）・`chime`（今日の1枚・手紙を引き出す）・`pop`（玉が収まる・ボタン）・`rub`（紙のこすれ・テープ・折り目）・`bell`（追い風）・`wind`／`gust`（向かい風・嵐）
+- **動きをへらす**：OS の `prefers-reduced-motion` か設定のスイッチで `<html class="rm">`。アニメーションを止め、遷移を一瞬にする。起動画面は静止画・風は色だけ・手紙は開いた状態で出す
+
+---
+
+## 10. アクセシビリティとレスポンシブ
+
+- 375px（iPhone SE）で崩れない。430px を超える画面では中央に置き、外側は革の色
+- タッチ領域は最小 54px（補助の丸は 40〜44px でも、当たり判定は広げる）
+- すべてのアイコンボタンに `aria-label`（例：「一言だけ書く」「しっかり書く」「今日はここまで」「あとで」「選び直す」「長押しで保存」「書き終えた」「質問をとばす」「音声で書く」「これまでの相談」「新しい相談」「今週の手紙を開く」「封をはがす」「手紙を引っぱり出す」「この手紙のことを相談する」「閉じる」「設定（アカウントを守る）」「もどる」）
+- 回転盤はなぞる以外の操作でも選べるようにする（横の玉のタップで回ってくる・キーボードの左右）
+- 長押しの操作は、押している間の進捗の輪で分かるようにする
+- フォーカスの輪は見えるようにする（金色か緑の点線）
+- リールの一言など、動的に変わる文は `aria-live="polite"`
+
+---
+
+## 11. やること・やらないこと
+
+### やること
+- 本人の文章は、表示も引用も一字も変えない
+- 操作は親指の弧に・ボタンは丸いアイコン・文字は小さく添えるだけ
+- 今日の気分は1か所の値から、すべての画面に同じ玉で出す
+- 紙は少し傾け、鉛筆の線はゆらがせる
+- 日本語の文言はプロトタイプのとおり
+
+### やらないこと
+- 光沢・ガラス・汎用の線画アイコン・絵文字・明朝体
+- 画面の下の説明文のフッター・ログインを最初に求めること
+- 6項目の成形カードを画面に出すこと・AI が本人の文章を書き換えること
+- 空いた日を責める文言・点滅・荒れたまま止まらない演出
+- ホームのカレンダーと最近の記録の一覧
