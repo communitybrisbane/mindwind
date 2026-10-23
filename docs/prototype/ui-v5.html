@@ -301,6 +301,70 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
 #s-splash.leaving #spGo{opacity:0;animation:none}
 #s-splash.leaving .sp-br{display:none}
 
+
+/* ---------- 設定・ログイン ---------- */
+#s-home .count{margin-right:50px}
+#homeGear{left:338px;top:52px;width:40px;height:40px;font-size:19px;z-index:6}
+#linkNudge{position:absolute;left:18px;right:18px;top:690px;height:54px;display:flex;align-items:center;gap:10px;padding:0 6px 0 14px;cursor:pointer;z-index:4;transform:rotate(.4deg)}
+#linkNudge.off{display:none}
+#linkNudge .ni{font-size:25px;color:#0d5a3c;flex:none}
+#linkNudge .nt{flex:1;font-family:var(--hand);font-size:13.5px;line-height:1.45;color:#2c2a26}
+#linkNudge .nx{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:19px;color:rgba(52,50,45,.5);flex:none}
+#s-settings .top{position:absolute;top:58px;left:24px}
+#setTitle{font-family:var(--mincho);font-size:25px;letter-spacing:.03em;margin-top:6px}
+#setArea{position:absolute;left:12px;right:12px;top:112px;bottom:128px;overflow-y:auto;overflow-x:hidden;padding:6px 4px 34px;scrollbar-width:none}
+#setArea::-webkit-scrollbar{display:none}
+.scard{position:relative;margin:0 0 22px;padding:18px 18px 12px;transform:rotate(-.25deg)}
+.scard:nth-child(even){transform:rotate(.25deg)}
+.scard h3{font-family:var(--mincho);font-weight:500;font-size:14px;margin:0 0 10px;color:rgba(52,50,45,.7);letter-spacing:.08em}
+.acct{display:flex;gap:14px;align-items:center;padding-bottom:6px}
+.acct .badge{width:58px;height:58px;border-radius:50%;border:2px dashed rgba(52,50,45,.45);display:flex;align-items:center;justify-content:center;font-size:30px;flex:none;color:#34322d;transition:all .4s}
+.acct.linked .badge{border:2px solid #0d5a3c;color:#0d5a3c;background:rgba(13,90,60,.1)}
+.acct .tx{flex:1;font-family:var(--hand);font-size:14.5px;line-height:1.7;color:#2c2a26}
+.acct .tx b{font-family:var(--mincho);font-weight:500;font-size:17px;display:block;margin-bottom:2px}
+.acct .tx small{display:block;font-family:var(--hand2);font-size:12.5px;color:rgba(52,50,45,.66);line-height:1.65;margin-top:3px}
+.rb.inline{position:relative;flex:none}
+#linkBtn{width:68px;height:68px;font-size:30px}
+#nameIn{width:100%;border:0;border-bottom:1.8px dashed rgba(52,50,45,.4);background:transparent;font-family:var(--hand);font-size:20px;color:#2c2a26;padding:4px 0 6px;outline:none;caret-color:#0d5a3c}
+#nameIn::placeholder{color:rgba(52,50,45,.45)}
+#nameHint{font-family:var(--hand2);font-size:12px;color:rgba(52,50,45,.6);margin:8px 0 6px;line-height:1.6}
+.trow,.lrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px dashed rgba(52,50,45,.2);font-family:var(--hand);font-size:17px;color:#2c2a26}
+.trow:first-of-type,.lrow:first-of-type{border-top:0}
+.trow span.l{flex:1}
+.trow svg,.lrow svg{font-size:22px;flex:none}
+.sw{width:54px;height:30px;border-radius:15px;border:1.8px solid rgba(52,50,45,.5);position:relative;transition:background .2s,border-color .2s;cursor:pointer;flex:none}
+.sw::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#34322d;transition:transform .2s cubic-bezier(.3,1.5,.5,1),background .2s}
+.sw.on{background:#2f7a5c;border-color:#2f7a5c}
+.sw.on::after{transform:translateX(24px);background:#f4ecd8}
+.lrow{cursor:pointer}
+.lrow .ar{margin-left:auto;font-size:18px;color:rgba(52,50,45,.4)}
+.lrow.danger{color:#a8321e}
+#setNav{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(transparent,rgba(29,41,29,.88) 55%);pointer-events:none}
+#setBack{left:26px;top:34px;width:64px;height:64px;font-size:28px;pointer-events:auto}
+#dlg{position:absolute;inset:0;z-index:48;background:rgba(12,20,14,.62);opacity:0;pointer-events:none;transition:opacity .25s;display:flex;align-items:center;justify-content:center}
+#dlg.show{opacity:1;pointer-events:auto}
+#dlgBox{width:322px;padding:26px 24px 22px;transform:rotate(-.8deg) scale(.92);transition:transform .4s cubic-bezier(.2,1.3,.4,1)}
+#dlg.show #dlgBox{transform:rotate(-.8deg)}
+#dlgT{font-family:var(--mincho);font-size:19px;color:#2b2a26;margin-bottom:10px}
+#dlgX{font-family:var(--hand);font-size:15.5px;line-height:1.85;color:#2c2a26}
+#dlgBtns{display:flex;justify-content:center;gap:20px;margin-top:22px;padding-bottom:16px}
+#dlgBtns .rb{width:62px;height:62px;font-size:27px}
+#dlgBtns .rb .cap,#linkBtn .cap{color:#3a362f}
+#dlgBtns{gap:26px}
+#dlgBtns .rb.warn{background-color:#b8402c;background-image:var(--tex2),var(--tex1);background-blend-mode:multiply;color:#f7e9e0}
+#dlgBtns .rb.holding{background:conic-gradient(#f0dca0 calc(var(--p,0)*1%),rgba(184,64,44,.35) 0)}
+#gsheet{position:absolute;left:0;right:0;bottom:0;z-index:47;background:#fbfaf6;color:#2c2a26;border-radius:22px 22px 0 0;padding:20px 20px 32px;transform:translateY(105%);transition:transform .45s cubic-bezier(.2,1,.3,1);box-shadow:0 -10px 30px rgba(0,0,0,.4)}
+#gsheet.show{transform:none}
+#gsheet .gh{font-family:var(--ui);font-size:15px;font-weight:700;margin-bottom:4px}
+#gsheet .gs{font-family:var(--ui);font-size:12.5px;color:#666;margin-bottom:12px}
+#gsheet .ga{display:flex;align-items:center;gap:12px;padding:12px 6px;border-top:1px solid #e6e3da;cursor:pointer;font-family:var(--ui)}
+#gsheet .ga:active{background:#f1efe8}
+#gsheet .gav{width:38px;height:38px;border-radius:50%;background:#2f7a5c;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+#gsheet .ga:nth-of-type(2) .gav{background:#b0623a}
+#gsheet .gn{font-size:14.5px;font-weight:700;line-height:1.3}
+#gsheet .ge{font-size:12.5px;color:#666}
+#gsheet .gnote{font-size:11.5px;color:#888;margin-top:12px;line-height:1.6}
+
 /* ---------- 3タブ共通 ---------- */
 #tabs{transition:transform .35s ease}
 #tabs.hide{transform:translateY(100%)}
@@ -477,12 +541,14 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
 
       <!-- ③ ホーム -->
       <section class="scr" id="s-home">
-        <div class="top"><div><div class="sm">10月25日 日曜日</div><div class="hi">おかえり、ゆうさん</div></div><div class="count"><div class="sm" style="letter-spacing:.1em;margin-bottom:4px">今週</div><span class="n"><span class="roll" id="roll"><span>4</span><span>5</span></span></span></div></div>
+        <div class="top"><div><div class="sm">10月25日 日曜日</div><div class="hi">おかえり、<span class="nm"></span></div></div><div class="count"><div class="sm" style="letter-spacing:.1em;margin-bottom:4px">今週</div><span class="n"><span class="roll" id="roll"><span>4</span><span>5</span></span></span></div></div>
+        <button class="rb chalk" id="homeGear" aria-label="設定"><svg class="i" data-ic="gear"></svg></button>
         <div id="week" class="sheet"></div>
         <div id="reunion" role="button" aria-label="1か月前のあなたの言葉をめくる"><div class="fl">
           <div class="fc front"><span class="tape"></span><div class="big"><svg class="i" data-ic="corner"></svg></div><div class="mincho" style="font-size:16px;font-weight:500">今日の1枚</div></div>
           <div class="fc back"><span class="tape"></span><span class="chip">1か月前のあなた ・ 9/25</span><div class="qt">配属が決まって、正直ほっとした気持ちと、ちゃんとやれるかなって不安が半分ずつ。</div></div>
         </div></div>
+        <div id="linkNudge" class="sheet" role="button" aria-label="記録を守る（設定を開く）"><span class="ni"><svg class="i" data-ic="shield"></svg></span><span class="nt">いまは、この端末だけに残っています。<br>Googleでつなぐと、記録を守れます。</span><span class="nx" id="nudgeX" aria-label="閉じる">×</span></div>
         <div id="letterCard" class="sheet" role="button" aria-label="今週の手紙を開く"><div class="envi"><svg class="i" data-ic="env"></svg><b></b></div><div class="t"><b>手紙が届いたよ</b><span>この1週間の、あなたの言葉</span></div><div class="go"><svg class="i" data-ic="arrow"></svg></div></div>
         
       </section>
@@ -507,7 +573,7 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
           <div class="P P1"><div class="sh"></div>
             <div class="face fr" id="p1face">
               <p class="pen date">2026.10.25 日</p>
-              <p class="pen to">ゆうさんへ</p>
+              <p class="pen to"><span class="nm"></span>へ</p>
               <p class="pen">今週もおつかれさま。<br>今週は5日、ここに来てくれたね。</p>
               <div class="stamps" id="r5"></div>
             </div>
@@ -536,7 +602,37 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
         </div>
       </section>
 
-<!-- 記録タブ -->
+<!-- 設定 -->
+      <section class="scr" id="s-settings">
+        <div class="top"><div class="sm">アカウントと設定</div><div id="setTitle">設定</div></div>
+        <div id="setArea">
+          <div class="scard sheet" id="acctCard">
+            <h3>アカウント</h3>
+            <div class="acct" id="acctRow"></div>
+          </div>
+          <div class="scard sheet">
+            <h3>呼び名</h3>
+            <input id="nameIn" maxlength="12" aria-label="呼び名" autocomplete="off">
+            <div id="nameHint"></div>
+          </div>
+          <div class="scard sheet">
+            <h3>くらし</h3>
+            <div class="trow"><svg class="i" data-ic="bookmark"></svg><span class="l">音</span><div class="sw" id="swSnd" role="switch" aria-label="音"></div></div>
+            <div class="trow"><svg class="i" data-ic="hanko"></svg><span class="l">振動</span><div class="sw" id="swVib" role="switch" aria-label="振動"></div></div>
+            <div class="trow"><svg class="i" data-ic="swirl"></svg><span class="l">動きをへらす</span><div class="sw" id="swRm" role="switch" aria-label="動きをへらす"></div></div>
+          </div>
+          <div class="scard sheet">
+            <h3>そのほか</h3>
+            <div class="lrow" id="rowTerms"><svg class="i" data-ic="book"></svg>利用規約<span class="ar"><svg class="i" data-ic="arrow"></svg></span></div>
+            <div class="lrow" id="rowPriv"><svg class="i" data-ic="shield"></svg>プライバシー<span class="ar"><svg class="i" data-ic="arrow"></svg></span></div>
+            <div class="lrow" id="rowOut"><svg class="i" data-ic="exit"></svg>ログアウト</div>
+            <div class="lrow danger" id="rowDel"><svg class="i" data-ic="trash"></svg>アカウントを削除</div>
+          </div>
+        </div>
+        <div id="setNav"><button class="rb chalk" id="setBack" aria-label="もどる"><svg class="i" data-ic="arrowL"></svg></button></div>
+      </section>
+
+      <!-- 記録タブ -->
       <section class="scr" id="s-record">
         <div class="top"><div><div class="sm">10月25日 日曜日</div><div class="recttl">今日の1ページ</div></div><div class="steps" aria-label="日記・深掘り・保存"><i class="on" id="st1"></i><i id="st2"></i><i id="st3"></i></div></div>
         <div id="recPaper" class="sheet">
@@ -578,6 +674,13 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
           <button class="rb chalk" id="hNext" aria-label="次へ"><svg class="i" data-ic="arrow"></svg></button>
         </div>
       </div>
+      <div id="gsheet" role="dialog" aria-label="Googleアカウントを選ぶ">
+        <div class="gh">アカウントを選択</div><div class="gs">MindWind に進む（このあとGoogleの画面が開きます）</div>
+        <div class="ga" data-a="new"><div class="gav">ゆ</div><div><div class="gn">ゆう</div><div class="ge">yu@example.com</div></div></div>
+        <div class="ga" data-a="used"><div class="gav">さ</div><div><div class="gn">さくら（もう MindWind で使用中）</div><div class="ge">sakura@example.com</div></div></div>
+        <div class="gnote">※ 本番では Google の標準の画面（ポップアップ）が開きます。</div>
+      </div>
+      <div id="dlg"><div id="dlgBox" class="sheet"><div id="dlgT"></div><div id="dlgX"></div><div id="dlgBtns"></div></div></div>
       <div id="toast"></div>
       <div id="zone"><b style="left:18px;top:60px">目だけ（触らない）</b><b style="left:150px;top:470px">指は届く</b><b style="left:22px;top:810px;background:rgba(0,120,70,.8)">親指の弧</b></div>
     </div>
@@ -587,7 +690,7 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
     <h1>3タブ v5（ホーム・記録・相談）</h1>
     <p class="sub">下の3タブ（ホーム／記録／相談）を行き来して触れます。最初の気分スタンプ → ホーム、の流れも前のままです。</p>
     <div class="ctl">
-      <button id="rst">最初から</button><button data-go="splash">起動画面</button><button data-go="stamp">① 回転盤</button><button data-go="home">③ ホーム</button><button data-go="letter">④ 手紙</button>
+      <button id="rst">最初から</button><button data-go="splash">起動画面</button><button data-go="set-guest">設定（ゲスト）</button><button data-go="set-linked">設定（連携済み）</button><button data-go="stamp">① 回転盤</button><button data-go="home">③ ホーム</button><button data-go="letter">④ 手紙</button>
     </div>
     <div class="ctl">
       <label><input type="checkbox" id="optSnd">音</label>
@@ -601,6 +704,16 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <li>回るたびに<b>カラカラ</b>（音をオンに）。上の紙の矢印がはじかれる。</li>
       <li>真ん中の文字が<b>リールのように回って</b>、いまの玉の名前と説明が出る。</li>
       <li>止まった<b>真ん中の玉をタップ</b>すると、今日の気分に決まる。横の玉をタップすると、その玉が真ん中まで回ってくる。</li>
+    </ul>
+    <h2>ログインのしくみ（設定）</h2>
+    <ul>
+      <li><b>最初はログイン不要</b>：起動画面 → 気分、の流れ。裏でゲスト（匿名）として自動的に始まる。</li>
+      <li><b>ホームの右上の歯車</b>から設定へ。アカウント欄は、ゲストなら「ゲスト／30日使わないと消える」と、緑の「守る」ボタン。押すと Google のアカウント選択（本番では Google の標準画面）。</li>
+      <li><b>連携できたら</b>：「Googleでつながっています」に変わり、記録はそのまま引き継がれ、上限が広がる。</li>
+      <li><b>すでに使われているアカウント</b>（さくら）を選ぶと、ログインし直しの確認（いまのゲストの記録は消えると警告）。</li>
+      <li><b>連携を促す案内</b>：ゲストのときだけ、ホームの下に小さな付箋（×で閉じられる）。連携すると出なくなる。</li>
+      <li><b>呼び名</b>：設定を開かなければ、自動の呼び名（そよ風さん）。入れるとホームの挨拶と手紙の宛名がすぐ変わる。</li>
+      <li><b>ログアウト</b>：ゲストは「記録に戻れなくなる」と警告（つなぐ／ログアウト／やめる）。<b>削除</b>は赤いボタンを長押し。</li>
     </ul>
     <h2>起動画面（ロゴ）</h2>
     <ul>
@@ -650,7 +763,7 @@ function bead(i,size){
   return '<svg viewBox="0 0 100 100" width="'+size+'" height="'+size+'"><g filter="url(#wc)"><circle cx="50" cy="50" r="42" fill="'+m.c+'" opacity=".86"/><circle cx="50" cy="50" r="41" fill="none" stroke="'+m.d+'" stroke-width="4" opacity=".6"/></g><g filter="url(#pencil)" style="color:#33312c"><use href="#g'+(i+1)+'" x="22" y="22" width="56" height="56"/></g></svg>';
 }
 
-const ICONS={"mic":"<path d=\"M16 4.6C13.6 4.4 12 6.2 12.1 8.6L12 15C12 17.4 13.6 19.1 16 19C18.4 19.1 20 17.4 20 15L19.9 8.6C20 6.2 18.4 4.4 16 4.6Z\"/><path d=\"M7.6 14C7.8 19.2 11.2 22.4 16 22.4C20.8 22.4 24.2 19.2 24.4 14\"/><path d=\"M16 22.6L16.1 27.4\"/><path d=\"M11.4 27.8C14 27.2 18 27.3 20.6 27.8\"/>","pencil": "<path d=\"M9 22.4C13 18 17.6 13.4 21.4 9.4C22.5 8.2 24.2 8.4 25.1 9.5C26 10.5 25.9 12 24.9 13C20.8 17.3 16.4 21.6 12.3 25.6C11.7 26.2 10.8 26.3 10 26.4L5.8 27L6.4 22.8C6.5 22.5 8.7 22.6 9 22.4Z\"/><path d=\"M19.2 11.6L23 15.4\"/><path d=\"M7 21.4L10.7 25\"/><path d=\"M2.6 30.2C8 29.4 11 30.6 15 29.2C19 27.6 22 29.6 29 28.6\"/>", "book": "<path d=\"M16 9.4C13 7.6 8.6 7.2 4.4 8.4L4.8 24.7C8.7 23.7 12.9 24 16 25.7C19.2 24 23.4 23.7 27.3 24.7L27.6 8.4C23.4 7.2 18.9 7.6 16 9.4Z\"/><path d=\"M16 9.6L16.1 25.4\"/><path d=\"M7.6 12.6C9.5 12.2 11.8 12.4 13.2 13.1\"/><path d=\"M7.7 16.6C9.6 16.3 11.6 16.4 13.3 17.1\"/><path d=\"M19.4 13.4C21.6 12.2 24.2 12.8 24.3 14.6C24.4 16.2 22.3 16.5 21.6 15.3\"/>", "moon": "<path d=\"M20.6 5.6C14.4 6.4 10.2 11.6 10.8 17.8C11.4 24 17 28 23 26.8C18.2 25 15.8 20.4 17 16C17.9 12.6 19.9 8.6 20.6 5.6Z\"/><path d=\"M13.6 17.4C14.4 18.5 15.8 18.8 16.8 18\"/><path d=\"M23.4 8.4H27.4L23.6 12.6H27.8\"/><path d=\"M26.2 18.2L26.3 18.3\"/>", "arrow": "<path d=\"M4.6 17.2C9.6 15.6 17 16.6 25.6 15.4\"/><path d=\"M19.6 9.4C22.6 11.8 25 14.2 26.4 15.8C24.6 18.2 22 20.6 19 23.2\"/>", "arrowL": "<path d=\"M27.4 17.2C22.4 15.6 15 16.6 6.4 15.4\"/><path d=\"M12.4 9.4C9.4 11.8 7 14.2 5.6 15.8C7.4 18.2 10 20.6 13 23.2\"/>", "plane": "<path d=\"M4.4 15.4L27.6 4.6L21.8 27L15.8 17.8Z\"/><path d=\"M15.8 17.8L27.4 4.8\"/><path d=\"M15.8 17.8L14.6 24.6L18.8 20.8\"/><path d=\"M2.6 23C4.6 23.6 5.8 25 8 24.4\"/>", "check": "<path d=\"M5.6 17.4C8.8 20 10.8 22.8 12.4 25.8C15.6 18.6 20.6 12 27.2 6\"/><path d=\"M4.8 29C12 27.6 20 28.8 27.4 27.6\"/>", "env": "<path d=\"M4.6 9.4C10 8.6 21 8.9 27.4 9.2L27.8 23.4C21.5 24.2 10.5 24 4.4 23.6Z\"/><path d=\"M4.8 9.8C9 14 12.8 17 16 18.6C19.4 17 23.4 13.4 27.2 9.6\"/><path d=\"M5 23.2L12.4 16.2\"/><path d=\"M27 23.2L19.8 16.4\"/>", "envopen": "<path d=\"M4.4 14.2L16 5.2L27.6 14.2\"/><path d=\"M4.6 14.4L4.9 25.6C11 26.4 21 26.4 27.1 25.4L27.4 14.4\"/><path d=\"M5 14.8C9 18 12.6 20.6 16 21.4C19.6 20.4 23 18 27 14.8\"/><path d=\"M11.4 13.2L11.8 8.6\"/><path d=\"M20.6 13L20.4 9\"/>", "undo": "<path d=\"M10.2 8.4C6.6 10.4 4.8 14.2 6 18.2C7.4 22.8 12.6 25.4 17.4 24C22 22.7 25 18.4 24.2 13.8\"/><path d=\"M5.6 5.6L10.4 8.6L7.2 12.8\"/>", "bookmark": "<path d=\"M9 5.6C12.5 5 19.5 5.2 23 5.6L23.4 26.8C21 25.2 19 23 16.2 21.4C13.6 23 11.2 25.2 9.2 27Z\"/><path d=\"M13 11.2C14.6 10.8 17.4 11 19 11.4\"/>", "hanko": "<path d=\"M7.6 22.6C10.4 21.4 21.6 21.4 24.4 22.6L24.6 26.6C21 27.8 11 27.8 7.4 26.6Z\"/><path d=\"M12.6 22C12.4 17.6 12 14.4 13.4 11.4C14.8 8.4 18.2 8.4 19.4 11.6C20.4 14.4 19.8 18 19.4 22\"/><path d=\"M11.8 6.8C13.6 5.6 18.4 5.6 20.2 6.8\"/>", "corner": "<path d=\"M6 6.6C12 5.8 20 6 26 6.4L26.2 18.6C23.2 19.2 21 21 20.4 26.2C14.2 26.6 10 26.4 5.8 26.2Z\"/><path d=\"M26.2 18.6C23.6 19.6 21 21.4 20.4 26.2\"/><path d=\"M10 12H21\"/><path d=\"M10 16.2H17\"/>", "swirl": "<path d=\"M16 17.6C16 14.2 20.4 14.2 20.4 17.4C20.4 22.8 10.6 22.8 10.6 16.4C10.6 8 26.6 8.2 26.6 18C26.6 28.4 5.6 28.2 5.6 14.6\"/>", "stack": "<path d=\"M6.8 21.4L25.2 21.8L25.6 26L7.2 25.6Z\"/><path d=\"M7.4 15.8L25 16L25.2 20.4\"/><path d=\"M7.8 10.2L24.6 10.6L24.8 14.8\"/><path d=\"M16 6.6C16 13 16.2 20 16.4 27\"/>", "cloud": "<path d=\"M8.6 22.6C4.6 22 3.6 16.8 7 14.8C6.8 10 12.4 8.2 15.6 11.2C18 8 23.4 9.6 23.6 14C27.6 14.4 28.4 20.6 24.6 22.4C20 23.6 14 23.2 11.6 23.4C10.6 24.6 9.4 25.8 7.6 26.8C8.4 25.4 8.6 24 8.6 22.6Z\"/>"};
+const ICONS={"gear":"<circle cx=\"16\" cy=\"16\" r=\"4.6\"/><circle cx=\"16.2\" cy=\"15.8\" r=\"9.4\"/><path d=\"M16 3.6V6.8M16 25.2V28.4M3.6 16H6.8M25.2 16H28.4M7.2 7.2L9.5 9.5M22.5 22.5L24.8 24.8M24.8 7.2L22.5 9.5M9.5 22.5L7.2 24.8\"/>","shield":"<path d=\"M16 4.2C20 6.2 23.4 6.8 26.2 6.8C26.2 17.6 22.6 24 16 27.8C9.4 24 5.8 17.6 5.8 6.8C8.6 6.8 12 6.2 16 4.2Z\"/><path d=\"M11.4 15.6L14.8 19L21 12\"/>","trash":"<path d=\"M6.6 9H25.4M12.6 9V6.2H19.4V9M9.6 9.4L10.8 26.6H21.2L22.4 9.4M14 13.6V22.2M18 13.6V22.2\"/>","exit":"<path d=\"M13 5.8H7.4V26.2H13M18.4 10.8L23.6 16L18.4 21.2M23.6 16H12.2\"/>","mic":"<path d=\"M16 4.6C13.6 4.4 12 6.2 12.1 8.6L12 15C12 17.4 13.6 19.1 16 19C18.4 19.1 20 17.4 20 15L19.9 8.6C20 6.2 18.4 4.4 16 4.6Z\"/><path d=\"M7.6 14C7.8 19.2 11.2 22.4 16 22.4C20.8 22.4 24.2 19.2 24.4 14\"/><path d=\"M16 22.6L16.1 27.4\"/><path d=\"M11.4 27.8C14 27.2 18 27.3 20.6 27.8\"/>","pencil": "<path d=\"M9 22.4C13 18 17.6 13.4 21.4 9.4C22.5 8.2 24.2 8.4 25.1 9.5C26 10.5 25.9 12 24.9 13C20.8 17.3 16.4 21.6 12.3 25.6C11.7 26.2 10.8 26.3 10 26.4L5.8 27L6.4 22.8C6.5 22.5 8.7 22.6 9 22.4Z\"/><path d=\"M19.2 11.6L23 15.4\"/><path d=\"M7 21.4L10.7 25\"/><path d=\"M2.6 30.2C8 29.4 11 30.6 15 29.2C19 27.6 22 29.6 29 28.6\"/>", "book": "<path d=\"M16 9.4C13 7.6 8.6 7.2 4.4 8.4L4.8 24.7C8.7 23.7 12.9 24 16 25.7C19.2 24 23.4 23.7 27.3 24.7L27.6 8.4C23.4 7.2 18.9 7.6 16 9.4Z\"/><path d=\"M16 9.6L16.1 25.4\"/><path d=\"M7.6 12.6C9.5 12.2 11.8 12.4 13.2 13.1\"/><path d=\"M7.7 16.6C9.6 16.3 11.6 16.4 13.3 17.1\"/><path d=\"M19.4 13.4C21.6 12.2 24.2 12.8 24.3 14.6C24.4 16.2 22.3 16.5 21.6 15.3\"/>", "moon": "<path d=\"M20.6 5.6C14.4 6.4 10.2 11.6 10.8 17.8C11.4 24 17 28 23 26.8C18.2 25 15.8 20.4 17 16C17.9 12.6 19.9 8.6 20.6 5.6Z\"/><path d=\"M13.6 17.4C14.4 18.5 15.8 18.8 16.8 18\"/><path d=\"M23.4 8.4H27.4L23.6 12.6H27.8\"/><path d=\"M26.2 18.2L26.3 18.3\"/>", "arrow": "<path d=\"M4.6 17.2C9.6 15.6 17 16.6 25.6 15.4\"/><path d=\"M19.6 9.4C22.6 11.8 25 14.2 26.4 15.8C24.6 18.2 22 20.6 19 23.2\"/>", "arrowL": "<path d=\"M27.4 17.2C22.4 15.6 15 16.6 6.4 15.4\"/><path d=\"M12.4 9.4C9.4 11.8 7 14.2 5.6 15.8C7.4 18.2 10 20.6 13 23.2\"/>", "plane": "<path d=\"M4.4 15.4L27.6 4.6L21.8 27L15.8 17.8Z\"/><path d=\"M15.8 17.8L27.4 4.8\"/><path d=\"M15.8 17.8L14.6 24.6L18.8 20.8\"/><path d=\"M2.6 23C4.6 23.6 5.8 25 8 24.4\"/>", "check": "<path d=\"M5.6 17.4C8.8 20 10.8 22.8 12.4 25.8C15.6 18.6 20.6 12 27.2 6\"/><path d=\"M4.8 29C12 27.6 20 28.8 27.4 27.6\"/>", "env": "<path d=\"M4.6 9.4C10 8.6 21 8.9 27.4 9.2L27.8 23.4C21.5 24.2 10.5 24 4.4 23.6Z\"/><path d=\"M4.8 9.8C9 14 12.8 17 16 18.6C19.4 17 23.4 13.4 27.2 9.6\"/><path d=\"M5 23.2L12.4 16.2\"/><path d=\"M27 23.2L19.8 16.4\"/>", "envopen": "<path d=\"M4.4 14.2L16 5.2L27.6 14.2\"/><path d=\"M4.6 14.4L4.9 25.6C11 26.4 21 26.4 27.1 25.4L27.4 14.4\"/><path d=\"M5 14.8C9 18 12.6 20.6 16 21.4C19.6 20.4 23 18 27 14.8\"/><path d=\"M11.4 13.2L11.8 8.6\"/><path d=\"M20.6 13L20.4 9\"/>", "undo": "<path d=\"M10.2 8.4C6.6 10.4 4.8 14.2 6 18.2C7.4 22.8 12.6 25.4 17.4 24C22 22.7 25 18.4 24.2 13.8\"/><path d=\"M5.6 5.6L10.4 8.6L7.2 12.8\"/>", "bookmark": "<path d=\"M9 5.6C12.5 5 19.5 5.2 23 5.6L23.4 26.8C21 25.2 19 23 16.2 21.4C13.6 23 11.2 25.2 9.2 27Z\"/><path d=\"M13 11.2C14.6 10.8 17.4 11 19 11.4\"/>", "hanko": "<path d=\"M7.6 22.6C10.4 21.4 21.6 21.4 24.4 22.6L24.6 26.6C21 27.8 11 27.8 7.4 26.6Z\"/><path d=\"M12.6 22C12.4 17.6 12 14.4 13.4 11.4C14.8 8.4 18.2 8.4 19.4 11.6C20.4 14.4 19.8 18 19.4 22\"/><path d=\"M11.8 6.8C13.6 5.6 18.4 5.6 20.2 6.8\"/>", "corner": "<path d=\"M6 6.6C12 5.8 20 6 26 6.4L26.2 18.6C23.2 19.2 21 21 20.4 26.2C14.2 26.6 10 26.4 5.8 26.2Z\"/><path d=\"M26.2 18.6C23.6 19.6 21 21.4 20.4 26.2\"/><path d=\"M10 12H21\"/><path d=\"M10 16.2H17\"/>", "swirl": "<path d=\"M16 17.6C16 14.2 20.4 14.2 20.4 17.4C20.4 22.8 10.6 22.8 10.6 16.4C10.6 8 26.6 8.2 26.6 18C26.6 28.4 5.6 28.2 5.6 14.6\"/>", "stack": "<path d=\"M6.8 21.4L25.2 21.8L25.6 26L7.2 25.6Z\"/><path d=\"M7.4 15.8L25 16L25.2 20.4\"/><path d=\"M7.8 10.2L24.6 10.6L24.8 14.8\"/><path d=\"M16 6.6C16 13 16.2 20 16.4 27\"/>", "cloud": "<path d=\"M8.6 22.6C4.6 22 3.6 16.8 7 14.8C6.8 10 12.4 8.2 15.6 11.2C18 8 23.4 9.6 23.6 14C27.6 14.4 28.4 20.6 24.6 22.4C20 23.6 14 23.2 11.6 23.4C10.6 24.6 9.4 25.8 7.6 26.8C8.4 25.4 8.6 24 8.6 22.6Z\"/>"};
 document.querySelectorAll("svg[data-ic]").forEach(function(e){var p=ICONS[e.dataset.ic];e.setAttribute("viewBox","0 0 32 32");e.innerHTML='<g transform="translate(.7 .55)" opacity=".28">'+p+"</g>"+p});
 /* 今日の気分は、ここ1か所（mood）から、すべての画面に出す */
 const todayMood=()=>mood==null?-1:mood;
@@ -840,7 +953,7 @@ $('#done').onclick=()=>{vib(12);snd.tick();go('home')};
 /* 手紙：テープをはがす → フタが開く → 指で引っぱり出す → 三つ折りを1枚ずつ開く */
 let lstate='closed';
 function openLetter(){
-  go('letter');lstate='closed';
+  updateNames();go('letter');lstate='closed';
   $('#env').classList.remove('open','gone');
   const w=$('#sheetWrap'),L=$('#letter');
   w.classList.remove('show');w.scrollTop=0;
@@ -917,6 +1030,8 @@ function setTabs(name){
   const order=['home','record','consult'];
   $$('#tabs .tb').forEach((t,i)=>t.classList.toggle('on',order[i]===name));
   if(name==='record')resetRecord();
+  if(name==='settings')renderSettings();
+  if(name==='home'){updateNudge();updateNames()}
   if(name==='consult')setTimeout(()=>{autoGrow();const a=$('#cvArea');a.scrollTop=a.scrollHeight},60);
 }
 $$('#tabs .tb').forEach((t,i)=>t.addEventListener('click',()=>{vib(8);snd.rub();go(['home','record','consult'][i])}));
@@ -1076,28 +1191,108 @@ function splashTap(){
 }
 $('#s-splash').addEventListener('pointerdown',splashTap);
 
+/* ---- 設定・ログイン ---- */
+const AUTO_NAME='そよ風さん';
+let nick='',acct={linked:false,email:''},nudgeOff=false;
+const dispName=()=>nick?nick+'さん':AUTO_NAME;
+function updateNames(){$$('.nm').forEach(e=>e.textContent=dispName())}
+function updateNudge(){$('#linkNudge').classList.toggle('off',acct.linked||nudgeOff)}
+function dlg(title,text,btns){
+  $('#dlgT').textContent=title;$('#dlgX').innerHTML=text;
+  const b=$('#dlgBtns');b.innerHTML='';
+  btns.forEach(x=>{const e=document.createElement('button');e.className='rb inline '+(x.cls||'');e.setAttribute('aria-label',x.label);
+    e.innerHTML='<svg class="i" data-ic="'+x.icon+'"></svg><span class="cap">'+x.label+'</span>';
+    const g=e.querySelector('svg');g.setAttribute('viewBox','0 0 32 32');g.innerHTML='<g transform="translate(.7 .55)" opacity=".28">'+ICONS[x.icon]+'</g>'+ICONS[x.icon];
+    if(x.hold){hold2(e,x.fn)}else e.addEventListener('click',()=>{closeDlg();vib(8);snd.tick();x.fn&&x.fn()});
+    b.appendChild(e)});
+  $('#dlg').classList.add('show');vib(8);snd.rub();
+}
+function closeDlg(){$('#dlg').classList.remove('show')}
+function hold2(btn,fn){
+  let raf=0,t0=0,on=false;
+  const step=t=>{if(!on)return;const pp=Math.min(1,(t-t0)/1300);btn.style.setProperty('--p',pp*100);if(pp<1)raf=requestAnimationFrame(step);else{on=false;btn.style.setProperty('--p',0);btn.classList.remove('holding');closeDlg();vib([20,40,36]);snd.seal();fn&&fn()}};
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();on=true;btn.classList.add('holding');t0=performance.now();vib(10);raf=requestAnimationFrame(step)});
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,()=>{if(!on)return;on=false;btn.classList.remove('holding');btn.style.setProperty('--p',0);cancelAnimationFrame(raf)}));
+}
+function renderSettings(){
+  const r=$('#acctRow');
+  if(acct.linked){
+    r.className='acct linked';
+    r.innerHTML='<div class="badge"><svg class="i" data-ic="shield"></svg></div><div class="tx"><b>Googleでつながっています</b>'+acct.email+'<small>記録はこのアカウントに守られています。どの端末からでも続けられます。1日の上限も広がっています（記録30・相談30）。</small></div>';
+  }else{
+    r.className='acct';
+    r.innerHTML='<div class="badge"><svg class="i" data-ic="bookmark"></svg></div><div class="tx"><b>ゲスト</b>いまは、この端末のブラウザだけで使っています。<small>30日使わないと、記録が消えます。端末を変えたり、ブラウザのデータを消すと戻れません。</small></div><button class="rb green inline" id="linkBtn" aria-label="Googleでデータを守る"><svg class="i" data-ic="shield"></svg><span class="cap">守る</span></button>';
+    $('#linkBtn').addEventListener('click',openG);
+  }
+  $$('#acctRow svg[data-ic]').forEach(e=>{const p=ICONS[e.dataset.ic];e.setAttribute('viewBox','0 0 32 32');e.innerHTML='<g transform="translate(.7 .55)" opacity=".28">'+p+'</g>'+p});
+  $('#nameIn').value=nick;$('#nameIn').placeholder=AUTO_NAME.replace(/さん$/,'');
+  $('#nameHint').textContent=nick?'「'+nick+'さん」と呼びます。空にすると、自動の呼び名（'+AUTO_NAME+'）に戻ります。':'いまは自動の呼び名（'+AUTO_NAME+'）です。好きな呼び名を入れると、そう呼びます。';
+  $('#swSnd').classList.toggle('on',opt.snd);$('#swVib').classList.toggle('on',opt.vib);$('#swRm').classList.toggle('on',document.body.classList.contains('rm'));
+}
+function openG(){vib(10);snd.pop();$('#gsheet').classList.add('show')}
+$$('#gsheet .ga').forEach(a=>a.addEventListener('click',()=>{
+  $('#gsheet').classList.remove('show');vib(10);snd.pop();
+  if(a.dataset.a==='new'){
+    setTimeout(()=>{acct={linked:true,email:'yu@example.com'};renderSettings();updateNudge();vib([14,26,18]);snd.chime();toast('Googleとつながりました。記録はそのまま引き継がれます。')},450);
+  }else{
+    setTimeout(()=>dlg('このGoogleアカウントは使用中です','「さくら」さんのアカウントは、すでに MindWind で使われています。<br>そのアカウントでログインし直すこともできますが、<b>いまのゲストの記録は引き継げません</b>（消えます）。',[
+      {icon:'arrowL',label:'やめる',cls:'ink'},
+      {icon:'check',label:'ログインし直す',cls:'warn',fn:()=>{acct={linked:true,email:'sakura@example.com'};nick='';renderSettings();updateNames();updateNudge();toast('さくらさんのアカウントに入りました。ゲストの記録は消えました。')}}]),450);
+  }
+}));
+$('#nameIn').addEventListener('input',e=>{nick=e.target.value.trim();updateNames();$('#nameHint').textContent=nick?'「'+nick+'さん」と呼びます。空にすると、自動の呼び名（'+AUTO_NAME+'）に戻ります。':'いまは自動の呼び名（'+AUTO_NAME+'）です。好きな呼び名を入れると、そう呼びます。'});
+function swClick(id,chk){$(id).addEventListener('click',()=>{const c=$(chk);c.checked=!c.checked;c.dispatchEvent(new Event('change'));vib(8);snd.tick();renderSettings()})}
+swClick('#swSnd','#optSnd');swClick('#swVib','#optVib');swClick('#swRm','#optRm');
+$('#rowTerms').onclick=()=>toast('利用規約（紙の便箋で表示します）');
+$('#rowPriv').onclick=()=>toast('プライバシー（紙の便箋で表示します）');
+$('#rowOut').onclick=()=>{
+  if(!acct.linked){
+    dlg('ログアウトしますか？','ゲストのまま出ると、<b>この記録には戻れなくなります</b>。残したいときは、先にGoogleでつないでください。',[
+      {icon:'arrowL',label:'やめる',cls:'ink'},
+      {icon:'shield',label:'つなぐ',cls:'green',fn:openG},
+      {icon:'exit',label:'ログアウト',cls:'warn',fn:()=>{toast('ログアウトしました');setTimeout(()=>{acct={linked:false,email:''};nick='';nudgeOff=false;resetAll()},700)}}]);
+  }else{
+    dlg('ログアウトしますか？','また「Googleでデータを守る」から、同じアカウントで戻れます。記録は消えません。',[
+      {icon:'arrowL',label:'やめる',cls:'ink'},
+      {icon:'exit',label:'ログアウト',cls:'green',fn:()=>{toast('ログアウトしました');setTimeout(()=>{acct={linked:false,email:''};nick='';nudgeOff=false;resetAll()},700)}}]);
+  }
+};
+$('#rowDel').onclick=()=>{
+  dlg('アカウントを削除しますか？','日記・相談・手紙・気分を、<b>すべて完全に消します</b>。元に戻せません。'+(acct.linked?'<br>（本番では、先にGoogleで本人確認をします）':'')+'<br><br>消すときは、右の赤いボタンを<b>長押し</b>します。',[
+    {icon:'arrowL',label:'やめる',cls:'ink'},
+    {icon:'trash',label:'長押しで削除',cls:'warn',hold:true,fn:()=>{toast('すべて削除しました');setTimeout(()=>{acct={linked:false,email:''};nick='';nudgeOff=false;resetAll()},900)}}]);
+};
+$('#homeGear').onclick=()=>{vib(8);snd.rub();go('settings')};
+$('#setBack').onclick=()=>{vib(8);snd.tick();go('home')};
+$('#linkNudge').addEventListener('click',e=>{if(e.target.closest('#nudgeX'))return;vib(8);snd.rub();go('settings');setTimeout(()=>{$('#setArea').scrollTop=0},50)});
+$('#nudgeX').addEventListener('click',e=>{e.stopPropagation();nudgeOff=true;updateNudge();vib(6);snd.tick();toast('あとで、設定からつなげます')});
+
 /* ---- panel ---- */
 function resetAll(){
   resetStamp();resetRecord();$('#week').innerHTML='';delete $('#week').dataset.built;
   $('#roll').style.transform='';$('#reunion').classList.remove('flipped');busy=false;holding=false;
-  go('splash');startSplash();
+  go('splash');startSplash();updateNames();updateNudge();
 }
 $('#rst').onclick=resetAll;
 $$('[data-go]').forEach(b=>b.onclick=()=>{
   const g=b.dataset.go;
   if(g==='splash')resetAll();
+  if(g==='set-guest'){resetAll();acct={linked:false,email:''};mood=3;go('home');fillToday();setTimeout(()=>go('settings'),150)}
+  if(g==='set-linked'){resetAll();acct={linked:true,email:'yu@example.com'};mood=3;go('home');fillToday();setTimeout(()=>go('settings'),150)}
   if(g==='stamp'){resetAll();go('stamp');introSpin()}
   if(g==='home'){resetAll();mood=3;go('home');fillToday()}
   if(g==='letter'){resetAll();mood=3;go('home');fillToday();setTimeout(openLetter,150)}
 });
 
 /* 起動 */
-setTabs('splash');render();startSplash();
+setTabs('splash');updateNames();updateNudge();render();startSplash();
 const h=location.hash.slice(1);
 if(h&&h!=='t-splash'){go('stamp')}
 if(h==='t-choose'){setTimeout(()=>{th=-S*3;vel=0;mode='idle';render();commit(3)},700)}
 if(h==='t-write'){setTimeout(()=>{mood=3;openWrite();$('#ta').value='今日は会議で、また言えなかった。';$('#cnt').textContent='16 / 60'},300)}
 if(h==='t-home'){mood=3;go('home');fillToday()}
+if(h==='t-set'){mood=3;go('home');fillToday();setTimeout(()=>go('settings'),150)}
+if(h==='t-set2'){mood=3;acct={linked:true,email:'yu@example.com'};go('home');fillToday();setTimeout(()=>go('settings'),150)}
 if(h&&/^t-mood\d$/.test(h)){mood=+h.slice(6);go('home');fillToday()}
 if(h&&/^t-wm\d$/.test(h)){mood=+h.slice(4);openWrite();setTimeout(()=>{$('#ta').value='テスト'},100)}
 if(h==='t-letter'){mood=3;go('home');setTimeout(openLetter,200)}
