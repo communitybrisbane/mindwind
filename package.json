@@ -10,7 +10,9 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "backup": "node scripts/backup.mjs",
-    "migrate:embeddings": "node scripts/migrate-embeddings.mjs"
+    "migrate:embeddings": "node scripts/migrate-embeddings.mjs",
+    "backfill-chunks": "node scripts/backfill-chunks.mjs",
+    "cleanup:guests": "node scripts/cleanup-guests.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
