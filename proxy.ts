@@ -3,9 +3,12 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { APP_CHECK_MESSAGE, checkAppCheck } from "@/lib/api/appCheck";
+import { warnProductionConfigOnce } from "@/lib/api/productionGuard";
 import { checkRateLimit, getRateLimitStore } from "@/lib/api/rateLimit";
 
 export async function proxy(request: NextRequest) {
+  // 本番で ENFORCE_APP_CHECK=enforce と Upstash が無いときは、起動後の最初のリクエストで1回だけ警告する（止めない）
+  warnProductionConfigOnce();
   if (request.method === "OPTIONS") return NextResponse.next();
 
   const rl = await checkRateLimit(

@@ -91,6 +91,17 @@ Vercel の Environment Variables（本番）に上の2つを入れて再デプ�
 
 ---
 
+## 公開前チェック（本番に出す前に本人が見る）
+
+入口が自動ゲストなので、下が無いままだと Anthropic / OpenAI の費用がむき出しになります。コードは**止めずに警告だけ**出します（`proxy.ts` → `lib/api/productionGuard.ts`。Vercel のログに `[production-config] …` が出たら、どれかが足りない）。
+
+- [ ] Vercel の Environment Variables に `ENFORCE_APP_CHECK=enforce`（monitor で数日ようすを見たあと）
+- [ ] `NEXT_PUBLIC_RECAPTCHA_ENTERPRISE_SITE_KEY` が入っている
+- [ ] `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` が入っている（無いとレート制限がプロセス内メモリになり、サーバーレスではほぼ効かない）
+- [ ] `RATE_LIMIT_DISABLED` が本番に入っていない
+- [ ] Firebase Console → App Check →「API」タブで Authentication と Cloud Firestore を「適用」
+- [ ] Anthropic / OpenAI の月額 spend limit が設定されている（最後の砦）
+
 ## 確認のしかた（本人）
 
 - レート制限：同じ画面で深掘りを1分に11回以上呼ぶと「少し急ぎすぎたみたい。…」の 429 が返る
