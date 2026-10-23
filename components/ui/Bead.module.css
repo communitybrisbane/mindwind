@@ -1,0 +1,40 @@
+/* 気分の玉。見た目の正は docs/prototype/ui-v5.html（.bd svg / #week .slot） */
+
+.bead {
+  display: block;
+  flex: none;
+  overflow: visible;
+  filter: drop-shadow(0 2px 1.5px rgba(0, 0, 0, 0.3));
+}
+
+.glyph {
+  display: block;
+  flex: none;
+  overflow: visible;
+  filter: url(#pencil);
+}
+
+.slot {
+  display: block;
+  flex: none;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1.8px dashed rgba(52, 50, 45, 0.35);
+}
+
+.today {
+  border-color: #0d5a3c;
+  animation: breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .today {
+    animation: none;
+  }
+}
