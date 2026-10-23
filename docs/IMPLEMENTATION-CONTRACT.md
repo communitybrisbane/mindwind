@@ -307,7 +307,7 @@ users/{uid}
   moods/{YYYY-MM-DD}: { mood: 0-4, updatedAt }
   letters/{weekKey}: { weekKey, from, to, status, blocks, refs, moods[7], recordDays, model, createdAt, readAt }
   usage/{YYYY-MM-DD}: { deepdive, consult, record, letter }   ← shape は使わなくなる（80 で型から消す）
-  chats/{chatId}/messages/{id}: 既存のまま（refs は thoughtId の配列）
+  chats/{chatId}/messages/{id}: 既存のまま（assistant の refs は `{ id, date, title, quote }[]`。元の記録が消えたら `{ id, date, deleted: true }` に伏せる）
   recordChat: **廃止**（56 から書かない。67 は読まない。下書きは端末内〔68〕。GET /api/record-chat は 80 で削除）
 ```
 
@@ -328,8 +328,8 @@ users/{uid}
 | `GET /api/thoughts[?date=]` | — | `200 { thoughts: ThoughtSummary[] }`（新しい順・最大2000・`date` 指定でその日だけ） | 400 invalid_date | 56 |
 | `POST /api/thoughts` | `CreateThoughtRequest` | `200 { id, title, date }` | 400 invalid_body / too_short（full<10・quick<2）/ too_long / invalid_date、409 daily_limit / date_taken、502 save_failed | 56 |
 | `GET /api/thoughts/[id]` | — | `200 { thought }` | 404 not_found | 67 |
-| `PUT /api/thoughts/[id]` | `UpdateThoughtRequest` | `200 { ok, title }`（チャンク作り直し・embedding 再生成・meta は 57 の仕組みで再生成） | 400、404 not_found、502 update_failed | 67 |
-| `DELETE /api/thoughts/[id]` | — | `200 { ok }`（chunks も削除・手紙の引用を伏せる） | 404 not_found | 67（引用は 79） |
+| `PUT /api/thoughts/[id]` | `UpdateThoughtRequest` | `200 { ok, title }`（チャンク作り直し・embedding 再生成・meta は 57 の仕組みで再生成） | 400、404 not_found、409 conflict（読んでから書くまでに別の画面が直した。開き直してやり直す）、502 update_failed | 67 |
+| `DELETE /api/thoughts/[id]` | — | `200 { ok }`（先に相談の refs と手紙の引用の写しを伏せ、次に thought と chunks を消す） | 404 not_found、502 delete_failed（写しを伏せられず記録は消していない） | 67（引用は 79） |
 | `GET /api/mood` | — | `200 { date, mood: 0-4 \| null }`（今日・Asia/Tokyo） | — | 62 |
 | `PUT /api/mood` | `{ mood: 0-4 }` | `200 { date, mood }`（今日のみ・上書き） | 400 invalid_mood | 62 |
 | `GET /api/moods?from&to` | クエリ | `200 { from, to, days: DayEntry[] }`（両端含む・日付順・無い日も `mood:null, records:0` で埋める） | 400 invalid_range | 73 |
@@ -461,7 +461,10 @@ export function letterLimitFor(isGuest: boolean): number
 | 今週◯日 | `profile.hideStreak` で隠せる（設定「くらし」にトグル） | 72・49 |
 | recordChat | 廃止（下書きは端末内。しおりは `GET /api/thoughts?date=today`） | PLAN 66 の「既存どおり」はこの意味に読み替える。ユーザーに報告する |
 | アプリアイコン・起動画像 | 今回は作らない（既存の `app/icon.svg` 等のまま）。ロゴからの作り直しは後で | PLAN 83 の確認事項 |
-| 記録削除と手紙 | 手紙は残し、引用だけ伏せる（`refs[i].deleted = true`・切れ端に「（消した記録）」） | PLAN 79 の確認事項 |
+| 記録削除と手紙 | 手紙は残し、引用だけ伏せる（`refs[i].deleted = true`・切れ端に「（消した記録）」） | PLAN 79 の確認事項。`lib/db/scrubDeleted.ts` が実装 |
+| 記録削除と相談の履歴 | 「読み返したページ」の写しは `{ id, date, deleted: true }` に伏せる（切れ端に「（消した記録）」）。返事の本文（AI がその記録を引いて書いた文）は本人が受け取った会話なので残す。消したければスレッドごと削除 | 憲法第13条の審査で決定（2026-10-24） |
+| アカウント削除・ログアウトと端末 | `mindwind:` で始まる localStorage（下書き・再会カードの印・回転盤の印・赤い点の印）と sessionStorage を消す。`mindwind:prefs`（音・振動・動きをへらす）は端末の好みなので残す | `lib/ui/localData.ts` |
+| 参考記録のしきい値 | コサイン類似度 0.3 未満のチャンクは落とす。1記録あたり 800 字（チャンクの境界で切る）。0件なら空のブロックではなく「見つからなかった」の一行を渡す | `lib/logic/ragChunks.ts`。計測を見て調整 |
 | 「相談する」からの下書き | `/search?draft=` で渡し、入力欄に入れるだけ（送らない） | 78・69 |
 
 ---
