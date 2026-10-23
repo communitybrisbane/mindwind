@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { Desk } from "@/components/ui/Desk";
+import { Paper } from "@/components/ui/Paper";
+import Icon from "@/components/ui/Icon";
 
 export const metadata = { title: "利用規約 | MindWind" };
 
@@ -9,7 +12,7 @@ const sections: { heading: string; body: string }[] = [
   },
   {
     heading: "2. アカウント",
-    body: "本サービスの利用には Google アカウントでのログインが必要です。アカウントの管理はユーザー自身の責任で行ってください。",
+    body: "本サービスはゲスト（この端末のブラウザだけで使う状態）として始められます。Google アカウントとつなぐと、記録をそのまま引き継いで、どの端末からでも続けられます。ゲストのまま30日使わないと、記録は削除されます。アカウントの管理はユーザー自身の責任で行ってください。",
   },
   {
     heading: "3. AI が生成する内容について",
@@ -31,19 +34,33 @@ const sections: { heading: string; body: string }[] = [
 
 export default function TermsPage() {
   return (
-    <main className="flex-1 overflow-y-auto p-6">
-      <h1 className="text-xl font-semibold text-primary">利用規約</h1>
-      <div className="mt-5 flex flex-col gap-5">
-        {sections.map(({ heading, body }) => (
-          <section key={heading}>
-            <h2 className="text-sm font-semibold text-ink">{heading}</h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink-secondary">{body}</p>
-          </section>
-        ))}
+    <Desk className="relative flex min-h-0 flex-1 flex-col">
+      <div className="flex-none px-6 pt-[58px]">
+        <div className="mincho text-[12.5px] tracking-[0.16em] text-cream/60">MindWind</div>
+        <h1 className="mincho mt-1.5 text-[25px] tracking-[0.03em] text-cream">利用規約</h1>
       </div>
-      <Link href="/" className="mt-8 inline-block text-sm text-accent underline">
-        戻る
-      </Link>
-    </main>
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-[150px] pt-5">
+        <Paper as="article" rotate={-0.4} className="px-[22px] pb-6 pt-[22px]">
+          <div className="flex flex-col gap-5">
+            {sections.map(({ heading, body }) => (
+              <section key={heading}>
+                <h2 className="mincho text-[15px] font-medium text-graphite">{heading}</h2>
+                <p className="hand mt-1.5 text-[15px] leading-[1.85] text-[#2c2a26]">{body}</p>
+              </section>
+            ))}
+          </div>
+        </Paper>
+      </div>
+      {/* もどる（親指の弧・左下の丸いボタン） */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[120px] bg-gradient-to-b from-transparent to-[rgba(29,41,29,0.88)]">
+        <Link
+          href="/settings"
+          aria-label="もどる"
+          className="pointer-events-auto absolute left-[26px] top-[34px] flex h-16 w-16 items-center justify-center rounded-full border-[1.8px] border-dashed border-cream/50 bg-cream/[0.07] text-[28px] text-cream/90 active:scale-[0.92]"
+        >
+          <Icon name="arrowL" />
+        </Link>
+      </div>
+    </Desk>
   );
 }
