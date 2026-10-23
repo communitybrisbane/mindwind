@@ -1,0 +1,355 @@
+/* 風の記録（月・年）と、その日の記録のモーダル（プロトタイプ ui-v5 の #hist / #hSheet / .mgrid / .ygrid / #hNav） */
+
+/* ---------- 幕（タブバーの上に重なる。シェル幅に合わせて固定） ---------- */
+.hist {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  max-width: 430px;
+  transform: translateX(-50%);
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  padding: 64px 12px 0;
+  background: rgba(14, 22, 15, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.hist.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---------- 紙 ---------- */
+.hSheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px 14px;
+  transform: translateY(60px) rotate(0.4deg);
+  transition: transform 0.5s cubic-bezier(0.2, 1.1, 0.4, 1);
+}
+.show .hSheet {
+  transform: rotate(-0.3deg);
+}
+.hTitle {
+  font-family: var(--font-mincho);
+  font-size: 21px;
+  color: #2b2a26;
+  margin: 0 6px 2px;
+}
+.hSub {
+  font-family: var(--font-hand2);
+  font-size: 12.5px;
+  color: rgba(52, 50, 45, 0.6);
+  margin: 0 6px 12px;
+}
+.hBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ---------- 月 ---------- */
+.mgrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 7px 2px;
+  text-align: center;
+}
+.wd {
+  font-family: var(--font-mincho);
+  font-size: 11.5px;
+  color: rgba(52, 50, 45, 0.55);
+}
+.cell {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.day {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.day:disabled {
+  cursor: default;
+}
+.day:focus-visible {
+  outline: 2px dashed var(--color-pen);
+  outline-offset: 1px;
+  border-radius: 6px;
+}
+.day:active:not(:disabled) .beadWrap,
+.day:active:not(:disabled) .empty {
+  transform: scale(0.9);
+}
+.beadWrap {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: transform 0.15s;
+}
+.bead {
+  display: block;
+  filter: drop-shadow(0 1.5px 1px rgba(0, 0, 0, 0.25));
+}
+.empty {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.6px dashed rgba(52, 50, 45, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+.recDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(52, 50, 45, 0.45);
+}
+.num {
+  position: absolute;
+  left: 3px;
+  top: 0;
+  font-family: var(--font-hand2);
+  font-size: 9.5px;
+  color: rgba(52, 50, 45, 0.4);
+  pointer-events: none;
+}
+.today .empty,
+.today .beadWrap {
+  outline: 2px solid var(--color-pen);
+  outline-offset: 2px;
+}
+
+/* ---------- 年 ---------- */
+.ygrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 8px;
+}
+.ymo {
+  display: block;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.ymo:active {
+  background: rgba(0, 0, 0, 0.07);
+}
+.ymo:focus-visible {
+  outline: 2px dashed var(--color-pen);
+  outline-offset: 1px;
+}
+.yl {
+  display: block;
+  font-family: var(--font-mincho);
+  font-size: 13px;
+  color: #2b2a26;
+  margin-bottom: 5px;
+}
+.yd {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.ydot,
+.ydotBlank {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.ydot {
+  background: rgba(52, 50, 45, 0.12);
+}
+.ydotRec {
+  background: rgba(52, 50, 45, 0.38);
+}
+.ydotFuture {
+  background: rgba(52, 50, 45, 0.05);
+}
+
+/* ---------- 下の操作（親指の弧） ---------- */
+.hNav {
+  flex: none;
+  height: 118px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 14px 10px;
+}
+.hMode {
+  flex: none;
+  width: 114px;
+  height: 46px;
+  display: flex;
+  border-radius: 23px;
+  border: 1.8px dashed rgba(244, 236, 216, 0.5);
+  overflow: hidden;
+}
+.hMode button {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: rgba(244, 236, 216, 0.7);
+  font-family: var(--font-hand);
+  font-size: 17px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+.hMode button.on {
+  background: var(--color-moss);
+  color: var(--color-cream);
+}
+.hMode button:focus-visible {
+  outline: 2px dashed var(--color-gold);
+  outline-offset: -4px;
+}
+
+/* ---------- その日の記録のモーダル ---------- */
+.dayVeil {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: rgba(12, 20, 14, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.dayVeil.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.dayInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-height: 100%;
+  padding: 64px 20px 40px;
+  pointer-events: none;
+}
+.dayInner > * {
+  pointer-events: auto;
+}
+.daySheet {
+  width: 100%;
+  max-width: 340px;
+  min-height: 0;
+  max-height: calc(100dvh - 300px);
+  overflow-y: auto;
+  padding: 22px 22px 20px;
+  transform: translateY(40px) rotate(-0.8deg);
+  transition: transform 0.4s cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+.show .daySheet {
+  transform: rotate(-0.8deg);
+}
+.dayDate {
+  font-family: var(--font-mincho);
+  font-size: 18px;
+  color: #2b2a26;
+  text-decoration: underline wavy var(--color-pen);
+  text-decoration-thickness: 1.4px;
+  text-underline-offset: 6px;
+  margin-bottom: 14px;
+}
+.dayNote {
+  font-family: var(--font-hand2);
+  font-size: 14px;
+  color: rgba(52, 50, 45, 0.7);
+  line-height: 1.7;
+}
+.retry {
+  margin-left: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--color-pen);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.dayEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0 4px;
+  text-align: center;
+}
+.dayList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.daySlip {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 0;
+  border-left: 3px solid rgba(13, 90, 60, 0.45);
+  background: rgba(248, 240, 196, 0.75);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  color: var(--color-graphite);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.daySlip:active {
+  transform: scale(0.98);
+}
+.slipBead {
+  flex: none;
+  margin-top: 2px;
+}
+.slipText {
+  font-family: var(--font-hand);
+  font-size: 15.5px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+.dayBtns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  min-height: 96px;
+}
