@@ -1,0 +1,138 @@
+/* 丸いアイコンボタン（プロトタイプ ui-v5 の .rb） */
+
+.rb {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1),
+    opacity 0.3s;
+  /* 紙の札（机の上） */
+  background-color: var(--color-paper);
+  background-image: var(--fib), var(--tex1);
+  background-size: 400px, 260px;
+  background-blend-mode: multiply;
+  color: var(--color-graphite);
+  box-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.28),
+    0 10px 16px rgba(0, 0, 0, 0.4);
+}
+.rb:focus-visible {
+  outline: 2px dashed var(--color-gold);
+  outline-offset: 4px;
+}
+
+/* 押すと沈む（長押し中も沈んだまま） */
+.rb:active:not(:disabled),
+.pressed {
+  transform: translateY(2px) scale(0.92);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.28),
+    0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.rb:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.icon {
+  display: flex;
+  filter: url(#pencil);
+}
+.icon svg {
+  stroke-width: 2.5;
+}
+
+/* 緑 */
+.green {
+  background-color: var(--color-moss);
+  background-image: var(--tex2), var(--tex1);
+  background-blend-mode: multiply, multiply;
+  color: var(--color-cream);
+}
+
+/* 赤（削除・ログインし直し） */
+.warn {
+  background-color: var(--color-warn);
+  background-image: var(--tex2), var(--tex1);
+  background-blend-mode: multiply;
+  color: #f7e9e0;
+}
+
+/* 紙の上の点線 */
+.ink {
+  background: transparent;
+  box-shadow: none;
+  border: 1.8px dashed rgba(52, 50, 45, 0.5);
+  color: var(--color-graphite);
+}
+.ink:active:not(:disabled),
+.ink.pressed {
+  transform: scale(0.92);
+  box-shadow: none;
+}
+
+/* 机の上の点線（チョーク） */
+.chalk {
+  background: rgba(244, 236, 216, 0.07);
+  box-shadow: none;
+  border: 1.8px dashed rgba(244, 236, 216, 0.5);
+  color: rgba(244, 236, 216, 0.9);
+}
+.chalk:active:not(:disabled),
+.chalk.pressed {
+  transform: scale(0.92);
+  box-shadow: none;
+}
+
+/* 下に小さく添える文字 */
+.cap {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-top: 8px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: var(--font-hand2);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: rgba(244, 236, 216, 0.82);
+}
+/* 紙の上では濃い字 */
+.ink .cap {
+  color: #3a362f;
+}
+
+/* 長押しの進捗の輪 */
+.ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(
+    var(--color-gold) calc(var(--p, 0) * 1%),
+    rgba(244, 236, 216, 0.2) 0
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+}
+.warn .ring {
+  background: conic-gradient(
+    var(--color-gold) calc(var(--p, 0) * 1%),
+    rgba(184, 64, 44, 0.35) 0
+  );
+}

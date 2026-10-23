@@ -1,0 +1,51 @@
+/* 紙のダイアログ（プロトタイプ ui-v5 の #dlg / #dlgBox / #dlgT / #dlgX / #dlgBtns） */
+
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: 48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 20, 14, 0.62);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.veil.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.box {
+  width: 322px;
+  max-width: calc(100% - 32px);
+  padding: 26px 24px 22px;
+  transform: rotate(-0.8deg) scale(0.92);
+  transition: transform 0.4s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+.show .box {
+  transform: rotate(-0.8deg);
+}
+
+.title {
+  font-family: var(--font-mincho);
+  font-size: 19px;
+  color: #2b2a26;
+  margin-bottom: 10px;
+}
+
+.text {
+  font-family: var(--font-hand);
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: #2c2a26;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  margin-top: 22px;
+  padding-bottom: 16px;
+}
