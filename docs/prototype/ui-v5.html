@@ -276,6 +276,31 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
 #hMode button{flex:1;border:0;background:transparent;color:rgba(244,236,216,.7);font-family:var(--hand);font-size:17px;cursor:pointer}
 #hMode button.on{background:#2f7a5c;color:#f4ecd8}
 
+
+/* ---------- 起動画面（ロゴ） ---------- */
+#s-splash .sp-card{position:absolute;left:42px;top:244px;width:306px;padding:20px 12px 18px;transform:rotate(-1.4deg)}
+#s-splash .sp-card svg{width:100%;display:block}
+#s-splash .sp-tag{font-family:var(--hand);font-size:14.5px;color:rgba(13,90,60,.82);text-align:center;margin-top:8px}
+.play .sp-card{animation:spCard 1s cubic-bezier(.3,.8,.3,1) both}
+@keyframes spCard{0%{transform:translateY(-440px) rotate(-10deg) scale(1.15);opacity:0}45%{opacity:1}72%{transform:translateY(10px) rotate(-.6deg) scale(1)}100%{transform:translateY(0) rotate(-1.4deg)}}
+.play .sp-mind{animation:spMind .9s .8s ease-out both}
+@keyframes spMind{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.play .sp-wind{animation:spWind 1.2s 1.55s ease-in-out both}
+@keyframes spWind{from{transform:translateY(-310px)}to{transform:none}}
+.play .sp-tag{opacity:0;animation:spTag .9s 2.8s ease both}
+@keyframes spTag{to{opacity:1}}
+.rm .sp-tag{opacity:1!important}
+.sp-br{position:absolute;left:0;width:90px;height:90px;color:rgba(244,236,216,.55);opacity:0;pointer-events:none;filter:url(#pencil)}
+.play .sp-br{animation:spBreeze 2.8s ease-in-out both}
+@keyframes spBreeze{0%{transform:translateX(-110px);opacity:0}25%{opacity:.6}70%{opacity:.6}100%{transform:translateX(470px);opacity:0}}
+#spGo{left:155px;top:700px;width:80px;height:80px;font-size:36px;opacity:0;pointer-events:none;transition:opacity .7s}
+#s-splash.done #spGo{opacity:1;pointer-events:auto;animation:spPulse 2.2s ease-in-out infinite}
+@keyframes spPulse{50%{transform:scale(1.07)}}
+#s-splash.skip *{animation-duration:.01s!important;animation-delay:0s!important}
+#s-splash.leaving .sp-card{animation:none;transition:transform .75s cubic-bezier(.5,0,.8,.4),opacity .5s .15s;transform:translateY(-135%) rotate(6deg);opacity:0}
+#s-splash.leaving #spGo{opacity:0;animation:none}
+#s-splash.leaving .sp-br{display:none}
+
 /* ---------- 3タブ共通 ---------- */
 #tabs{transition:transform .35s ease}
 #tabs.hide{transform:translateY(100%)}
@@ -384,6 +409,8 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <feTurbulence type="fractalNoise" baseFrequency=".05 .05" numOctaves="3" seed="6" result="n"/>
       <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
     </filter>
+    <clipPath id="sp-reveal" clipPathUnits="userSpaceOnUse"><rect x="0" y="450" width="1200" height="450"/></clipPath><g id="mind"><path transform="translate(0 0)" d="M370 1022Q366 981 363.0 942.5Q360 904 359 865Q495 951 571.0 980.5Q647 1010 717 1010Q802 1010 861.5 971.0Q921 932 963 848Q1097 937 1182.0 973.5Q1267 1010 1335 1010Q1481 1010 1547.5 921.0Q1614 832 1614 633V612L1610 283Q1610 233 1608 192Q1608 189 1608 188Q1608 116 1630.0 93.0Q1652 70 1718 70H1741V0Q1644 6 1596.0 8.0Q1548 10 1518 10Q1486 10 1438.5 8.0Q1391 6 1303 0V70Q1309 69 1318.0 68.5Q1327 68 1343 68Q1407 68 1428.5 109.5Q1450 151 1450 311V457Q1450 493 1451.0 552.0Q1452 611 1452 635Q1452 763 1405.5 823.0Q1359 883 1262 883Q1215 883 1150.0 858.0Q1085 833 989 778L981 285V203Q981 113 1003.5 91.5Q1026 70 1096 70H1108V1Q1029 5 976.0 7.5Q923 10 885 10Q847 10 796.0 7.5Q745 5 689 0L688 70Q758 70 779.0 81.5Q800 93 809 135Q816 168 819.5 302.0Q823 436 823 645Q823 770 778.5 826.5Q734 883 637 883Q590 883 524.5 858.5Q459 834 367 782Q361 619 358.5 499.0Q356 379 356 281Q356 128 376.5 98.0Q397 68 463 68Q468 68 478.5 69.0Q489 70 496 70L495 0Q433 5 375.0 7.5Q317 10 266 10Q222 10 168.0 7.5Q114 5 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q146 946 221.0 970.0Q296 994 370 1022Z"/><path transform="translate(1802 0)" d="M395 1022Q394 984 392 914Q379 512 379 348V242Q379 126 401.0 96.0Q423 66 487 66Q493 66 503.0 67.0Q513 68 518 68V0Q433 6 381.0 8.0Q329 10 293 10Q261 10 211.5 8.0Q162 6 63 0V70H88Q212 70 213 314Q213 349 213 369L217 616Q217 643 218.0 684.0Q219 725 219 739Q219 820 203.5 846.0Q188 872 147 872Q139 872 123.5 870.5Q108 869 90 867L80 930Q159 945 237.5 968.0Q316 991 395 1022ZM287 1493 358 1440Q386 1419 399.0 1398.0Q412 1377 412 1354Q412 1331 401.5 1314.5Q391 1298 362 1276L287 1219L217 1274Q188 1297 175.0 1316.5Q162 1336 162 1358Q162 1380 172.0 1396.5Q182 1413 213 1436Z"/><path transform="translate(2410 0)" d="M377 1022 365 854Q478 936 561.5 973.0Q645 1010 715 1010Q862 1010 936.0 927.0Q1010 844 1010 678Q1010 677 1009.0 590.0Q1008 503 1008 416Q1008 379 1007.0 323.5Q1006 268 1006 248Q1006 136 1026.0 102.0Q1046 68 1102 68Q1105 68 1113.5 69.0Q1122 70 1126 70V0Q1036 6 990.0 8.0Q944 10 913 10Q865 10 809.0 7.5Q753 5 695 0L694 70H709Q837 70 839 304Q840 317 840 324L842 539V575Q842 760 799.0 820.5Q756 881 651 881Q593 881 522.5 853.5Q452 826 373 772Q369 668 367.0 575.5Q365 483 365 408V270Q365 138 384.5 103.0Q404 68 461 68Q465 68 473.5 69.0Q482 70 487 70V0Q401 6 351.5 8.0Q302 10 270 10Q240 10 191.0 8.0Q142 6 54 0L53 70H72Q197 70 198 313Q198 349 199 369L201 614V713Q201 811 186.0 841.5Q171 872 131 872Q123 872 110.5 870.0Q98 868 84 864L72 926Q147 940 222.5 964.0Q298 988 377 1022Z"/><path transform="translate(3606 0)" d="M799 821Q732 859 672.0 877.0Q612 895 551 895Q397 895 313.0 799.0Q229 703 229 528Q229 342 311.5 232.5Q394 123 532 123Q587 123 650.5 144.0Q714 165 793 209ZM983 1550 982 1532Q970 1177 963 846L961 690Q959 635 957.5 543.5Q956 452 956 342V303Q956 147 967.0 109.5Q978 72 1010 72Q1029 72 1049.5 76.0Q1070 80 1092 88L1108 25Q1038 -2 971.0 -15.5Q904 -29 836 -29L807 -28Q800 15 796.5 51.5Q793 88 793 121Q679 48 605.0 20.0Q531 -8 461 -8Q286 -8 176.0 124.5Q66 257 66 469Q66 705 207.0 850.0Q348 995 573 995Q624 995 680.5 985.5Q737 976 803 956Q803 965 804 983Q809 1158 809 1298Q809 1361 789.5 1387.0Q770 1413 725 1413Q715 1413 700.0 1410.5Q685 1408 659 1403L647 1468Q721 1481 804.0 1501.5Q887 1522 983 1550Z"/></g>
+    <filter id="logoink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".32" numOctaves="1" seed="9" result="s"/><feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.3 1.72" result="m"/><feComposite in="d" in2="m" operator="in"/></filter>
     <symbol id="g1" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17 C16 17 22 8 31 12 C38 15 35 24 29 21"/><path d="M5 26 H35 C42 26 44 34 38 36"/><path d="M5 35 C14 35 18 42 27 40"/></g></symbol>
     <symbol id="g2" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20 C18 20 24 12 33 16 C38 18 36 25 31 24"/><path d="M7 30 C16 30 22 26 29 28"/></g></symbol>
     <symbol id="g3" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M8 18 H40"/><path d="M12 26 H36"/><path d="M17 34 H31"/></g></symbol>
@@ -399,7 +426,24 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <div class="status"><span>9:41</span><span>●●●</span></div>
 
       <!-- ① 回転盤 -->
-      <section class="scr show" id="s-stamp">
+      <!-- 起動画面 -->
+      <section class="scr show" id="s-splash">
+        <svg class="sp-br" viewBox="0 0 48 48" style="top:190px"><use href="#g2" width="48" height="48"/></svg>
+        <svg class="sp-br" viewBox="0 0 48 48" style="top:520px;animation-delay:.25s!important"><use href="#g1" width="48" height="48"/></svg>
+        <svg class="sp-br" viewBox="0 0 48 48" style="top:600px;animation-delay:.55s!important;width:70px;height:70px"><use href="#g3" width="48" height="48"/></svg>
+        <div class="sp-card sheet" id="spCard">
+          <svg viewBox="150 232 900 440" role="img" aria-label="mindwind">
+            <g filter="url(#logoink)" fill="#0b5a3b">
+              <g class="sp-mind"><use href="#mind" transform="translate(170.448402 434) scale(0.180218837 -0.180218837)"/></g>
+              <g clip-path="url(#sp-reveal)"><g class="sp-wind"><use href="#mind" transform="translate(170.448402 466) scale(0.180218837 0.180218837)"/></g></g>
+            </g>
+          </svg>
+          <div class="sp-tag">あなたが、自分のメンターになる</div>
+        </div>
+        <button class="rb green" id="spGo" aria-label="はじめる"><svg class="i" data-ic="hanko"></svg><span class="cap">はじめる</span></button>
+      </section>
+
+      <section class="scr" id="s-stamp">
         <div class="top"><div class="sm">10月25日 日曜日</div><div id="q">今日の気分は？</div></div>
         <div id="reelwin"><div id="reel"></div></div>
         <svg id="ink" viewBox="0 0 280 280"><defs><path id="ring" d="M140 140 m-108 0 a108 108 0 1 1 216 0 a108 108 0 1 1 -216 0"/></defs>
@@ -543,7 +587,7 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
     <h1>3タブ v5（ホーム・記録・相談）</h1>
     <p class="sub">下の3タブ（ホーム／記録／相談）を行き来して触れます。最初の気分スタンプ → ホーム、の流れも前のままです。</p>
     <div class="ctl">
-      <button id="rst">最初から</button><button data-go="stamp">① 回転盤</button><button data-go="home">③ ホーム</button><button data-go="letter">④ 手紙</button>
+      <button id="rst">最初から</button><button data-go="splash">起動画面</button><button data-go="stamp">① 回転盤</button><button data-go="home">③ ホーム</button><button data-go="letter">④ 手紙</button>
     </div>
     <div class="ctl">
       <label><input type="checkbox" id="optSnd">音</label>
@@ -557,6 +601,12 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <li>回るたびに<b>カラカラ</b>（音をオンに）。上の紙の矢印がはじかれる。</li>
       <li>真ん中の文字が<b>リールのように回って</b>、いまの玉の名前と説明が出る。</li>
       <li>止まった<b>真ん中の玉をタップ</b>すると、今日の気分に決まる。横の玉をタップすると、その玉が真ん中まで回ってくる。</li>
+    </ul>
+    <h2>起動画面（ロゴ）</h2>
+    <ul>
+      <li>アプリを開くと、革の机の上に<b>紙のカードが落ちてきて</b>、緑のインクで<b>「mind」</b>が現れ、そのあと鏡像の<b>「wind」が上から落ちてきます</b>（ロゴの動きそのまま）。最後に風が1本ずつ横切ります。</li>
+      <li>動きが終わると、下の判子の丸ボタンがゆっくり脈打ちます。<b>どこをタップしても</b>カードが上へ去り、気分の回転盤が始まります。動きの途中でタップすると、動きを飛ばします。</li>
+      <li>ロゴは <code>docs/brand/mindwind-opening.svg</code> をそのまま使用。カードの下の一行は、アプリのコンセプトの文です。</li>
     </ul>
     <h2>v5 で足したところ</h2>
     <ul>
@@ -1009,23 +1059,42 @@ function limitUI(el,max,warnAt,cnt,label){
   $('#hNext').onclick=()=>{vib(6);snd.tick();if(st.mode==='month'){st.m++;if(st.m>12){st.m=1;st.y++}}else st.y++;render()};
   $('#week').addEventListener('click',open);
 })();
+/* ---- 起動画面 ---- */
+let spDone=false,spTimer=0;
+function startSplash(){
+  const sp=$('#s-splash');clearTimeout(spTimer);
+  sp.classList.remove('done','leaving','skip','play');void sp.offsetWidth;sp.classList.add('play');
+  spDone=false;
+  setTimeout(()=>snd.pon(),520);
+  spTimer=setTimeout(()=>{sp.classList.add('done');spDone=true},3500);
+}
+function splashTap(){
+  const sp=$('#s-splash');if(sp.classList.contains('leaving'))return;
+  if(!spDone){clearTimeout(spTimer);sp.classList.add('skip','done');spDone=true;return}
+  vib(12);snd.pop();sp.classList.add('leaving');
+  setTimeout(()=>{go('stamp');introSpin()},650);
+}
+$('#s-splash').addEventListener('pointerdown',splashTap);
+
 /* ---- panel ---- */
 function resetAll(){
   resetStamp();resetRecord();$('#week').innerHTML='';delete $('#week').dataset.built;
   $('#roll').style.transform='';$('#reunion').classList.remove('flipped');busy=false;holding=false;
-  go('stamp');introSpin();
+  go('splash');startSplash();
 }
 $('#rst').onclick=resetAll;
 $$('[data-go]').forEach(b=>b.onclick=()=>{
   const g=b.dataset.go;
-  if(g==='stamp')resetAll();
+  if(g==='splash')resetAll();
+  if(g==='stamp'){resetAll();go('stamp');introSpin()}
   if(g==='home'){resetAll();mood=3;go('home');fillToday()}
   if(g==='letter'){resetAll();mood=3;go('home');fillToday();setTimeout(openLetter,150)}
 });
 
 /* 起動 */
-setTabs('stamp');render();startWheel();setTimeout(introSpin,500);
+setTabs('splash');render();startSplash();
 const h=location.hash.slice(1);
+if(h&&h!=='t-splash'){go('stamp')}
 if(h==='t-choose'){setTimeout(()=>{th=-S*3;vel=0;mode='idle';render();commit(3)},700)}
 if(h==='t-write'){setTimeout(()=>{mood=3;openWrite();$('#ta').value='今日は会議で、また言えなかった。';$('#cnt').textContent='16 / 60'},300)}
 if(h==='t-home'){mood=3;go('home');fillToday()}
