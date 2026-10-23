@@ -249,6 +249,7 @@ export function isWelcomeBack(dates: Iterable<string>, todayKey: string): boolea
 // lib/logic/moodDay.ts（61）
 export function isFirstLaunchOfDay(promptedOn: string | null, todayKey: string): boolean
 export function recordedDays(thoughtDates: Iterable<string>, moodDates: Iterable<string>): Set<string>   // 記録あり＝thoughts ∪ moods（玉だけの日も1日に数える）
+//   同じファイルに sanitizeMoodMap / weekStrip / monthMatrix（日付キーの行列）/ yearMatrix / validateRange（366日以内）もある。73 の parseRange は validateRange の薄い包みでよい
 
 // lib/logic/chunk.ts（55）本人の言葉を書き換えずに分ける
 export type ChunkInput = { rawText: string; deepDiveQuestion: string; deepDiveAnswer: string; kind: ThoughtKind }
@@ -377,7 +378,7 @@ IP レート制限（53）と App Check（52）は `proxy.ts`（Next 16。Node �
 | 65 | `components/record/AddDeepDive.tsx`（quick に深掘りを足す。`/api/deepdive` → `PUT /api/thoughts/[id]`） |
 | 66 | `app/(tabs)/record/page.tsx`・`app/(tabs)/record/useRecordSession.ts`・`components/record/NotePaper.tsx`・`RecordTray.tsx`・`MentorInk.tsx`・`components/MicButton.tsx`（必要なら） |
 | 67 | `app/api/thoughts/[id]/route.ts`・`components/record/ThoughtView.tsx`・`ThoughtModal.tsx`・`SavedChips.tsx`（しおり）・`components/record/useThoughtActions.ts` |
-| 68 | `lib/logic/draft.ts`（+test）・`lib/ui/useDraft.ts` |
+| 68 | `lib/logic/draft.ts`（+test）・`lib/ui/draftStore.ts`（localStorage の薄い層）・`lib/ui/useDraft.ts` |
 | 69 | `app/(tabs)/search/page.tsx`・`app/(tabs)/search/useConsultChat.ts`・`components/consult/QuestionSlip.tsx`・`ReplySheet.tsx`・`RefSlips.tsx`・`RefModal.tsx`・`HistoryDrawer.tsx`・`NewThreadDialog.tsx` |
 | 70 | `components/consult/ConsultInput.tsx` |
 | 71 | `lib/logic/reunion.ts`・`lib/logic/reunion.test.ts` |
@@ -385,7 +386,7 @@ IP レート制限（53）と App Check（52）は `proxy.ts`（Next 16。Node �
 | 73 | `app/api/moods/route.ts`・`lib/logic/moodRange.ts`（+test） |
 | 74 | `components/home/WindHistory.tsx`・`MonthGrid.tsx`・`YearGrid.tsx`・`lib/ui/useMoodRange.ts`・`lib/logic/windCalendar.ts`（+test） |
 | 75 | `docs/mentor-prompt.md`・`lib/ai/mentorPrompt.ts`（LETTER_APPENDIX。**58 の後**） |
-| 76 | `lib/logic/week.ts`・`lib/logic/week.test.ts` |
+| 76 | `lib/logic/week.ts`・`lib/logic/week.test.ts`・`lib/logic/letterKey.ts`（+test。`isWeekKey` / `letterDocId` / `isLetterDay` / `isLetterOpenable` / `hasEnoughForLetter`） |
 | 77 | `app/api/letters/current/route.ts`・`app/api/letters/route.ts`・`app/api/letters/[weekKey]/route.ts`・`lib/ai/letter.ts`・`lib/ai/anthropic.ts`（`MODELS.letter`）・`lib/db/usage.ts`（`"letter"` 追加）・`lib/logic/letterRefs.ts`（引用の検証。+test） |
 | 78 | `app/(full)/letter/page.tsx`・`components/letter/Envelope.tsx`・`PullOut.tsx`・`TriFold.tsx`・`LetterBody.tsx`・`LetterList.tsx`・`lib/ui/useLetter.ts` |
 | 79 | `lib/db/letterRefs.ts`（`maskLetterRefs(tx, uid, thoughtId)`）・`app/api/thoughts/[id]/route.ts`（**67 の後に** DELETE へ1行足す） |
