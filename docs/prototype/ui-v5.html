@@ -662,7 +662,7 @@ svg.i[data-ic]{stroke-width:2.5;overflow:visible}
       <li><b>連携できたら</b>：「Googleでつながっています」に変わり、記録はそのまま引き継がれ、上限が広がる。</li>
       <li><b>すでに使われているアカウント</b>（さくら）を選ぶと、ログインし直しの確認（いまのゲストの記録は消えると警告）。</li>
       <li><b>連携を促す案内</b>：ゲストのときだけ、ホームの下に小さな付箋（×で閉じられる）。連携すると出なくなる。</li>
-      <li><b>呼び名</b>：設定を開かなければ、自動の呼び名（春風さん〜）。入れるとホームの挨拶と手紙の宛名がすぐ変わる。</li>
+      <li><b>呼び名</b>：設定を開かなければ、自動の呼び名（風見さん〜）。入れるとホームの挨拶と手紙の宛名がすぐ変わる。</li>
       <li><b>ログアウト</b>：ゲストは「記録に戻れなくなる」と警告（つなぐ／ログアウト／やめる）。<b>削除</b>は赤いボタンを長押し。</li>
     </ul>
     <h2>起動画面（ロゴ）</h2>
@@ -1143,7 +1143,7 @@ function splashTap(){
 $('#s-splash').addEventListener('pointerdown',splashTap);
 
 /* ---- 設定・ログイン ---- */
-const AUTO_NAMES=['春風','薫風','涼風','朝風','夕風','海風','山風','若葉風','初風'];
+const AUTO_NAMES=['風見','風車','風鈴','渡り鳥','旅人','凧','羽根','帆','風読み'];
 const AUTO_NAME=AUTO_NAMES[Math.floor(Math.random()*AUTO_NAMES.length)]+'さん'; // 本番はユーザー番号から決める（同じ人はいつも同じ名前）
 let nick='',acct={linked:false,email:''},nudgeOff=false;
 const dispName=()=>nick?nick+'さん':AUTO_NAME;
