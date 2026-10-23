@@ -3,7 +3,8 @@ import { FieldValue } from "firebase-admin/firestore";
 import { tokyoDateKey } from "@/lib/logic/date";
 import { adminDb } from "./admin";
 
-export type QuotaKind = "deepdive" | "shape" | "consult" | "record";
+/** 成形（shape）は廃止したので数えない（旧データの shape フィールドは残っていても読まない） */
+export type QuotaKind = "deepdive" | "consult" | "record" | "letter";
 
 /**
  * 利用枠を1つ消費する。上限到達なら null、消費できたら返金関数を返す。
