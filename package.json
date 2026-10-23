@@ -12,7 +12,8 @@
     "backup": "node scripts/backup.mjs",
     "migrate:embeddings": "node scripts/migrate-embeddings.mjs",
     "backfill-chunks": "node scripts/backfill-chunks.mjs",
-    "cleanup:guests": "node scripts/cleanup-guests.mjs"
+    "cleanup:guests": "node scripts/cleanup-guests.mjs",
+    "retention": "node scripts/retention.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
