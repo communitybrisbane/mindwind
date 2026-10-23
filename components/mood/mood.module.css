@@ -1,0 +1,496 @@
+/* 気分の回転盤・3択・一言（PLAN 63・64）。見た目の正は docs/prototype/ui-v5.html の ① 回転盤・② 一言。
+   プロトタイプは 390×844 の絶対配置。ここでは上の要素は上から、盤と操作は下から測って置く（縦が変わっても崩れない）。 */
+
+.screen {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+/* ---------- 見出し ---------- */
+.top {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none;
+}
+.date {
+  font-family: var(--font-mincho);
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  color: rgba(244, 236, 216, 0.62);
+}
+.q {
+  font-family: var(--font-mincho);
+  font-size: 27px;
+  font-weight: 500;
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+  transition: opacity 0.3s;
+}
+
+/* ---------- リール（真ん中の文字） ---------- */
+.reelwin {
+  position: absolute;
+  left: 50%;
+  width: 300px;
+  max-width: calc(100% - 32px);
+  transform: translateX(-50%);
+  top: 236px;
+  height: 176px;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s;
+  -webkit-mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent);
+  mask-image: linear-gradient(transparent, #000 28%, #000 72%, transparent);
+}
+.reel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  will-change: transform;
+}
+.reelItem {
+  height: 176px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 6px;
+}
+.reelName {
+  font-family: var(--font-mincho);
+  font-weight: 500;
+  font-size: 44px;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+}
+.reelDesc {
+  font-family: var(--font-hand);
+  font-size: 15.5px;
+  line-height: 1.8;
+  margin-top: 10px;
+  color: rgba(244, 236, 216, 0.82);
+}
+
+/* ---------- 回し方のヒント ---------- */
+.hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 314px; /* 844 - 515 - 15 */
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 13px;
+  color: rgba(244, 236, 216, 0.62);
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+/* ---------- 盤（画面の下に半分沈む） ---------- */
+.wheelg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition:
+    transform 0.7s cubic-bezier(0.5, 0, 0.3, 1),
+    opacity 0.5s;
+}
+.wheelg.out {
+  transform: translateY(320px);
+  opacity: 0;
+}
+/* 盤の中心（基準フレームで 195, 910 ＝ 下端から 66px 下） */
+.origin {
+  position: absolute;
+  left: 50%;
+  bottom: -66px;
+  width: 0;
+  height: 0;
+}
+.disc {
+  position: absolute;
+  left: -320px;
+  top: -320px;
+  width: 640px;
+  height: 640px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #2a4230 0 288px,
+    #5b3f27 289px 318px,
+    #3d2917 319px 320px,
+    transparent 321px
+  );
+  box-shadow: 0 -6px 22px rgba(0, 0, 0, 0.45);
+}
+.disc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-image: var(--tex1);
+  background-size: 260px;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+}
+.disc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(244, 236, 216, 0.55) 0 0.7deg, transparent 0.7deg 4.8deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 272px, #000 273px 284px, transparent 285px);
+  mask-image: radial-gradient(circle, transparent 0 272px, #000 273px 284px, transparent 285px);
+}
+/* 矢印（玉が通るたびにはじかれる） */
+.pawl {
+  position: absolute;
+  left: -18px;
+  top: -344px; /* 566 - 910 */
+  width: 36px;
+  height: 44px;
+  transform-origin: 50% 0;
+  z-index: 200;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.45));
+}
+.flick {
+  animation: flick 0.16s ease-out;
+}
+@keyframes flick {
+  0% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: rotate(-26deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+.bead {
+  position: absolute;
+  left: -46px;
+  top: -46px;
+  width: 92px;
+  height: 92px;
+  will-change: transform;
+  pointer-events: none;
+}
+.bead svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* 指で回す面（基準フレームで top 545 から下） */
+.hit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 299px;
+  touch-action: none;
+  cursor: grab;
+  z-index: 6;
+  outline: none;
+}
+.hit:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(240, 220, 160, 0.6);
+}
+.hit.off {
+  pointer-events: none;
+}
+
+/* ---------- 決めた玉・インクの消印 ---------- */
+.fly {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 92px;
+  height: 92px;
+  z-index: 60;
+  pointer-events: none;
+}
+.fly svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.4));
+}
+.ink {
+  position: absolute;
+  left: 50%;
+  top: 160px;
+  width: 280px;
+  height: 280px;
+  margin-left: -140px;
+  opacity: 0;
+  pointer-events: none;
+}
+.ink.go {
+  opacity: 1;
+}
+.ink .draw {
+  stroke-dasharray: 820;
+  stroke-dashoffset: 820;
+}
+.ink.go .draw {
+  animation: draw 0.8s ease-out forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.ringrot {
+  transform-origin: 140px 140px;
+  animation: spin 50s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--rc, #fff);
+  pointer-events: none;
+  animation: ripple 0.9s ease-out forwards;
+}
+@keyframes ripple {
+  from {
+    transform: scale(0.4);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* メンターの一言（決めたあと） */
+.line {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  top: 452px;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 19px;
+  line-height: 1.7;
+  min-height: 64px;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.line.show {
+  opacity: 1;
+}
+
+/* ---------- 3択 ---------- */
+.choices {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 284px;
+  pointer-events: none;
+}
+.choices.up {
+  pointer-events: auto;
+}
+.choice {
+  position: absolute;
+  opacity: 0;
+  transform: translateY(40px) scale(0.6);
+  transition:
+    transform 0.45s cubic-bezier(0.3, 1.5, 0.5, 1),
+    opacity 0.3s;
+}
+.choices.up .choice {
+  opacity: 1;
+  transform: none;
+}
+.choices.up .choice:nth-child(1) {
+  transition-delay: 0.05s;
+}
+.choices.up .choice:nth-child(2) {
+  transition-delay: 0.15s;
+}
+.choices.up .choice:nth-child(3) {
+  transition-delay: 0.25s;
+}
+.cLater {
+  left: calc(50% - 139px);
+  top: 92px;
+}
+.cOne {
+  left: calc(50% - 45px);
+  top: 50px;
+}
+.cFull {
+  left: calc(50% + 71px);
+  top: 92px;
+}
+
+/* あとで・選び直す（左下） */
+.corner {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  z-index: 8;
+  transition: opacity 0.3s;
+}
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- ② 一言 ---------- */
+.writeScreen {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 58px 18px 22px;
+  gap: 16px;
+}
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 2px;
+}
+.headLine {
+  font-family: var(--font-mincho);
+  font-size: 17px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+.paper {
+  flex: 1 1 auto;
+  min-height: 140px;
+  max-height: 352px;
+  padding: 22px 24px;
+  transition: transform 0.7s cubic-bezier(0.5, 0, 0.3, 1);
+}
+.paper.sealed {
+  transform: translateY(-30px) scale(0.97);
+}
+.ta {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-family: var(--font-hand);
+  font-size: 20px;
+  line-height: 34px;
+  color: #2c2a26;
+  caret-color: var(--color-pen);
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 33px,
+    rgba(70, 90, 120, 0.26) 33px,
+    rgba(70, 90, 120, 0.26) 34px
+  );
+  background-position: 0 7px;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.cnt {
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+}
+.holdRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 0 0 6px;
+}
+.holdHint {
+  font-family: var(--font-hand);
+  font-size: 13.5px;
+  color: rgba(244, 236, 216, 0.7);
+  max-width: 240px;
+  line-height: 1.7;
+}
+
+/* 封蝋 */
+.seal {
+  position: absolute;
+  left: 50%;
+  top: 300px;
+  width: 116px;
+  height: 116px;
+  margin: -58px 0 0 -58px;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 5px rgba(0, 0, 0, 0.45));
+  z-index: 20;
+}
+.seal.go {
+  animation: sealin 0.8s cubic-bezier(0.2, 1.3, 0.4, 1) forwards;
+}
+.seal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sealGlyph {
+  position: absolute;
+  left: 24%;
+  top: 24%;
+  width: 52%;
+  height: 52%;
+  color: #f3d9c9;
+}
+@keyframes sealin {
+  0% {
+    transform: scale(2.2) rotate(-20deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.92) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(-4deg);
+    opacity: 1;
+  }
+}
+.spark {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: spark 1s ease-out forwards;
+}
+@keyframes spark {
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(0.2);
+    opacity: 0;
+  }
+}
