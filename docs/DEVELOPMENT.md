@@ -54,18 +54,7 @@ OPENAI_API_KEY=your_openai_api_key
 ### Firebase 側の設定
 
 1. Firebase Console で Authentication → Google プロバイダを有効化
-2. Firestore を作成し、セキュリティルールを設定：
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
+2. Firestore を作成し、リポジトリの `firestore.rules`（全拒否）を Firebase Console のルールに貼って公開する。データアクセスはすべて API Routes（Admin SDK）経由で、クライアントから Firestore を直接読み書きしない（利用上限カウンタの改ざん防止）
 
 3. サービスアカウントの秘密鍵を発行し、`FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` に設定
 

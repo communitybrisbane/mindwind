@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic, MODELS } from "@/lib/ai/anthropic";
 import { buildSystemPrompt } from "@/lib/ai/mentorPrompt";
-import { adminDb, verifyUser } from "@/lib/db/admin";
+import { adminDb, verifyUserInfo } from "@/lib/db/admin";
+import { consumeQuota } from "@/lib/db/usage";
 import type { ShapedRecord } from "@/lib/db/types";
-import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH } from "@/lib/logic/limits";
+import { MAX_DIARY_LENGTH, MIN_DIARY_LENGTH, shapeLimitFor } from "@/lib/logic/limits";
 
 export const maxDuration = 60;
 
@@ -23,8 +24,9 @@ const shapedSchema = {
 };
 
 export async function POST(req: NextRequest) {
-  const uid = await verifyUser(req.headers.get("authorization"));
-  if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const authInfo = await verifyUserInfo(req.headers.get("authorization"));
+  if (!authInfo) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { uid, isGuest } = authInfo;
 
   const body = await req.json().catch(() => null);
   const diary = typeof body?.diary === "string" ? body.diary.trim() : "";
@@ -38,8 +40,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "input too long" }, { status: 400 });
   }
 
-  const userSnap = await adminDb.doc(`users/${uid}`).get();
-  const system = buildSystemPrompt("shaping", userSnap.get("profile") ?? null);
+  // 1日の成形上限（ゲストは会員の1/10）。Anthropic を呼ぶ前に消費し、失敗時は返す
+  const quota = await consumeQuota(uid, "shape", shapeLimitFor(isGuest));
+  if (!quota) return NextResponse.json({ error: "daily_limit" }, { status: 429 });
+
+  let system: string;
+  try {
+    const userSnap = await adminDb.doc(`users/${uid}`).get();
+    system = buildSystemPrompt("shaping", userSnap.get("profile") ?? null);
+  } catch (e) {
+    console.error("shape profile load failed:", e);
+    await quota.refund();
+    return NextResponse.json({ error: "ai_unavailable" }, { status: 502 });
+  }
 
   const userContent =
     `【日記】\n${diary}` +
@@ -66,6 +79,7 @@ export async function POST(req: NextRequest) {
 
         // refusal や max_tokens 到達などの異常応答（DEVELOPMENT §エラーハンドリング）
         if (final.stop_reason !== "end_turn") {
+          await quota.refund();
           push({ type: "incomplete" });
           return;
         }
@@ -78,6 +92,7 @@ export async function POST(req: NextRequest) {
         push({ type: "done" });
       } catch (e) {
         console.error("shape failed:", e);
+        await quota.refund();
         push({ type: "error" });
       } finally {
         controller.close();

@@ -109,6 +109,16 @@ export default function SearchPage() {
         setMessages((m) => m.slice(0, -1));
         return;
       }
+      if (res.status === 404) {
+        setChatId(null);
+        setMessages([
+          {
+            role: "assistant",
+            text: "このスレッドは削除されたみたい。新しい相談として、もう一度送ってね。",
+          },
+        ]);
+        return;
+      }
       if (res.status === 409) {
         const { count } = await res.json();
         setMessages((m) => [
@@ -149,6 +159,9 @@ export default function SearchPage() {
         }
       });
       if (failed && !started) throw new Error("consult stream error");
+      if (failed) {
+        updateLastAssistant((msg) => ({ ...msg, text: msg.text + "\n\n（途中で途切れてしまいました）" }));
+      }
     } catch {
       setMessages((m) => [
         ...m,

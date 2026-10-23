@@ -5,7 +5,7 @@ import { buildSystemPrompt } from "@/lib/ai/mentorPrompt";
 import { MIN_THOUGHTS_FOR_CONSULT, searchRelevantThoughts, type RagThought } from "@/lib/ai/rag";
 import { adminDb, verifyUserInfo } from "@/lib/db/admin";
 import { SHAPED_FIELDS } from "@/lib/db/types";
-import { tokyoDateKey } from "@/lib/logic/date";
+import { consumeQuota } from "@/lib/db/usage";
 import { consultLimitFor, MAX_CONSULT_MESSAGE } from "@/lib/logic/limits";
 
 export const maxDuration = 300;
@@ -35,35 +35,54 @@ export async function POST(req: NextRequest) {
   }
   const chatId = typeof body?.chatId === "string" ? body.chatId : null;
 
+  // 1日の相談上限（ゲストは会員の1/10。Asia/Tokyo 日付でリセット。トランザクションで原子的に判定）
+  const quota = await consumeQuota(uid, "consult", consultLimitFor(isGuest));
+  if (!quota) return NextResponse.json({ error: "daily_limit" }, { status: 429 });
+
   const userDoc = adminDb.doc(`users/${uid}`);
-  const userSnap = await userDoc.get();
-
-  // 1日の相談上限（ゲストは会員の1/10。Asia/Tokyo 日付でリセット）
-  const today = tokyoDateKey(new Date());
-  const consultCount = userSnap.get("consultCount");
-  const usedToday: number = consultCount?.date === today ? consultCount.count : 0;
-  if (usedToday >= consultLimitFor(isGuest)) {
-    return NextResponse.json({ error: "daily_limit" }, { status: 429 });
-  }
-
-  // スレッド履歴はサーバー側で読み込む（スレッド間でコンテキストを混ぜない）
   let chatRef = chatId ? userDoc.collection("chats").doc(chatId) : null;
   let history: { role: "user" | "assistant"; content: string }[] = [];
-  if (chatRef) {
-    const snap = await chatRef.collection("messages").orderBy("createdAt", "asc").get();
-    history = snap.docs
-      .map((d) => ({ role: d.get("role"), content: d.get("content") }))
-      .slice(-MAX_HISTORY);
-  }
+  let userSnap;
+  let results: RagThought[];
+  try {
+    // スレッド履歴はサーバー側で読み込む（スレッド間でコンテキストを混ぜない）
+    let chatExists = true;
+    [userSnap, chatExists, history] = await Promise.all([
+      userDoc.get(),
+      chatRef ? chatRef.get().then((s) => s.exists) : Promise.resolve(true),
+      chatRef
+        ? chatRef
+            .collection("messages")
+            .orderBy("createdAt", "asc")
+            .get()
+            .then((snap) =>
+              snap.docs
+                .map((d) => ({ role: d.get("role"), content: d.get("content") }))
+                .slice(-MAX_HISTORY)
+            )
+        : Promise.resolve([]),
+    ]);
+    // 別タブで削除済みのスレッドは、後段の update で落ちる前にここで返す
+    if (!chatExists) {
+      await quota.refund();
+      return NextResponse.json({ error: "chat_not_found" }, { status: 404 });
+    }
 
-  // 追い質問で主語が省略される場合に備え、直前のユーザー発言で検索クエリを補完する
-  const lastUserMessage = [...history].reverse().find((m) => m.role === "user");
-  const searchQuery = lastUserMessage ? `${lastUserMessage.content}\n${message}` : message;
+    // 追い質問で主語が省略される場合に備え、直前のユーザー発言で検索クエリを補完する
+    const lastUserMessage = [...history].reverse().find((m) => m.role === "user");
+    const searchQuery = lastUserMessage ? `${lastUserMessage.content}\n${message}` : message;
 
-  // 記録3件未満なら分析せず案内（コールドスタートガード）
-  const { count, results } = await searchRelevantThoughts(uid, searchQuery);
-  if (count < MIN_THOUGHTS_FOR_CONSULT) {
-    return NextResponse.json({ error: "not_enough_records", count }, { status: 409 });
+    // 記録3件未満なら分析せず案内（コールドスタートガード）
+    const found = await searchRelevantThoughts(uid, searchQuery);
+    if (found.count < MIN_THOUGHTS_FOR_CONSULT) {
+      await quota.refund();
+      return NextResponse.json({ error: "not_enough_records", count: found.count }, { status: 409 });
+    }
+    results = found.results;
+  } catch (e) {
+    console.error("consult prepare failed:", e);
+    await quota.refund();
+    return NextResponse.json({ error: "ai_unavailable" }, { status: 502 });
   }
 
   const system = buildSystemPrompt("consult", userSnap.get("profile") ?? null);
@@ -106,6 +125,7 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       const push = (data: object) =>
         controller.enqueue(encoder.encode(JSON.stringify(data) + "\n"));
+      let saved = false;
       try {
         // スレッドがなければ作成（タイトルは最初の質問から）
         if (!chatRef) {
@@ -134,16 +154,18 @@ export async function POST(req: NextRequest) {
           .map((block) => block.text)
           .join("");
 
-        // 履歴保存（画面を離れても復元できるように）＋上限カウント
+        // 履歴保存（画面を離れても復元できるように）
         const messagesCol = chatRef.collection("messages");
         await messagesCol.add({ role: "user", content: message, createdAt: FieldValue.serverTimestamp() });
         await messagesCol.add({ role: "assistant", content: answer, refs, createdAt: FieldValue.serverTimestamp() });
         await chatRef.update({ updatedAt: FieldValue.serverTimestamp() });
-        await userDoc.set({ consultCount: { date: today, count: usedToday + 1 } }, { merge: true });
+        saved = true;
 
         push({ type: "done" });
       } catch (e) {
         console.error("consult failed:", e);
+        // 回答が保存済みなら成功扱い（枠は返さない）
+        if (!saved) await quota.refund();
         push({ type: "error" });
       } finally {
         controller.close();

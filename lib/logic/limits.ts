@@ -17,6 +17,10 @@ export const MEMBER_LIMITS = {
   recordPerDay: 30,
   /** 相談の上限（メッセージ/日） */
   consultPerDay: 30,
+  /** 深掘りの上限（回/日）。記録上限の3倍（やり直しの余裕） */
+  deepdivePerDay: 90,
+  /** 成形の上限（回/日）。記録上限の3倍（やり直しの余裕） */
+  shapePerDay: 90,
 };
 
 /** ゲストは会員の 1/10（最低1件は保証・切り捨て） */
@@ -34,4 +38,14 @@ export function recordLimitFor(isGuest: boolean): number {
 /** 相談の上限：ゲストは会員の 1/10 */
 export function consultLimitFor(isGuest: boolean): number {
   return isGuest ? guestLimit(MEMBER_LIMITS.consultPerDay) : MEMBER_LIMITS.consultPerDay;
+}
+
+/** 深掘りの上限：ゲストは会員の 1/10 */
+export function deepdiveLimitFor(isGuest: boolean): number {
+  return isGuest ? guestLimit(MEMBER_LIMITS.deepdivePerDay) : MEMBER_LIMITS.deepdivePerDay;
+}
+
+/** 成形の上限：ゲストは会員の 1/10 */
+export function shapeLimitFor(isGuest: boolean): number {
+  return isGuest ? guestLimit(MEMBER_LIMITS.shapePerDay) : MEMBER_LIMITS.shapePerDay;
 }

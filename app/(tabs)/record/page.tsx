@@ -174,6 +174,10 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
         setGentleNote("申し訳ない、もう一度詳しく説明してもらえますか？");
         return;
       }
+      if (res.status === 429) {
+        setError("今日の AI の利用上限に達しました。また明日書こう");
+        return;
+      }
       if (!res.ok) throw new Error(`deepdive ${res.status}`);
       const { question } = await res.json();
       setDiaryText(text);
@@ -211,6 +215,12 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
         deepDiveQuestion: answer ? deepDiveQuestion : "",
         deepDiveAnswer: answer,
       });
+      if (res.status === 429) {
+        setStreamingShaped(null);
+        setError("今日の AI の利用上限に達しました。また明日書こう");
+        setPhase(2);
+        return;
+      }
       if (!res.ok || !res.body) throw new Error(`shape ${res.status}`);
 
       // JSON の生成をストリームで受け、項目ができたそばから清書に埋めていく

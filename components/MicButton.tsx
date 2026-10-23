@@ -56,6 +56,11 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, onErr
   const recordingRef = useRef(false);
   // 致命的エラー（許可拒否など）の目印。onerror → onend の順で発火するため onend 側で拾う
   const fatalErrorRef = useRef(false);
+  // 録音中に親の状態（フェーズ等）が変わっても最新のハンドラへ流すため ref に保持する
+  const handlersRef = useRef({ onFinal, onInterim, onRecordingChange, onError });
+  useEffect(() => {
+    handlersRef.current = { onFinal, onInterim, onRecordingChange, onError };
+  });
 
   useEffect(
     () => () => {
@@ -68,7 +73,7 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, onErr
   function setRec(value: boolean) {
     recordingRef.current = value;
     setRecording(value);
-    onRecordingChange?.(value);
+    handlersRef.current.onRecordingChange?.(value);
   }
 
   function start() {
@@ -82,10 +87,10 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, onErr
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const result = e.results[i];
-        if (result.isFinal) onFinal(result[0].transcript);
+        if (result.isFinal) handlersRef.current.onFinal(result[0].transcript);
         else interim += result[0].transcript;
       }
-      onInterim(interim);
+      handlersRef.current.onInterim(interim);
     };
     // 無害なエラー（無音・中断）は自動再開に任せ、それ以外（not-allowed / audio-capture /
     // network 等）は録音を止めてユーザーに知らせる（無言で失敗させない）
@@ -99,8 +104,8 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, onErr
       if (fatalErrorRef.current) {
         fatalErrorRef.current = false;
         setRec(false);
-        onInterim("");
-        onError?.();
+        handlersRef.current.onInterim("");
+        handlersRef.current.onError?.();
         return;
       }
       if (!recordingRef.current) return;
@@ -117,7 +122,7 @@ export default function MicButton({ onFinal, onInterim, onRecordingChange, onErr
 
   function stop() {
     setRec(false);
-    onInterim("");
+    handlersRef.current.onInterim("");
     recognitionRef.current?.stop();
   }
 

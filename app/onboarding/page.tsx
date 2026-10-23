@@ -38,6 +38,7 @@ function OnboardingForm() {
   const { user, loading } = useUser();
   const [profile, setProfile] = useState<Profile>(emptyProfile);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   // 保存済みの値があれば復元（編集し直して戻ってきた場合など）
   useEffect(() => {
@@ -97,7 +98,8 @@ function OnboardingForm() {
       return;
     try {
       // 直近ログインが古いと deleteUser が requires-recent-login になるため先に再認証する
-      await reauthenticateWithPopup(current, googleProvider);
+      // ゲスト（匿名）は Google で再認証できないので省く
+      if (!user.isGuest) await reauthenticateWithPopup(current, googleProvider);
       const res = await authedFetch(user, "/api/account", { method: "DELETE" });
       if (!res.ok) throw new Error(`account ${res.status}`);
       await deleteUser(current);
@@ -112,18 +114,30 @@ function OnboardingForm() {
 
   /** スキップ：空のプロフィールを保存して「初回済み」にする（次回からオンボーディングに戻されない） */
   async function skip() {
-    if (user) {
-      await authedJson(user, "PUT", "/api/profile", emptyProfile).catch(() => {});
+    if (!user || saving) return;
+    setSaving(true);
+    setSaveError("");
+    try {
+      const res = await authedJson(user, "PUT", "/api/profile", emptyProfile);
+      if (!res.ok) throw new Error(`profile ${res.status}`);
+      router.push("/home");
+    } catch {
+      setSaveError("保存できませんでした。少し待ってからもう一度試してください。");
+    } finally {
+      setSaving(false);
     }
-    router.push("/home");
   }
 
   async function save() {
     if (!user || saving) return;
     setSaving(true);
+    setSaveError("");
     try {
-      await authedJson(user, "PUT", "/api/profile", profile);
+      const res = await authedJson(user, "PUT", "/api/profile", profile);
+      if (!res.ok) throw new Error(`profile ${res.status}`);
       router.push("/home");
+    } catch {
+      setSaveError("保存できませんでした。少し待ってからもう一度試してください。");
     } finally {
       setSaving(false);
     }
@@ -212,6 +226,11 @@ function OnboardingForm() {
         </div>
 
         <div className="mt-12">
+          {saveError && (
+            <p role="alert" className="mb-3 text-center text-sm text-error">
+              {saveError}
+            </p>
+          )}
           <button
             type="button"
             aria-label={isEdit ? "保存する" : "はじめる"}

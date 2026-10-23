@@ -1,0 +1,10 @@
+rules_version = '2';
+// すべてのデータアクセスは API Routes（Admin SDK）経由。Admin SDK はルールを迂回するため、
+// クライアント SDK からの直接アクセスは全拒否にする（利用上限カウンタ usage の改ざん防止）
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
