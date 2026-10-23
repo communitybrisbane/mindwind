@@ -9,8 +9,6 @@ export const DIARY_TOO_SHORT_MESSAGE = `もう少し書いてみてね（${MIN_D
 /** 入力サイズの上限（AI トークン費用と悪用のガード。超過はサーバーが 400 を返す） */
 export const MAX_DIARY_LENGTH = 5000; // 日記・深掘り回答
 export const MAX_CONSULT_MESSAGE = 2000; // 相談の1メッセージ
-/** @deprecated 成形（shape）は廃止予定（Phase 12〜19）。80 で消す */
-export const MAX_SHAPED_FIELD = 2000; // 成形カードの各項目
 export const MAX_TITLE_LENGTH = 50; // タイトル（AI 生成は15字だが編集の余地を残す）
 
 /** 相談に必要な最低記録数（未満はコールドスタート案内。文言にも使う） */
@@ -23,9 +21,6 @@ export const MEMBER_LIMITS = {
   consultPerDay: 30,
   /** 深掘りの上限（回/日）。記録上限の3倍（やり直しの余裕） */
   deepdivePerDay: 90,
-  /** 成形の上限（回/日）。記録上限の3倍（やり直しの余裕） */
-  /** @deprecated 成形（shape）は廃止予定。80 で消す */
-  shapePerDay: 90,
   /** 手紙の生成上限（回/日。やり直し込み。ゲストは 1/10 → 1） */
   letterPerDay: 3,
 };
@@ -72,12 +67,6 @@ export function consultLimitFor(isGuest: boolean): number {
 /** 深掘りの上限：ゲストは会員の 1/10 */
 export function deepdiveLimitFor(isGuest: boolean): number {
   return isGuest ? guestLimit(MEMBER_LIMITS.deepdivePerDay) : MEMBER_LIMITS.deepdivePerDay;
-}
-
-/** @deprecated 成形（shape）は廃止予定。80 で消す */
-/** 成形の上限：ゲストは会員の 1/10 */
-export function shapeLimitFor(isGuest: boolean): number {
-  return isGuest ? guestLimit(MEMBER_LIMITS.shapePerDay) : MEMBER_LIMITS.shapePerDay;
 }
 
 /** 手紙の生成上限：ゲストは会員の 1/10（最低1） */

@@ -11,7 +11,6 @@ import {
   warnAtFor,
   MEMBER_LIMITS,
   recordLimitFor,
-  shapeLimitFor,
 } from "./limits";
 
 describe("guestLimit", () => {
@@ -43,17 +42,15 @@ describe("consultLimitFor / recordLimitFor", () => {
   });
 });
 
-describe("deepdiveLimitFor / shapeLimitFor", () => {
+describe("deepdiveLimitFor", () => {
   it("会員は満額・ゲストは 1/10", () => {
     expect(deepdiveLimitFor(false)).toBe(MEMBER_LIMITS.deepdivePerDay);
     expect(deepdiveLimitFor(true)).toBe(guestLimit(MEMBER_LIMITS.deepdivePerDay));
-    expect(shapeLimitFor(false)).toBe(MEMBER_LIMITS.shapePerDay);
-    expect(shapeLimitFor(true)).toBe(guestLimit(MEMBER_LIMITS.shapePerDay));
   });
 
   it("現在の値：会員90・ゲスト9（記録上限の3倍）", () => {
     expect(deepdiveLimitFor(false)).toBe(90);
-    expect(shapeLimitFor(true)).toBe(9);
+    expect(deepdiveLimitFor(true)).toBe(9);
     expect(MEMBER_LIMITS.deepdivePerDay).toBe(MEMBER_LIMITS.recordPerDay * 3);
   });
 });

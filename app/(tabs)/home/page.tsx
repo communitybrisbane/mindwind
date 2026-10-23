@@ -15,7 +15,7 @@ import HistorySheet from "@/components/hist/HistorySheet";
 import Bead from "@/components/ui/Bead";
 import { showToast } from "@/components/ui/Toast";
 import type { ThoughtsListResponse } from "@/lib/api/contracts";
-import type { ShapedRecord, ThoughtSummary } from "@/lib/db/types";
+import type { ThoughtSummary } from "@/lib/db/types";
 import { authedJsonOrNull, useUser } from "@/lib/db/useUser";
 import { splitDateHeading, tokyoDateKey, tokyoHour } from "@/lib/logic/date";
 import { isMoodId, type MoodId } from "@/lib/logic/moods";
@@ -26,9 +26,6 @@ import { useProfile } from "@/lib/ui/useDisplayName";
 import { sound, vibrate } from "@/lib/ui/feedback";
 import { useMoodRange } from "@/lib/ui/useMoodRange";
 import { useReducedMotion } from "@/lib/ui/useReducedMotion";
-
-/** 旧 UI の型（app/(tabs)/home/useThoughtEditing.ts が import している。80 がそのファイルを消すときに一緒に消す） */
-export type Thought = ShapedRecord & { id: string; date: string };
 
 const FLY_KEY ="mindwind:flyMood";
 const COUNT_KEY = "mindwind:home:weekCount";
