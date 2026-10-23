@@ -155,6 +155,13 @@
   padding: 0 6px;
   font-size: 15px;
   color: #a8321e;
+  position: relative;
+}
+/* 見た目は小さい×のまま、押せる範囲だけ広げる（a11y・81） */
+.errorX::after {
+  content: "";
+  position: absolute;
+  inset: -14px -10px;
 }
 
 .counter {

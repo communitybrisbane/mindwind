@@ -69,6 +69,7 @@ export default function LetterList({
                       <Icon name="env" />
                       {!l.readAt && <b className={styles.rowDot} />}
                     </span>
+                    {!l.readAt && <span className="sr-only">未読</span>}
                     <span className={styles.rowText}>
                       <b>
                         {md(l.from)}〜{md(l.to)}

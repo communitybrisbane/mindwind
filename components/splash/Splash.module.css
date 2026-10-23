@@ -14,6 +14,11 @@
   touch-action: manipulation;
   outline: none;
 }
+/* キーボードで来たときだけ、画面のふちに金の点線を出す（全面が「タップしてスタート」のボタン） */
+.root:focus-visible {
+  outline: 2px dashed var(--color-gold);
+  outline-offset: -6px;
+}
 
 /* 上：カードを置く場所。下：「タップしてスタート」（親指の弧＝画面の下3分の1） */
 .stage {

@@ -12,6 +12,8 @@ export type PaperProps = {
   onClick?: () => void;
   role?: string;
   "aria-label"?: string;
+  /** role="dialog" のときに true（背景を読み上げ対象から外す） */
+  "aria-modal"?: boolean;
   children?: ReactNode;
 };
 
@@ -24,6 +26,7 @@ export function Paper({
   onClick,
   role,
   "aria-label": ariaLabel,
+  "aria-modal": ariaModal,
   children,
 }: PaperProps) {
   const cls = ["sheet", styles.paper, onClick ? styles.clickable : "", className ?? ""]
@@ -34,7 +37,7 @@ export function Paper({
       ? { transform: `rotate(${rotate}deg)`, ...style }
       : style;
   return (
-    <Tag className={cls} style={merged} onClick={onClick} role={role} aria-label={ariaLabel}>
+    <Tag className={cls} style={merged} onClick={onClick} role={role} aria-label={ariaLabel} aria-modal={ariaModal || undefined}>
       {children}
     </Tag>
   );

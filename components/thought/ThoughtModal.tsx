@@ -232,7 +232,7 @@ function ThoughtModalBody({
   return (
     <div className={styles.veil} onClick={() => !editing && onClose()} role="presentation">
       <div className={styles.stage} onClick={(e) => e.stopPropagation()}>
-        <Paper as="article" role="dialog" aria-label={heading || "記録"} className={styles.sheet}>
+        <Paper as="article" role="dialog" aria-modal aria-label={heading || "記録"} className={styles.sheet}>
           {heading && <div className={styles.date}>{heading}</div>}
 
           {loading && <p className={styles.wait}>ひらいているよ…</p>}

@@ -57,7 +57,7 @@ export function Dialog({ open, title, text, buttons, onClose }: DialogProps) {
 
   return (
     <div className={cls} onClick={onClose} aria-hidden={!open} inert={!open}>
-      <Paper role="dialog" aria-label={title} className={styles.box}>
+      <Paper role="dialog" aria-modal aria-label={title} className={styles.box}>
         {/* 紙の中のタップは幕に伝えない（閉じない） */}
         <div onClick={(e) => e.stopPropagation()}>
           <div id={titleId} className={styles.title}>
