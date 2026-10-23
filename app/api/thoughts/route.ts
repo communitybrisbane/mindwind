@@ -2,8 +2,10 @@ import { FieldValue } from "firebase-admin/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
+import { toStoredEmbedding } from "@/lib/db/embeddingField";
+import { consumeQuota } from "@/lib/db/usage";
 import { resolveRecordDate } from "@/lib/logic/backdate";
-import { tokyoDateKey, tokyoDayStart } from "@/lib/logic/date";
+import { tokyoDateKey } from "@/lib/logic/date";
 import { MAX_DIARY_LENGTH, recordLimitFor } from "@/lib/logic/limits";
 import { omit } from "@/lib/logic/omit";
 import { buildEmbeddingText } from "@/lib/logic/recordText";
@@ -56,64 +58,71 @@ export async function POST(req: NextRequest) {
   }
   const { date, isPast } = resolved;
 
+  // 1日の記録上限（書いた日基準・Asia/Tokyo）。AI 呼び出しと同じ原子カウンタで数える。
+  // 削除しても枠は戻らない（書き込み回数の上限）。過去日付の記録も「今日書いた1件」
+  const quota = await consumeQuota(uid, "record", recordLimitFor(isGuest));
+  if (!quota) {
+    return NextResponse.json({ error: "daily_limit" }, { status: 409 });
+  }
+
   try {
-    // 独立した処理は並列で走らせて待ち時間を圧縮する
-    // （上限超過時は embedding 1回ぶん無駄になるが $0.00001 なので許容）
-    // 日次上限は「今日書いた件数」（createdAt 基準）で数える：過去日付指定での上限すり抜けを防ぐ
-    const [countSnap, targetDateSnap, embedding, userSnap] = await Promise.all([
-      thoughts.where("createdAt", ">=", tokyoDayStart(todayKey)).count().get(),
-      isPast ? thoughts.where("date", "==", date).count().get() : Promise.resolve(null),
-      embedText(buildEmbeddingText(shaped)),
-      userDoc.get(),
-    ]);
-
-    // 1日の記録上限（Asia/Tokyo 日付境界。上限値は lib/logic/limits.ts で一元管理）
-    if (countSnap.data().count >= recordLimitFor(isGuest)) {
-      return NextResponse.json({ error: "daily_limit" }, { status: 409 });
-    }
-
-    // 過去日は1日1件まで（すでに記録がある日には追記できない。削除→書き直しで対応）
-    if (targetDateSnap && targetDateSnap.data().count > 0) {
-      return NextResponse.json({ error: "date_taken" }, { status: 409 });
-    }
-
-    // recordChat は保存済みカードのみ保持する設計。新しいカードをサーバー側で追記して
-    // クライアントの2本目のリクエストをなくす（日付が変わっていたら作り直し）。
-    // 過去日モードのセッションは復元対象外なので recordChat には積まない
+    const embedding = await embedText(buildEmbeddingText(shaped));
     const docRef = thoughts.doc();
-    const existing = userSnap.get("recordChat");
-    const cards =
-      existing?.date === todayKey
-        ? existing.messages.filter((m: { type: string }) => m.type === "card")
-        : [];
-    const recordChat = isPast
-      ? existing?.date === todayKey
-        ? existing
-        : null
-      : {
-          date: todayKey,
-          messages: [
-            ...cards,
-            { role: "ai", type: "card", content: JSON.stringify(shaped), thoughtId: docRef.id },
-          ],
-        };
 
-    await Promise.all([
-      docRef.set({
+    // 過去日の重複チェック・thought の保存・recordChat の更新を1トランザクションで行う
+    // （同じ日の同時保存や、複数端末の同時保存でカードが消えるのを防ぐ）
+    const saved = await adminDb.runTransaction(async (tx) => {
+      const userSnap = await tx.get(userDoc);
+      // 過去日は1日1件まで（すでに記録がある日には追記できない。削除→書き直しで対応）
+      if (isPast) {
+        const taken = await tx.get(thoughts.where("date", "==", date).limit(1));
+        if (!taken.empty) return false;
+      }
+
+      // recordChat は保存済みカードのみ保持する設計。新しいカードをサーバー側で追記して
+      // クライアントの2本目のリクエストをなくす（日付が変わっていたら作り直し）。
+      // 過去日モードのセッションは復元対象外なので recordChat には積まない
+      if (!isPast) {
+        const existing = userSnap.get("recordChat");
+        const cards =
+          existing?.date === todayKey
+            ? existing.messages.filter((m: { type: string }) => m.type === "card")
+            : [];
+        tx.set(
+          userDoc,
+          {
+            recordChat: {
+              date: todayKey,
+              messages: [
+                ...cards,
+                { role: "ai", type: "card", content: JSON.stringify(shaped), thoughtId: docRef.id },
+              ],
+            },
+          },
+          { merge: true }
+        );
+      }
+      tx.set(docRef, {
         date,
         ...shaped,
         rawText,
         deepDiveQuestion,
         deepDiveAnswer,
         tags: [],
-        embedding,
+        embedding: toStoredEmbedding(embedding),
         createdAt: FieldValue.serverTimestamp(),
-      }),
-      recordChat ? userDoc.set({ recordChat }, { merge: true }) : Promise.resolve(null),
-    ]);
+      });
+      return true;
+    });
+
+    if (!saved) {
+      await quota.refund();
+      return NextResponse.json({ error: "date_taken" }, { status: 409 });
+    }
     return NextResponse.json({ id: docRef.id });
   } catch (e) {
     console.error("save thought failed:", e);
+    await quota.refund();
     return NextResponse.json({ error: "save_failed" }, { status: 502 });
   }
 }

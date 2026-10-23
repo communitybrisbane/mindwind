@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { embedText } from "@/lib/ai/embedding";
 import { adminDb, verifyUser } from "@/lib/db/admin";
+import { toStoredEmbedding } from "@/lib/db/embeddingField";
 import type { StoredMessage } from "@/lib/logic/recordChatMessages";
 import { buildEmbeddingText } from "@/lib/logic/recordText";
 import { parseShapedRecord } from "@/lib/logic/shapedRecord";
@@ -27,25 +28,26 @@ export async function PUT(
   const docRef = userDoc.collection("thoughts").doc(id);
 
   try {
-    const [snap, embedding] = await Promise.all([
-      docRef.get(),
-      embedText(buildEmbeddingText(shaped)),
-    ]);
-    if (!snap.exists) return NextResponse.json({ error: "not_found" }, { status: 404 });
+    const embedding = await embedText(buildEmbeddingText(shaped));
 
-    await docRef.update({
-      ...shaped,
-      embedding,
+    // thought の更新と recordChat の同期を1トランザクションで行う（同時編集での巻き戻り防止）
+    const found = await adminDb.runTransaction(async (tx) => {
+      const [snap, userSnap] = await Promise.all([tx.get(docRef), tx.get(userDoc)]);
+      if (!snap.exists) return false;
+
+      tx.update(docRef, { ...shaped, embedding: toStoredEmbedding(embedding) });
+
+      // 今日のしおり（recordChat のカード）に同じ記録があれば内容を同期する
+      const recordChat = userSnap.get("recordChat");
+      if (recordChat?.messages?.some((m: StoredMessage) => m.thoughtId === id)) {
+        const messages = (recordChat.messages as StoredMessage[]).map((m) =>
+          m.thoughtId === id ? { ...m, content: JSON.stringify(shaped) } : m
+        );
+        tx.set(userDoc, { recordChat: { date: recordChat.date, messages } }, { merge: true });
+      }
+      return true;
     });
-
-    // 今日のしおり（recordChat のカード）に同じ記録があれば内容を同期する
-    const recordChat = (await userDoc.get()).get("recordChat");
-    if (recordChat?.messages?.some((m: StoredMessage) => m.thoughtId === id)) {
-      const messages = (recordChat.messages as StoredMessage[]).map((m) =>
-        m.thoughtId === id ? { ...m, content: JSON.stringify(shaped) } : m
-      );
-      await userDoc.set({ recordChat: { date: recordChat.date, messages } }, { merge: true });
-    }
+    if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
     return NextResponse.json({ ok: true });
   } catch (e) {
@@ -63,23 +65,29 @@ export async function DELETE(
 
   const { id } = await params;
   const userDoc = adminDb.doc(`users/${uid}`);
-  await userDoc.collection("thoughts").doc(id).delete();
+  const docRef = userDoc.collection("thoughts").doc(id);
 
-  // recordChat からも該当セッション（前カード直後〜このカードまで）を取り除く
-  const recordChat = (await userDoc.get()).get("recordChat");
-  if (recordChat?.messages) {
-    const kept: StoredMessage[] = [];
-    let buffer: StoredMessage[] = [];
-    for (const message of recordChat.messages as StoredMessage[]) {
-      buffer.push(message);
-      if (message.type === "card") {
-        if (message.thoughtId !== id) kept.push(...buffer);
-        buffer = [];
+  // thought の削除と recordChat の書き換えを1トランザクションで行う
+  await adminDb.runTransaction(async (tx) => {
+    const userSnap = await tx.get(userDoc);
+    tx.delete(docRef);
+
+    // recordChat からも該当セッション（前カード直後〜このカードまで）を取り除く
+    const recordChat = userSnap.get("recordChat");
+    if (recordChat?.messages) {
+      const kept: StoredMessage[] = [];
+      let buffer: StoredMessage[] = [];
+      for (const message of recordChat.messages as StoredMessage[]) {
+        buffer.push(message);
+        if (message.type === "card") {
+          if (message.thoughtId !== id) kept.push(...buffer);
+          buffer = [];
+        }
       }
+      kept.push(...buffer);
+      tx.set(userDoc, { recordChat: { date: recordChat.date, messages: kept } }, { merge: true });
     }
-    kept.push(...buffer);
-    await userDoc.set({ recordChat: { date: recordChat.date, messages: kept } }, { merge: true });
-  }
+  });
 
   return NextResponse.json({ ok: true });
 }

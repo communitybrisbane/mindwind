@@ -58,6 +58,18 @@ OPENAI_API_KEY=your_openai_api_key
 
 3. サービスアカウントの秘密鍵を発行し、`FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` に設定
 
+4. **相談の RAG 検索をベクトル検索にする（初回のみ。この順番で行う）**。インデックスが無い間は自動で全件読みにフォールバックするので、途中で動作は止まらない
+   1. **デプロイする**（新しい記録からベクトル型で保存される）
+   2. **既存記録を移行する**：`node scripts/migrate-embeddings.mjs`（dry-run で件数確認）→ `node scripts/migrate-embeddings.mjs --apply`（`npm run migrate:embeddings -- --apply` でも可）。旧形式（number 配列）の embedding をベクトル型に書き換える。実行前に `npm run backup` を推奨
+   3. **ベクトルインデックスを作成する**。`gcloud` でプロジェクトを選択した状態で実行する：
+
+      ```bash
+      gcloud firestore indexes composite create --collection-group=thoughts --query-scope=COLLECTION --field-config=vector-config='{"dimension":"1536","flat": "{}"}',field-path=embedding --database="(default)"
+      ```
+
+   - 移行より先にインデックスを作ると、旧形式の記録がベクトル検索の対象外になり、相談の参考記録が一部漏れる期間ができる
+   - インデックスが無い状態で最初に `findNearest` が失敗すると、サーバーログ（`[rag] findNearest に失敗…`）にインデックス作成用のコンソールリンクも出る。それでも作成できる
+
 ## エラーハンドリング（MVP）
 
 ### API エラー

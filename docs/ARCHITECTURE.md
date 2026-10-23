@@ -27,8 +27,8 @@
 ### MVP での実装：シンプル実装
 
 - 記録保存時、マージ後の6項目（出来事・思考・行動・理由・感情・価値観）を連結したテキストを OpenAI `text-embedding-3-small` でベクトル化
-- Firestore に `embedding` フィールド（number 配列・1536次元）で保存
-- 相談時は API Routes（Admin SDK）が本人の全記録を読み込み、コサイン類似度で上位5件を抽出
+- Firestore に `embedding` フィールド（ベクトル型・1536次元。移行前の旧記録は number 配列）で保存
+- 相談時は API Routes（Admin SDK）が `findNearest` で上位5件を抽出（失敗時は全記録を読んでコサイン類似度で抽出。下記「Firestore Vector Search への移行」参照）
 - 抽出した記録を Claude に渡してパターン分析・アドバイス生成
 
 ### 特徴
@@ -37,9 +37,19 @@
 - 数百件程度のデータで十分パフォーマンス出力可能
 - 新卒向けアプリの初期ユーザー数に対応可能
 
-### 将来：Firestore Vector Search への移行
+### Firestore Vector Search への移行（実装済み・インデックス作成とデータ移行が必要）
 
-- データが増えてパフォーマンス問題が出たら、Firestore Vector Search にネイティブ移行可能
+`lib/ai/rag.ts` の `searchRelevantThoughts` は次の順で動く。
+
+1. **コールドスタート判定**：`count()` 集計クエリで記録件数を取得（ドキュメントは読まない）。`MIN_THOUGHTS_FOR_CONSULT` 未満なら即返す
+2. 質問をベクトル化し、**`findNearest`**（`vectorField: "embedding"`・`distanceMeasure: "COSINE"`・`limit: RAG_TOP_K`）で上位5件を取得。embedding・rawText・深掘り・createdAt・tags は結果に含めない
+3. **フォールバック**：`findNearest` が失敗した（ベクトルインデックス未作成＝`FAILED_PRECONDITION` など）、または `min(件数, 5)` 件に満たない（旧形式の number 配列で保存された記録はベクトル検索の対象外）ときは、従来どおり全件読み＋`topKSimilar`（コサイン類似度）で検索する。`readEmbedding` で配列・ベクトル型の両方を読める。インデックスエラーの警告ログはプロセスごとに1回だけ出す
+4. embedding は保存時から Firestore の**ベクトル型**（`FieldValue.vector`、`lib/db/embeddingField.ts` の `toStoredEmbedding`）で書く
+
+運用上の必須作業（初回のみ）：
+
+- **ベクトルインデックスの作成**（`thoughts` コレクショングループ・1536次元）。コマンドは `docs/DEVELOPMENT.md` 参照。未作成でもフォールバックで動くが、全件読みに戻る
+- **既存データの移行**：`npm run migrate:embeddings`（dry-run）→ `node scripts/migrate-embeddings.mjs --apply`。number 配列の embedding をベクトル型に書き換える。デプロイ後に実行する
 
 ## 使用モデルと API 機能
 
@@ -237,7 +247,7 @@ users/{userId}/
 ## 公開範囲とレート制限
 
 - **公開範囲**：招待制・allowlist は設けない。URL を知る人だけが使う非公開運用（マーケティングしない）。Google ログインさえすれば誰でも使える構造のため、コスト保護はレート制限で行う
-- **記録**：安全上限（会員30件/日・ゲスト3件/日）により、記録系の AI 呼び出し（深掘り＋成形）は最大60回/日/ユーザーにキャップされる（1記録≈$0.015 のため上限でも約$0.5/日）。カウントは**書いた日基準**（createdAt の Asia/Tokyo 日付。過去日付の記録も「今日書いた1件」として数える）
+- **記録**：安全上限（会員30件/日・ゲスト3件/日）により、記録系の AI 呼び出し（深掘り＋成形）は最大60回/日/ユーザーにキャップされる（1記録≈$0.015 のため上限でも約$0.5/日）。カウントは**書いた日基準**で、AI クォータと同じ使用量カウンタ（`users/{uid}/usage/{YYYY-MM-DD}` の `record` フィールド）を `consumeQuota` がトランザクションで原子的に加算する（同時リクエストでも上限を超えない）。過去日付の記録も「今日書いた1件」として数え、**記録を削除しても枠は戻らない**（書き込み回数の上限）。保存に失敗した場合（embedding 失敗・過去日の重複 `date_taken`・保存エラー）のみ返却する。超過時は `409 { error: "daily_limit" }`。過去日の1日1件制約の確認と thought・recordChat の書き込みは1つのトランザクションで行う
 - **相談**：**30メッセージ/日/ユーザー**を上限とする。超過時は入力バーを無効化し「今日の相談はここまで。また明日話そう」と表示。カウントは Asia/Tokyo の日付単位で API Routes 側で判定
 - **AI 呼び出しの日次クォータ（深掘り・成形・相談）**：`users/{uid}/usage/{YYYY-MM-DD}`（Asia/Tokyo）に種別ごと（`deepdive` / `shape` / `consult`）の回数を持つ。上限は深掘り・成形が**会員90回/日**（記録上限の3倍・やり直しの余裕）、相談が30回/日、**ゲストはいずれも会員の 1/10**（`lib/logic/limits.ts`）。判定と加算は `lib/db/usage.ts` の `consumeQuota` がトランザクションで原子的に行い、同時リクエストでも上限を超えない。Anthropic を呼ぶ前に消費し、AI の失敗・不完全応答・早期エラー（記録不足 409・スレッド不在 404 など）では消費した日付のドキュメントへ返却する。超過時は `429 { error: "daily_limit" }`。アカウント削除は `recursiveDelete` でサブコレクションごと消える
 - **ゲスト（匿名認証）**：スタート画面の「ゲストで試す」から `signInAnonymously` で利用開始できる。記録は会員と同じ上限、**相談は会員の 1/10**（上限値は `lib/logic/limits.ts` で一元管理し、会員側を変えると自動追従）。ゲスト判定はサーバー側で ID トークンの `sign_in_provider === "anonymous"` を見る（偽装不可）。`linkWithPopup` で Google に昇格でき、uid が変わらないためデータはそのまま引き継がれる。Firebase Console で匿名アカウントの30日自動削除を有効にする
