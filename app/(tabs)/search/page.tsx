@@ -1,170 +1,278 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import ChatHistoryDrawer from "@/components/ChatHistoryDrawer";
-import ChatInputBar from "@/components/ChatInputBar";
-import RefThoughts from "@/components/RefThoughts";
-import { ClockIcon, PlusIcon, SendIcon, SpiralIcon } from "@/components/icons";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useSearchParams } from "next/navigation";
+import ConsultInput from "@/components/consult/ConsultInput";
+import ConsultThread from "@/components/consult/ConsultThread";
+import RefModal from "@/components/consult/RefModal";
+import styles from "@/components/consult/consult.module.css";
+import { Desk } from "@/components/ui/Desk";
+import { Dialog } from "@/components/ui/Dialog";
+import { Paper } from "@/components/ui/Paper";
+import { RoundButton } from "@/components/ui/RoundButton";
+import { showToast } from "@/components/ui/Toast";
 import { useUser } from "@/lib/db/useUser";
-import { formatMonthDay } from "@/lib/logic/date";
-import { MAX_CONSULT_MESSAGE } from "@/lib/logic/limits";
-import { useConsultChat } from "./useConsultChat";
+import { sound, vibrate } from "@/lib/ui/feedback";
+import { useConsultChat, type ChatSummary, type RefPage } from "./useConsultChat";
 
-const iconButtonClass =
-  "flex h-[34px] w-[34px] items-center justify-center rounded-full bg-[rgba(0,98,65,0.08)] text-primary";
-
-/** "2026-07-18" や ISO 文字列 → "7月18日"（不正な日付は ""） */
-function threadDateLabel(iso: string): string {
+/** ISO 文字列 → "10/23"（不正な日付は ""） */
+function shortDate(iso: string | null): string {
+  if (!iso) return "";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : formatMonthDay(d);
+  return Number.isNaN(d.getTime()) ? "" : `${d.getMonth() + 1}/${d.getDate()}`;
 }
 
-export default function SearchPage() {
+/** これまでの相談（左から出る紙。スレッドを開く・消す・新しい相談） */
+function HistoryDrawer({
+  chats,
+  loading,
+  currentChatId,
+  onSelect,
+  onDelete,
+  onNewChat,
+  onClose,
+}: {
+  chats: ChatSummary[];
+  loading: boolean;
+  currentChatId: string | null;
+  onSelect: (id: string) => void;
+  onDelete: (chat: ChatSummary) => void;
+  onNewChat: () => void;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className={styles.drawerScrim}
+      role="dialog"
+      aria-modal="true"
+      aria-label="これまでの相談"
+      onClick={onClose}
+    >
+      <div className={styles.drawerShell}>
+        <div className={styles.drawerBox} onClick={(e) => e.stopPropagation()}>
+          <Paper className={styles.drawer}>
+            <h2 className={styles.drawerTitle}>これまでの相談</h2>
+            <ul className={styles.drawerList}>
+              {chats.length === 0 ? (
+                <li className={styles.drawerEmpty}>
+                  {loading ? "読み込んでいます…" : "まだ相談はありません"}
+                </li>
+              ) : (
+                chats.map((chat) => (
+                  <li
+                    key={chat.id}
+                    className={`${styles.drawerItem} ${chat.id === currentChatId ? styles.current : ""}`}
+                  >
+                    <button
+                      type="button"
+                      className={styles.drawerOpen}
+                      onClick={() => onSelect(chat.id)}
+                      aria-current={chat.id === currentChatId ? "true" : undefined}
+                    >
+                      <span className={styles.drawerItemTitle}>{chat.title || "（無題の相談）"}</span>
+                      <span className={styles.drawerItemDate}>{shortDate(chat.updatedAt)}</span>
+                    </button>
+                    <RoundButton
+                      variant="ink"
+                      icon="trash"
+                      aria-label={`「${chat.title || "無題の相談"}」を消す`}
+                      onClick={() => onDelete(chat)}
+                    />
+                  </li>
+                ))
+              )}
+            </ul>
+            <div className={styles.drawerFoot}>
+              <RoundButton variant="ink" icon="check" label="とじる" aria-label="とじる" onClick={onClose} />
+              <RoundButton
+                variant="green"
+                icon="pencil"
+                label="新しい相談"
+                aria-label="新しい相談"
+                onClick={onNewChat}
+              />
+            </div>
+          </Paper>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function SearchInner() {
   const { user } = useUser();
+  const searchParams = useSearchParams();
+  // 手紙の「相談する」から来たときの下書き（入れるだけで送らない）
+  const [draft] = useState(() => searchParams.get("draft") ?? "");
   const {
     chatId,
     messages,
-    threadDate,
     chats,
+    chatsLoading,
     thinking,
+    streaming,
     limitReached,
     send,
     loadChats,
     selectChat,
-    startNewChat: resetChat,
+    startNewChat,
     deleteChat,
   } = useConsultChat(user);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [refPage, setRefPage] = useState<RefPage | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<ChatSummary | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // 下書きは一度入れたら URL から外す（再読み込みで二重に入らないように）
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, thinking]);
+    if (!draft) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("draft");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search);
+  }, [draft]);
 
-  function startNewChat() {
-    resetChat();
+  const followBottom = useCallback(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
+
+  const closeRef = useCallback(() => setRefPage(null), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
+  function openRef(ref: RefPage) {
+    vibrate(10);
+    sound("pop");
+    setRefPage(ref);
+  }
+
+  function openDrawer() {
+    sound("rub");
+    setDrawerOpen(true);
+    void loadChats();
+  }
+
+  function newChat() {
+    sound("rub");
+    startNewChat();
     setDrawerOpen(false);
   }
 
+  async function pickChat(id: string) {
+    setDrawerOpen(false);
+    const ok = await selectChat(id);
+    if (!ok) showToast("相談をひらけませんでした");
+  }
+
+  async function confirmDelete(chat: ChatSummary) {
+    const ok = await deleteChat(chat.id);
+    showToast(ok ? "相談を消したよ" : "消せませんでした。少し待ってからもう一度試してね");
+  }
+
+  const current = chats.find((c) => c.id === chatId);
+  const firstAsk = messages.find((m) => m.role === "user")?.text ?? "";
+  const threadTitle = current?.title || firstAsk.slice(0, 20) || "新しい相談";
+
   return (
-    <main className="flex min-h-0 flex-1 flex-col bg-[#f7f4ec]">
-      {/* ヘッダー行（小ラベル＋丸ボタン。便箋スタイル） */}
-      <div className="flex flex-none items-center justify-between px-4 pb-1 pl-6 pt-[18px]">
-        <span className="text-[12px] tracking-[0.08em] text-ink-tertiary">MindWind 相談</span>
-        <div className="flex gap-2">
-          <button type="button" aria-label="新しい相談" className={iconButtonClass} onClick={startNewChat}>
-            <PlusIcon className="h-[18px] w-[18px]" />
-          </button>
-          <button
-            type="button"
-            aria-label="相談履歴"
-            className={iconButtonClass}
-            onClick={async () => {
-              setDrawerOpen(true);
-              await loadChats();
-            }}
-          >
-            <ClockIcon className="h-[18px] w-[18px]" />
-          </button>
-        </div>
+    <Desk className={styles.page}>
+      <div className={styles.bar}>
+        <h1 className={styles.thread}>{threadTitle}</h1>
+        <RoundButton variant="chalk" icon="stack" aria-label="これまでの相談" onClick={openDrawer} />
+        <RoundButton variant="chalk" icon="pencil" aria-label="新しい相談" onClick={newChat} />
       </div>
 
-      {/* 便箋（往復書簡）エリア */}
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6">
-        {messages.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-            <SpiralIcon className="h-10 w-[72px] text-accent" />
-            <p className="mt-6 text-lg font-semibold text-ink">過去の自分に相談しよう</p>
-            <p className="mt-3 text-sm leading-relaxed text-ink-secondary">
-              あなたの記録をもとに、
-              <br />
-              過去のあなたが一緒に考えます
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6 py-3">
-            <p className="text-center text-[11px] tracking-[0.2em] text-ink-tertiary">
-              — {threadDateLabel(threadDate)}の相談 —
-            </p>
-            {messages.map((msg, i) =>
-              msg.role === "user" ? (
-                <div key={i} className="relative ml-[42px]">
-                  <span className="absolute -left-[42px] top-[5px] text-[10px] tracking-[0.14em] text-ink-tertiary">
-                    あなた
-                  </span>
-                  <p className="whitespace-pre-wrap border-l-2 border-house/25 pl-3 font-serif text-[15.5px] leading-[1.85] text-ink">
-                    {msg.text}
-                  </p>
-                </div>
-              ) : (
-                <div key={i} className="relative pl-[26px]">
-                  <span
-                    aria-hidden
-                    className="absolute left-0 top-[6px] h-[18px] w-[18px] rounded-[50%_50%_50%_4px] border-[1.6px] border-accent opacity-85"
-                  />
-                  <p className="whitespace-pre-wrap font-serif text-[15px] leading-[1.9] text-[#0f5132]">
-                    {msg.text}
-                  </p>
-                  <p className="mt-1.5 text-[10.5px] tracking-[0.14em] text-ink-tertiary">
-                    メンターの返事
-                  </p>
-                  {msg.refs && <RefThoughts refs={msg.refs} />}
-                </div>
-              )
-            )}
-            {thinking && (
-              <p className="animate-pulse pl-[26px] font-serif text-[14.5px] leading-[1.9] text-accent">
-                記録を読み返している…
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+      <ConsultThread
+        messages={messages}
+        thinking={thinking}
+        onSelectRef={openRef}
+        scrollRef={scrollRef}
+      />
 
-      {/* 入力バー（下部固定） */}
-      <div className="flex-none px-4 pb-3">
+      <div className={styles.inputWrap}>
         {limitReached &&
           (user?.isGuest ? (
-            <p className="pb-2 text-[13px] text-ink-secondary">
+            <p className={styles.notice}>
               今日のゲストの上限に達しました。
-              <Link href="/onboarding?edit=1" className="font-semibold text-accent underline">
-                Google アカウントと連携
-              </Link>
+              <Link href="/settings">Google アカウントと連携</Link>
               するともっと相談できます
             </p>
           ) : (
-            <p className="pb-2 text-[13px] text-ink-secondary">
-              今日の相談はここまで。また明日話そう
-            </p>
+            <p className={styles.notice}>今日の相談はここまで。また明日話そう</p>
           ))}
-        <ChatInputBar
-          mic
-          serif
-          paper
-          disabled={thinking || limitReached}
-          placeholder={messages.length === 0 ? "なんでも聞いてみよう" : "続きを話す…"}
-          maxLength={MAX_CONSULT_MESSAGE}
+        <ConsultInput
+          initial={draft}
+          disabled={limitReached}
+          busy={thinking || streaming}
+          placeholder={messages.length === 0 ? "いま思っていること" : "続きを書く"}
           onSend={send}
-          actionIcon={<SendIcon className="h-[18px] w-[18px]" />}
-          actionAriaLabel="送信する"
+          onResize={followBottom}
         />
       </div>
 
-      {/* 相談履歴ドロワー（左からスライドイン） */}
       {drawerOpen && (
-        <ChatHistoryDrawer
+        <HistoryDrawer
           chats={chats}
+          loading={chatsLoading}
           currentChatId={chatId}
-          onSelect={(id) => {
-            selectChat(id);
+          onSelect={(id) => void pickChat(id)}
+          onDelete={(chat) => {
+            // 確認の紙は机の上に出るので、そのあいだドロワーは閉じておく（閉じたら戻す）
             setDrawerOpen(false);
+            setPendingDelete(chat);
           }}
-          onDelete={(id) => void deleteChat(id)}
-          onNewChat={startNewChat}
-          onClose={() => setDrawerOpen(false)}
+          onNewChat={newChat}
+          onClose={closeDrawer}
         />
       )}
-    </main>
+
+      <RefModal page={refPage} onClose={closeRef} />
+
+      <Dialog
+        open={pendingDelete !== null}
+        title="この相談を消しますか？"
+        text={
+          <>
+            「{pendingDelete?.title || "無題の相談"}」のやりとりを、<b>すべて完全に消します</b>。元に戻せません。
+            <br />
+            <br />
+            消すときは、右の赤いボタンを<b>長押し</b>します。
+          </>
+        }
+        buttons={[
+          { icon: "undo", label: "やめる", onPress: () => {} },
+          {
+            icon: "trash",
+            label: "消す",
+            variant: "warn",
+            hold: true,
+            onPress: () => {
+              if (pendingDelete) void confirmDelete(pendingDelete);
+            },
+          },
+        ]}
+        onClose={() => {
+          setPendingDelete(null);
+          setDrawerOpen(true);
+        }}
+      />
+    </Desk>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchInner />
+    </Suspense>
   );
 }

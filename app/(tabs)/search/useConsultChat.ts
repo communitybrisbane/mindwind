@@ -1,71 +1,100 @@
 "use client";
 
 import { useState } from "react";
-import type { ChatSummary } from "@/components/ChatHistoryDrawer";
-import type { RefThought } from "@/components/RefThoughts";
+import { showToast } from "@/components/ui/Toast";
 import { authedFetch, authedJson, type AppUser } from "@/lib/db/useUser";
 import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 
-export type Message = { role: "user" | "assistant"; text: string; refs?: RefThought[] };
+/** 「読み返したページ」1枚。新形式は quote（検索で当たったチャンクの本文）。
+ *  旧形式（成形6項目のスナップショット）の履歴も表示できるよう、旧フィールドは任意で残す */
+export type RefPage = {
+  id: string;
+  date: string;
+  title?: string;
+  quote?: string;
+  event?: string;
+  thinking?: string;
+  action?: string;
+  reason?: string;
+  emotion?: string;
+  values?: string;
+};
+
+export type ChatSummary = { id: string; title: string; updatedAt: string | null };
+
+export type Message = {
+  role: "user" | "assistant";
+  text: string;
+  refs?: RefPage[];
+  /** 返事がまだ書かれている途中（緑インクのキャレットを出す） */
+  streaming?: boolean;
+};
 
 type ConsultEvent =
   | { type: "meta"; chatId: string }
-  | { type: "refs"; refs: RefThought[] }
+  | { type: "refs"; refs: RefPage[] }
   | { type: "delta"; text: string }
   | { type: "done" }
   | { type: "error" };
 
-/** 相談チャットの状態と操作（スレッド・メッセージ・ストリーミング受信・履歴） */
+/** 相談（文通）の状態と操作：スレッド・メッセージ・ストリーミング受信・履歴・削除・上限 */
 export function useConsultChat(user: AppUser | null) {
   const [chatId, setChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  // スレッド見出しの日付（新規=今日、履歴から開いたら最終更新日）
-  const [threadDate, setThreadDate] = useState<string>(() => new Date().toISOString());
   const [chats, setChats] = useState<ChatSummary[]>([]);
+  const [chatsLoading, setChatsLoading] = useState(false);
   const [thinking, setThinking] = useState(false);
+  const [streaming, setStreaming] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
 
-  // タブを開いたときは常に新規相談から始める（過去のスレッドは履歴ドロワーから開く）
+  // タブを開いたときは常に新しい相談から（過去のスレッドは「これまでの相談」から開く）
 
   /** 履歴一覧を読み込む（失敗時は空） */
   async function loadChats() {
     if (!user) return;
-    const res = await authedFetch(user, "/api/chats");
-    setChats(res.ok ? (await res.json()).chats : []);
+    setChatsLoading(true);
+    try {
+      const res = await authedFetch(user, "/api/chats");
+      setChats(res.ok ? (await res.json()).chats : []);
+    } catch {
+      setChats([]);
+    } finally {
+      setChatsLoading(false);
+    }
   }
 
-  async function openChat(id: string) {
-    if (!user) return;
-    const res = await authedFetch(user, `/api/chats/${id}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    setChatId(id);
-    setMessages(
-      data.messages.map((m: { role: Message["role"]; content: string; refs: RefThought[] }) => ({
-        role: m.role,
-        text: m.content,
-        refs: m.refs?.length ? m.refs : undefined,
-      }))
-    );
-  }
-
-  /** 履歴ドロワーからスレッドを開く（見出しの日付は最終更新日） */
-  function selectChat(id: string) {
-    void openChat(id);
-    const summary = chats.find((c) => c.id === id);
-    if (summary?.updatedAt) setThreadDate(summary.updatedAt);
+  /** スレッドを開く。失敗したら false */
+  async function selectChat(id: string): Promise<boolean> {
+    if (!user) return false;
+    try {
+      const res = await authedFetch(user, `/api/chats/${id}`);
+      if (!res.ok) return false;
+      const data = await res.json();
+      setChatId(id);
+      setMessages(
+        (data.messages as Array<{ role: Message["role"]; content: string; refs?: RefPage[] }>).map(
+          (m) => ({
+            role: m.role,
+            text: m.content,
+            refs: m.refs?.length ? m.refs : undefined,
+          }),
+        ),
+      );
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   function startNewChat() {
     setChatId(null);
     setMessages([]);
-    setThreadDate(new Date().toISOString());
   }
 
-  async function deleteChat(id: string) {
-    if (!user) return;
-    if (!window.confirm("この相談履歴を削除しますか？ 削除すると元に戻せません。")) return;
+  /** スレッドを完全に削除する（確認は呼び出し側のダイアログで済ませてから呼ぶ）。失敗したら false */
+  async function deleteChat(id: string): Promise<boolean> {
+    if (!user) return false;
     try {
       const res = await authedFetch(user, `/api/chats/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error(`delete ${res.status}`);
@@ -74,12 +103,13 @@ export function useConsultChat(user: AppUser | null) {
         setChatId(null);
         setMessages([]);
       }
+      return true;
     } catch {
-      window.alert("削除できませんでした。少し待ってからもう一度試してください。");
+      return false;
     }
   }
 
-  /** 最後の assistant メッセージを更新するヘルパー（ストリーミング反映用） */
+  /** 最後の assistant メッセージを更新する（ストリーミング反映用） */
   function updateLastAssistant(update: (msg: Message) => Message) {
     setMessages((m) => {
       const last = m[m.length - 1];
@@ -92,44 +122,66 @@ export function useConsultChat(user: AppUser | null) {
     setMessages((m) => [...m, { role: "assistant", text }]);
   }
 
-  /** ndjson ストリームを読みながら AI バブルへ逐次反映する */
+  /** NDJSON を読みながら便箋に1文字ずつ書いていく */
   async function readConsultStream(body: ReadableStream<Uint8Array>) {
-    let refs: RefThought[] = [];
+    let refs: RefPage[] = [];
     let started = false;
     let failed = false;
-    await readNdjson(body, (event) => {
-      const data = event as ConsultEvent;
-      if (data.type === "meta") setChatId(data.chatId);
-      else if (data.type === "refs") refs = data.refs;
-      else if (data.type === "delta") {
-        if (!started) {
-          started = true;
-          setThinking(false);
-          addAssistantMessage("");
+    try {
+      await readNdjson(body, (event) => {
+        const data = event as ConsultEvent;
+        if (data.type === "meta") setChatId(data.chatId);
+        else if (data.type === "refs") refs = Array.isArray(data.refs) ? data.refs : [];
+        else if (data.type === "delta") {
+          if (!started) {
+            started = true;
+            setThinking(false);
+            setStreaming(true);
+            setMessages((m) => [...m, { role: "assistant", text: "", streaming: true }]);
+          }
+          updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
+        } else if (data.type === "done") {
+          updateLastAssistant((msg) => ({
+            ...msg,
+            streaming: false,
+            refs: refs.length ? refs : undefined,
+          }));
+        } else if (data.type === "error") {
+          failed = true;
         }
-        updateLastAssistant((msg) => ({ ...msg, text: msg.text + data.text }));
-      } else if (data.type === "done") {
-        updateLastAssistant((msg) => ({ ...msg, refs: refs.length ? refs : undefined }));
-      } else if (data.type === "error") {
-        failed = true;
-      }
-    });
+      });
+    } catch {
+      failed = true;
+    } finally {
+      setStreaming(false);
+    }
     if (failed && !started) throw new Error("consult stream error");
     if (failed) {
-      updateLastAssistant((msg) => ({ ...msg, text: msg.text + "\n\n（途中で途切れてしまいました）" }));
+      updateLastAssistant((msg) => ({
+        ...msg,
+        streaming: false,
+        text: msg.text + "\n\n（途中で途切れてしまいました）",
+      }));
     }
   }
 
-  async function send(text: string) {
-    if (!user || thinking) return;
+  /** 問いを送る。送れなかったとき（上限・送信中）は false */
+  async function send(text: string): Promise<boolean> {
+    if (!user || thinking || streaming || limitReached) return false;
     setMessages((m) => [...m, { role: "user", text }]);
     setThinking(true);
     try {
       const res = await authedJson(user, "POST", "/api/consult", { message: text, chatId });
       if (res.status === 429) {
-        setLimitReached(true);
+        const body = (await res.json().catch(() => null)) as { error?: string } | null;
         setMessages((m) => m.slice(0, -1));
-        return;
+        // IP のレート制限（rate_limited）は1日の上限ではないので、入力欄は閉じない
+        if (body?.error === "rate_limited") {
+          showToast("少し待ってから、もう一度送ってね");
+          return false;
+        }
+        setLimitReached(true);
+        return false;
       }
       if (res.status === 404) {
         setChatId(null);
@@ -139,19 +191,21 @@ export function useConsultChat(user: AppUser | null) {
             text: "このスレッドは削除されたみたい。新しい相談として、もう一度送ってね。",
           },
         ]);
-        return;
+        return true;
       }
       if (res.status === 409) {
         const { count } = await res.json();
         addAssistantMessage(
-          `まずは${MIN_THOUGHTS_FOR_CONSULT}日分、記録してみましょう（いま${count}件）。記録がたまるほど、過去のあなたが力になれるよ。`
+          `まずは${MIN_THOUGHTS_FOR_CONSULT}日分、記録してみましょう（いま${count}件）。記録がたまるほど、過去のあなたが力になれるよ。`,
         );
-        return;
+        return true;
       }
       if (!res.ok || !res.body) throw new Error(`consult ${res.status}`);
       await readConsultStream(res.body);
+      return true;
     } catch {
       addAssistantMessage("ごめん、うまく応答できなかった。少し待ってからもう一度聞いてみて。");
+      return true;
     } finally {
       setThinking(false);
     }
@@ -160,9 +214,10 @@ export function useConsultChat(user: AppUser | null) {
   return {
     chatId,
     messages,
-    threadDate,
     chats,
+    chatsLoading,
     thinking,
+    streaming,
     limitReached,
     send,
     loadChats,
