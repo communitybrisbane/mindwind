@@ -3,6 +3,7 @@ import ThemeColor from "@/components/ThemeColor";
 import SvgDefs from "@/components/ui/SvgDefs";
 import FeedbackBoot from "@/components/ui/FeedbackBoot";
 import { ToastHost } from "@/components/ui/Toast";
+import AmbienceLayer from "@/components/fx/AmbienceLayer";
 import { fontVariables } from "@/app/fonts";
 import "./globals.css";
 
@@ -47,6 +48,8 @@ export default function RootLayout({
         {/* シェルは画面高さに固定。長いチャットは各画面の内側でスクロールさせ、タブバーは常に画面下に留める */}
         <div className="relative flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-warm shadow-shell">
           {children}
+          {/* 風の強さで変わる雰囲気（色2枚・粒子・明るさ・揺れ）。画面の上にうっすら重ね、触れない */}
+          <AmbienceLayer />
           {/* 机の上の黒い札（absolute なのでシェルの中に置く） */}
           <ToastHost />
         </div>

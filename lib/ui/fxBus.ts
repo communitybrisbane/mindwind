@@ -1,4 +1,4 @@
-// 風の強さの雰囲気を流す箱（契約 §4）。44 が箱を作り、63（回転盤）が流し、84（WindAmbience）が受ける。
+// 風の強さの雰囲気を流す箱（契約 §4）。44 が箱を作り、63（回転盤）が流し、84（components/fx/AmbienceLayer）が受ける。
 // React に依存しない。SSR でも落ちない。
 
 import type { MoodId } from "@/lib/logic/moods";
