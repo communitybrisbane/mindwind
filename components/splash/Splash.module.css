@@ -1,0 +1,301 @@
+/* 起動画面（PLAN 83）。値は docs/prototype/ui-v5.html の「起動画面（ロゴ・タップしてスタート）」を写したもの。
+   クラスの段階：play（演出中）→ done（「タップしてスタート」）→ leaving（カードが上へ去る）。
+   skip は途中のタップで演出を飛ばす。「動きをへらす」では play を付けず、最初から done（静止画）。 */
+
+.root {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+}
+
+/* 上：カードを置く場所。下：「タップしてスタート」（親指の弧＝画面の下3分の1） */
+.stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: clamp(32px, 14dvh, 120px);
+  min-height: 0;
+}
+
+.card {
+  width: min(318px, calc(100% - 72px));
+  padding: 22px 10px 20px;
+  transform: rotate(-1.4deg);
+}
+
+.logo {
+  width: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.tag {
+  font-family: var(--font-hand);
+  font-size: 14.5px;
+  color: rgba(13, 90, 60, 0.82);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.letter {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* 横切る風 */
+.breeze {
+  position: absolute;
+  left: 0;
+  width: 90px;
+  height: 90px;
+  color: rgba(244, 236, 216, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  filter: url(#pencil);
+}
+.br1 {
+  top: 21%;
+}
+.br2 {
+  top: 62%;
+}
+.br3 {
+  top: 70%;
+  width: 70px;
+  height: 70px;
+}
+
+/* 「タップしてスタート」 */
+.tap {
+  position: relative;
+  text-align: center;
+  padding-bottom: calc(clamp(40px, 12dvh, 102px) + env(safe-area-inset-bottom));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s;
+}
+.ring {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+}
+.ring i {
+  position: absolute;
+  inset: 0;
+  border: 1.8px solid rgba(244, 236, 216, 0.7);
+  border-radius: 50%;
+  filter: url(#pencil);
+}
+.ring b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background: rgba(244, 236, 216, 0.9);
+}
+.tx {
+  position: relative;
+  font-family: var(--font-mincho);
+  font-size: 22px;
+  letter-spacing: 0.34em;
+  padding-left: 0.34em;
+  color: var(--color-cream);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- 演出（play） ---------- */
+.play .card {
+  animation: spCard 1s 0.15s cubic-bezier(0.3, 0.8, 0.3, 1) both;
+}
+@keyframes spCard {
+  0% {
+    transform: translateY(-440px) rotate(-10deg) scale(1.15);
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  72% {
+    transform: translateY(10px) rotate(-0.6deg) scale(1);
+  }
+  100% {
+    transform: translateY(0) rotate(-1.4deg);
+  }
+}
+
+.play .letter {
+  animation: spInk 0.7s ease-out both;
+}
+.play .lt1 {
+  animation-delay: 1s;
+}
+.play .lt2 {
+  animation-delay: 1.22s;
+}
+.play .lt3 {
+  animation-delay: 1.44s;
+}
+.play .lt4 {
+  animation-delay: 1.66s;
+}
+@keyframes spInk {
+  0% {
+    opacity: 0;
+    transform: scale(1.16);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.play .wind {
+  animation: spWind 1.25s 2.4s ease-in-out both;
+}
+@keyframes spWind {
+  from {
+    transform: translateY(-310px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.play .tag {
+  opacity: 0;
+  animation: spTag 0.9s 3.8s ease both;
+}
+@keyframes spTag {
+  to {
+    opacity: 1;
+  }
+}
+
+.play .breeze {
+  animation: spBreeze 3s ease-in-out both;
+}
+.play .br2 {
+  animation-delay: 0.3s;
+}
+.play .br3 {
+  animation-delay: 0.7s;
+}
+@keyframes spBreeze {
+  0% {
+    transform: translateX(-110px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.55;
+  }
+  70% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(480px);
+    opacity: 0;
+  }
+}
+
+/* ---------- 終わり（done） ---------- */
+.done .tap {
+  opacity: 1;
+}
+.done .tx {
+  animation: spBlink 1.9s ease-in-out infinite;
+}
+@keyframes spBlink {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.done .ring i {
+  animation: spRing 2.1s ease-out infinite;
+}
+.done .ring i:nth-child(2) {
+  animation-delay: 1.05s;
+}
+@keyframes spRing {
+  0% {
+    transform: scale(0.25);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* ---------- 途中のタップで飛ばす（skip） ---------- */
+.skip * {
+  animation-duration: 0.01s !important;
+  animation-delay: 0s !important;
+}
+.skip .breeze {
+  display: none;
+}
+.skip.done .tx {
+  animation-duration: 1.9s !important;
+}
+.skip.done .ring i {
+  animation-duration: 2.1s !important;
+}
+.skip.done .ring i:nth-child(2) {
+  animation-delay: 1.05s !important;
+}
+
+/* ---------- 去る（leaving） ---------- */
+.leaving .card {
+  animation: none;
+  transition:
+    transform 0.75s cubic-bezier(0.5, 0, 0.8, 0.4),
+    opacity 0.5s 0.15s;
+  transform: translateY(-135%) rotate(6deg);
+  opacity: 0;
+}
+.leaving .tap {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.leaving .breeze {
+  display: none;
+}
+
+/* 「動きをへらす」：静止画（明滅も波紋も止める。風の線は出さない） */
+.still .tx,
+.still .ring i {
+  animation: none;
+}
+.still .tx {
+  opacity: 1;
+}
+.still .ring i {
+  transform: scale(0.85);
+  opacity: 0.7;
+}
+.still .breeze {
+  display: none;
+}
+.still .ring i:nth-child(2) {
+  display: none;
+}
