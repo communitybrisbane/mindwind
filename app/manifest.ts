@@ -8,8 +8,9 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "あなたが自分のメンターになる、日記×AI相談アプリ",
     start_url: "/",
     display: "standalone",
-    background_color: "#f2f0eb",
-    theme_color: "#006241",
+    // 革の机（契約 §2：felt2 / felt）
+    background_color: "#232f21",
+    theme_color: "#34492f",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icon-512.png", sizes: "512x512", type: "image/png" },

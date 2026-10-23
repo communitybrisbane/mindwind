@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import ThemeColor from "@/components/ThemeColor";
+import SvgDefs from "@/components/ui/SvgDefs";
+import FeedbackBoot from "@/components/ui/FeedbackBoot";
+import { ToastHost } from "@/components/ui/Toast";
+import { fontVariables } from "@/app/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,8 +26,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  // ステータスバー領域の色（スタート画面では ThemeColor が緑に切り替える）
-  themeColor: "#f2f0eb",
+  // ステータスバー領域の色（革の机。静的ページでは ThemeColor が生成りに切り替える）
+  themeColor: "#34492f",
 };
 
 export default function RootLayout({
@@ -32,13 +36,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className="h-full antialiased">
+    <html lang="ja" className={`${fontVariables} h-full antialiased`}>
       <body className="h-dvh flex justify-center">
+        {/* 新 UI の SVG フィルター（#pencil #wc #ink #deckle #logoink）。ここに1回だけ置く */}
+        <SvgDefs />
         <ThemeColor />
+        {/* 最初のタップで音を解錠し、「動きをへらす」で <html class="rm"> を付ける（描画なし） */}
+        <FeedbackBoot />
         {/* アプリシェル: モバイルネイティブ設計（max-width 430px・基準 390×844） */}
         {/* シェルは画面高さに固定。長いチャットは各画面の内側でスクロールさせ、タブバーは常に画面下に留める */}
         <div className="relative flex h-dvh w-full max-w-[430px] flex-col overflow-hidden bg-warm shadow-shell">
           {children}
+          {/* 机の上の黒い札（absolute なのでシェルの中に置く） */}
+          <ToastHost />
         </div>
       </body>
     </html>

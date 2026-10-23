@@ -3,8 +3,14 @@
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-// ステータスバー領域の色を画面に合わせる（スタート画面=Green Accent、他=Neutral Warm）
-const colorFor = (pathname: string) => (pathname === "/" ? "#00754a" : "#f2f0eb");
+// ステータスバー領域とシェル外側の色を画面に合わせる。
+// 新 UI（v5）はすべて革の机（--color-felt）。紙の静的ページ（規約・プライバシー・開発用）だけ生成り。
+const FELT = "#34492f";
+const WARM = "#f2f0eb";
+const PAPER_ROUTES = ["/terms", "/privacy", "/dev-login"];
+
+const colorFor = (pathname: string) =>
+  PAPER_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`)) ? WARM : FELT;
 
 /** ルートに応じて theme-color メタタグを切り替える（描画はしない） */
 export default function ThemeColor() {

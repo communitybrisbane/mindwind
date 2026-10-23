@@ -1,6 +1,60 @@
 @import "tailwindcss";
 
-/* デザイントークン（docs/DESIGN-mindwind.md §2〜4） */
+/* ===================================================================
+   新 UI（v5）のデザイントークン（docs/IMPLEMENTATION-CONTRACT.md §2・PLAN 41）
+   見た目の正は docs/prototype/ui-v5.html の :root。
+   bg-felt / text-pen / font-hand のように Tailwind のユーティリティで使える。
+   =================================================================== */
+@theme {
+  /* 革の机 */
+  --color-felt: #34492f; /* 革の机（上） */
+  --color-felt2: #232f21; /* 革の机（下）・グラデの終点 */
+  /* 紙とインク */
+  --color-paper: #f1e9d6; /* 紙 */
+  --color-cream: #f4ecd8; /* 机の上の文字色 */
+  --color-graphite: #34322d; /* 紙の上の文字（鉛筆） */
+  --color-pen: #0d5a3c; /* 緑インク（メンターの字・キャレット） */
+  --color-gold: #f0dca0; /* 強調（今週の数字・長押しの輪・選択中のタブ） */
+  --color-moss: #2f7a5c; /* 緑のボタン */
+  --color-warn: #b8402c; /* 赤いボタン（削除・ログインし直し） */
+  --color-dot: #c8412c; /* 歯車の赤い点・手紙の未読の点 */
+  --color-slip: #f8f0c4; /* 付箋（黄） */
+  --color-tabbar: #1d291d; /* タブバーの地 */
+  /* 5色の玉（lib/logic/moods.ts の MOODS[i].color / deep と同じ値） */
+  --color-mood-0: #3f9d78;
+  --color-mood-0-deep: #1f6a4c;
+  --color-mood-1: #9fbf4f;
+  --color-mood-1-deep: #62802a;
+  --color-mood-2: #cdbf9f;
+  --color-mood-2-deep: #8d7f5c;
+  --color-mood-3: #e49b3d;
+  --color-mood-3-deep: #a2641a;
+  --color-mood-4: #d9604d;
+  --color-mood-4-deep: #982f20;
+}
+
+/* 書体：app/fonts.ts（next/font）が <html> に付ける --font-kiwi などを役割名に束ねる。
+   inline にして、ユーティリティ（font-hand など）が var(--font-yomogi) を直接参照するようにする */
+@theme inline {
+  --font-mincho: var(--font-kiwi), "Kiwi Maru", "Zen Maru Gothic", "Hiragino Maru Gothic ProN", sans-serif; /* 見出し（明朝は使わない） */
+  --font-hand: var(--font-yomogi), "Yomogi", "Klee One", "Hiragino Maru Gothic ProN", sans-serif; /* あなたの言葉 */
+  --font-hand2: var(--font-klee), "Klee One", "Hiragino Maru Gothic ProN", sans-serif; /* 補助（キャプション・日付） */
+  --font-pen: var(--font-kurenaido), "Zen Kurenaido", "Klee One", "Hiragino Maru Gothic ProN", sans-serif; /* メンターの字 */
+  --font-ui: var(--font-zenmaru), "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif; /* UI 全般 */
+}
+
+/* 紙・革の質感（data URI。@theme ではなく通常の CSS 変数。値はプロトタイプ :root のまま） */
+:root {
+  --tex1:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='3' result='n'/><feDiffuseLighting in='n' lighting-color='%23ffffff' surfaceScale='1.4' diffuseConstant='1.32'><feDistantLight azimuth='45' elevation='58'/></feDiffuseLighting></filter><rect width='260' height='260' filter='url(%23p)'/></svg>");
+  --tex2:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='500'><filter id='m' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='8'/><feColorMatrix values='0 0 0 0 .62  0 0 0 0 .5  0 0 0 0 .32  0 0 0 .55 -.12'/></filter><rect width='500' height='500' filter='url(%23m)'/></svg>");
+  --fib:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.02 .9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .25  0 0 0 .5 -.26'/></filter><rect width='400' height='400' filter='url(%23f)'/></svg>");
+  --leather:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='340'><filter id='l' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='4' seed='12' stitchTiles='stitch' result='n'/><feDiffuseLighting in='n' lighting-color='%23ffffff' surfaceScale='3.2' diffuseConstant='.85'><feDistantLight azimuth='225' elevation='50'/></feDiffuseLighting></filter><rect width='340' height='340' filter='url(%23l)'/></svg>");
+}
+
+/* ===================================================================
+   旧 UI のデザイントークン（docs/DESIGN-mindwind.md §2〜4）
+   旧画面が使っているので、80 が消すまで残す
+   =================================================================== */
 @theme {
   /* Primary Colors */
   --color-primary: #006241; /* Starbucks Green: H1・ブランド */
@@ -34,22 +88,25 @@
   --font-serif: "Iowan Old Style", Georgia, serif; /* 日記本文用 Reading Serif */
 }
 
+/* 既定の書体は UI（Zen Maru Gothic）。旧画面で欧文書体が要る所は font-sans を付ける */
 html {
-  font-family: var(--font-sans);
-  letter-spacing: -0.01em;
+  font-family: var(--font-ui);
+  letter-spacing: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* シェルの外側（PC 表示時）も革の机の色に合わせる */
 body {
   color: var(--color-ink);
-  background: #d9d7d2; /* シェル外側（PC表示時） */
+  background: radial-gradient(120% 80% at 50% 0%, var(--color-felt), var(--color-felt2) 70%) fixed,
+    var(--color-felt2);
 }
 
-/* スマホ幅ではシェルが全面に広がるため、外側グレーをやめてページ地色に合わせる
-   （iOS のステータスバー裏に外側の色が映り込むのを防ぐ）。
-   --page-edge は ThemeColor がルートごとに設定する（スタート=緑、他=生成り） */
+/* スマホ幅ではシェルが全面に広がるため、ステータスバー裏に映る色をページ地色に合わせる。
+   --page-edge は ThemeColor がルートごとに設定する（新 UI＝革、静的ページ＝生成り） */
 @media (max-width: 480px) {
   body {
-    background: var(--page-edge, var(--color-warm));
+    background: var(--page-edge, var(--color-felt));
   }
 }
 
@@ -62,6 +119,180 @@ body {
   /* ダブルタップ拡大を無効化（ピンチ拡大は viewport の userScalable: false 側で無効化） */
   touch-action: manipulation;
 }
+
+/* ===================================================================
+   新 UI（v5）の共通クラス（契約 §2「ユーティリティクラス」）
+   components レイヤーに置き、Tailwind のユーティリティで上書きできるようにする
+   =================================================================== */
+@layer components {
+  /* ---------- 革の机（プロトタイプ .bg / .leather / .grain / .stitch） ----------
+     画面のいちばん外側の要素に .desk を付けると、ランプ・ムラ・革のしぼ・粒が全部入る。
+     縫い目は <div className="stitch" /> を中に置く（プロトタイプどおり別要素）。
+     .bg / .leather / .grain は絶対配置の重ね用（プロトタイプの構成で組みたいとき） */
+  .desk {
+    position: relative;
+    isolation: isolate;
+    color: var(--color-cream);
+    background:
+      radial-gradient(70% 44% at 50% 13%, rgba(255, 222, 150, 0.26), transparent 72%),
+      radial-gradient(70px 46px at 80% 68%, rgba(0, 0, 0, 0.16), transparent),
+      radial-gradient(90px 120px at 14% 38%, rgba(255, 240, 200, 0.07), transparent),
+      radial-gradient(130% 95% at 50% 48%, transparent 50%, rgba(0, 0, 0, 0.52) 100%),
+      linear-gradient(var(--color-felt), var(--color-felt2));
+  }
+  .desk::before,
+  .desk::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .desk::before {
+    mix-blend-mode: soft-light;
+    opacity: 0.55;
+    background-image: var(--leather);
+    background-size: 340px;
+  }
+  .desk::after {
+    mix-blend-mode: overlay;
+    opacity: 0.3;
+    background-image: var(--tex1);
+    background-size: 260px;
+  }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 44% at 50% 13%, rgba(255, 222, 150, 0.26), transparent 72%),
+      radial-gradient(70px 46px at 80% 68%, rgba(0, 0, 0, 0.16), transparent),
+      radial-gradient(90px 120px at 14% 38%, rgba(255, 240, 200, 0.07), transparent),
+      radial-gradient(130% 95% at 50% 48%, transparent 50%, rgba(0, 0, 0, 0.52) 100%),
+      linear-gradient(var(--color-felt), var(--color-felt2));
+  }
+  .leather {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: soft-light;
+    opacity: 0.55;
+    pointer-events: none;
+    background-image: var(--leather);
+    background-size: 340px;
+  }
+  .grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    background-image: var(--tex1);
+    background-size: 260px;
+  }
+  .stitch {
+    position: absolute;
+    inset: 8px;
+    border: 1.6px dashed rgba(244, 225, 175, 0.3);
+    border-radius: 32px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* ---------- 紙（Paper の実体。プロトタイプ .sheet） ---------- */
+  .sheet {
+    position: relative;
+    isolation: isolate;
+    color: var(--color-graphite);
+  }
+  .sheet::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 3px;
+    background-color: var(--color-paper);
+    background-image: var(--fib), var(--tex2), var(--tex1);
+    background-size: 400px, 500px, 260px;
+    background-blend-mode: multiply;
+    filter: url(#deckle) drop-shadow(0 10px 12px rgba(0, 0, 0, 0.42));
+  }
+
+  /* ---------- 線と字 ---------- */
+  .pencil {
+    filter: url(#pencil);
+  }
+  .hand {
+    font-family: var(--font-hand);
+  }
+  .hand2 {
+    font-family: var(--font-hand2);
+  }
+  .mincho {
+    font-family: var(--font-mincho);
+  }
+  /* 緑インクの段落（プロトタイプ .pen） */
+  .pen-ink,
+  .pen {
+    font-family: var(--font-pen);
+    color: var(--color-pen);
+    font-size: 17.5px;
+    line-height: 34px;
+  }
+  /* 余白のメンターの字（プロトタイプ .mnote） */
+  .mnote {
+    font-family: var(--font-pen);
+    color: var(--color-pen);
+    font-size: 17px;
+    line-height: 34px;
+    border-left: 2px solid rgba(13, 90, 60, 0.45);
+    padding-left: 12px;
+  }
+  /* 罫線（34px 行送り）。文字も line-height 34px にそろえる。
+     罫の上下位置は --rule-offset で調整（プロトタイプのノートは 7px） */
+  .rule-lines {
+    line-height: 34px;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 33px,
+      rgba(70, 90, 120, 0.26) 33px,
+      rgba(70, 90, 120, 0.26) 34px
+    );
+    background-position: 0 var(--rule-offset, 7px);
+    background-attachment: local;
+  }
+
+  /* 上限に達したときの揺れ（useLimitedInput が 320ms だけ付ける） */
+  .shake {
+    animation: mw-shake 0.32s;
+  }
+}
+
+@keyframes mw-shake {
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* 動きを減らす（useReducedMotion が <html class="rm"> を付け外しする） */
+.rm *,
+.rm *::before,
+.rm *::after {
+  animation: none !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ===================================================================
+   旧 UI のクラス（旧画面が使っている。80 が消すまで残す）
+   =================================================================== */
 
 /* 記録ページ（罫線ノート）。罫線と赤の余白線は「テキストとスクロールを共有する
    内容コンテナ」の背景として描く（DESIGN §Recording Page リデザイン：整列ルール）。
