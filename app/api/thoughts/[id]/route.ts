@@ -1,65 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
-import { embedText } from "@/lib/ai/embedding";
+import type { DeleteThoughtResponse, ThoughtResponse, UpdateThoughtResponse } from "@/lib/api/contracts";
 import { adminDb, verifyUser } from "@/lib/db/admin";
-import { toStoredEmbedding } from "@/lib/db/embeddingField";
-import type { StoredMessage } from "@/lib/logic/recordChatMessages";
-import { buildEmbeddingText } from "@/lib/logic/recordText";
-import { parseShapedRecord } from "@/lib/logic/shapedRecord";
+import { deleteChunksInTx, getChunkIdsInTx, prepareChunks, writeChunks } from "@/lib/db/chunks";
+import { toMood } from "@/lib/logic/quickRecord";
+import { INPUT_ERROR_STATUS, parseUpdateThought, toThoughtSummary } from "@/lib/logic/recordText";
+import { autoTitle } from "@/lib/logic/title";
 
 export const maxDuration = 30;
 
-/** 保存済み記録の編集（6項目＋タイトル）。編集後のテキストで embedding を作り直す。
- *  date / rawText / deepDive は変更しない（日付や原文は編集対象外） */
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+type Params = { params: Promise<{ id: string }> };
+
+/** 旧 recordChat（廃止）のメッセージ。削除時に旧データから記録の写しを消すためだけに読む */
+type LegacyRecordChatMessage = { type?: string; thoughtId?: string };
+
+/** 1件の記録（本人の文章＋深掘りの質問と答え。embedding は返さない） */
+export async function GET(req: NextRequest, { params }: Params) {
+  const uid = await verifyUser(req.headers.get("authorization"));
+  if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const { id } = await params;
+  const snap = await adminDb.doc(`users/${uid}/thoughts/${id}`).get();
+  if (!snap.exists) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  const body: ThoughtResponse = { thought: toThoughtSummary(snap.id, snap.data() ?? {}) };
+  return NextResponse.json(body);
+}
+
+/**
+ * 記録の編集：本文・深掘りの質問と答えを直す → タイトルを作り直す → チャンクを作り直して embedding を再生成。
+ * 日付・kind は変えない。full の検索用メタは 57 の仕組みが裏で作り直す（ここでは付けない）。
+ */
+export async function PUT(req: NextRequest, { params }: Params) {
   const uid = await verifyUser(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
-  const shaped = parseShapedRecord(body?.shaped);
-  if (!shaped) {
-    return NextResponse.json({ error: "invalid shaped record" }, { status: 400 });
-  }
-
   const { id } = await params;
-  const userDoc = adminDb.doc(`users/${uid}`);
-  const docRef = userDoc.collection("thoughts").doc(id);
+  const docRef = adminDb.doc(`users/${uid}/thoughts/${id}`);
 
   try {
-    const embedding = await embedText(buildEmbeddingText(shaped));
+    const snap = await docRef.get();
+    if (!snap.exists) return NextResponse.json({ error: "not_found" }, { status: 404 });
+    const data = snap.data() ?? {};
+    const current = toThoughtSummary(id, data);
 
-    // thought の更新と recordChat の同期を1トランザクションで行う（同時編集での巻き戻り防止）
+    const parsed = parseUpdateThought(body, current);
+    if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: INPUT_ERROR_STATUS });
+    const { rawText, deepDiveQuestion, deepDiveAnswer } = parsed.value;
+    const title = autoTitle(rawText);
+
+    // embedding（AI 呼び出し）はトランザクションの外で先に作る
+    const chunks = await prepareChunks({
+      thoughtId: id,
+      date: current.date,
+      rawText,
+      deepDiveQuestion,
+      deepDiveAnswer,
+      kind: current.kind,
+      mood: toMood(data.mood),
+    });
+
+    // thought の更新とチャンクの置き換え（余った order の削除）を1トランザクションで行う
     const found = await adminDb.runTransaction(async (tx) => {
-      const [snap, userSnap] = await Promise.all([tx.get(docRef), tx.get(userDoc)]);
-      if (!snap.exists) return false;
-
-      tx.update(docRef, { ...shaped, embedding: toStoredEmbedding(embedding) });
-
-      // 今日のしおり（recordChat のカード）に同じ記録があれば内容を同期する
-      const recordChat = userSnap.get("recordChat");
-      if (recordChat?.messages?.some((m: StoredMessage) => m.thoughtId === id)) {
-        const messages = (recordChat.messages as StoredMessage[]).map((m) =>
-          m.thoughtId === id ? { ...m, content: JSON.stringify(shaped) } : m
-        );
-        tx.set(userDoc, { recordChat: { date: recordChat.date, messages } }, { merge: true });
-      }
+      const fresh = await tx.get(docRef);
+      if (!fresh.exists) return false;
+      const existingIds = await getChunkIdsInTx(tx, adminDb, uid, id);
+      tx.update(docRef, { rawText, deepDiveQuestion, deepDiveAnswer, title });
+      writeChunks(tx, adminDb, uid, chunks, existingIds);
       return true;
     });
     if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
-    return NextResponse.json({ ok: true });
+    const res: UpdateThoughtResponse = { ok: true, title };
+    return NextResponse.json(res);
   } catch (e) {
     console.error("update thought failed:", e);
     return NextResponse.json({ error: "update_failed" }, { status: 502 });
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+/** 記録の完全削除（憲法第13条）：thought とそのチャンクを全部消す。旧 recordChat に残る写しも取り除く */
+export async function DELETE(req: NextRequest, { params }: Params) {
   const uid = await verifyUser(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
@@ -67,17 +87,25 @@ export async function DELETE(
   const userDoc = adminDb.doc(`users/${uid}`);
   const docRef = userDoc.collection("thoughts").doc(id);
 
-  // thought の削除と recordChat の書き換えを1トランザクションで行う
-  await adminDb.runTransaction(async (tx) => {
-    const userSnap = await tx.get(userDoc);
-    tx.delete(docRef);
+  const found = await adminDb.runTransaction(async (tx) => {
+    // 読み取りを先にまとめる（トランザクションは読み → 書きの順）
+    const [snap, userSnap, chunkIds] = await Promise.all([
+      tx.get(docRef),
+      tx.get(userDoc),
+      getChunkIdsInTx(tx, adminDb, uid, id),
+    ]);
+    if (!snap.exists && chunkIds.length === 0) return false;
 
-    // recordChat からも該当セッション（前カード直後〜このカードまで）を取り除く
+    tx.delete(docRef);
+    deleteChunksInTx(tx, adminDb, uid, chunkIds);
+
+    // 旧 recordChat（廃止）に同じ記録のカードがあれば、そのセッション（前カード直後〜このカード）を取り除く
     const recordChat = userSnap.get("recordChat");
-    if (recordChat?.messages) {
-      const kept: StoredMessage[] = [];
-      let buffer: StoredMessage[] = [];
-      for (const message of recordChat.messages as StoredMessage[]) {
+    const messages = recordChat?.messages as LegacyRecordChatMessage[] | undefined;
+    if (messages?.some((m) => m.thoughtId === id)) {
+      const kept: LegacyRecordChatMessage[] = [];
+      let buffer: LegacyRecordChatMessage[] = [];
+      for (const message of messages) {
         buffer.push(message);
         if (message.type === "card") {
           if (message.thoughtId !== id) kept.push(...buffer);
@@ -87,7 +115,10 @@ export async function DELETE(
       kept.push(...buffer);
       tx.set(userDoc, { recordChat: { date: recordChat.date, messages: kept } }, { merge: true });
     }
+    return true;
   });
+  if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
-  return NextResponse.json({ ok: true });
+  const res: DeleteThoughtResponse = { ok: true };
+  return NextResponse.json(res);
 }
