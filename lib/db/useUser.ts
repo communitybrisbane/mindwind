@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth } from "./firebase";
+import { appCheckHeaders } from "./appCheck";
 
 export type AppUser = {
   uid: string;
@@ -31,11 +32,14 @@ export function useUser(): { user: AppUser | null; loading: boolean } {
   return { user, loading };
 }
 
-/** Authorization ヘッダー付き fetch。401（認証切れ）はスタート画面へ戻す */
+// 未ログインなら匿名で始める useEnsureUser は lib/ui/useEnsureUser.ts（契約 §4）
+
+/** Authorization ヘッダー（と App Check のトークン。鍵が無ければ付かない）付き fetch。401（認証切れ）はスタート画面へ戻す */
 export async function authedFetch(user: AppUser, input: RequestInfo, init: RequestInit = {}) {
   const token = await user.getIdToken();
   const headers = new Headers(init.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  for (const [k, v] of Object.entries(await appCheckHeaders())) headers.set(k, v);
   const res = await fetch(input, { ...init, headers });
   if (res.status === 401) {
     window.location.href = "/";

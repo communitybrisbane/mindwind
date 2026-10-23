@@ -49,7 +49,22 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 # OpenAI API（Embeddings）
 OPENAI_API_KEY=your_openai_api_key
+
+# ボット対策（任意。未設定でも動く。設定手順は docs/SECURITY-SETUP.md）
+# App Check（PLAN 52）：reCAPTCHA Enterprise のサイトキー・開発用デバッグトークン・強制モード（off / monitor / enforce）
+NEXT_PUBLIC_RECAPTCHA_ENTERPRISE_SITE_KEY=
+NEXT_PUBLIC_APP_CHECK_DEBUG_TOKEN=
+ENFORCE_APP_CHECK=off
+# IP レート制限（PLAN 53）：Upstash Redis（未設定ならメモリで数える）。RATE_LIMIT_DISABLED=true で止める
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+RATE_LIMIT_DISABLED=
 ```
+
+### 運用スクリプト（手動。既定はドライラン）
+
+- `npm run backfill-chunks`（PLAN 59）：既存の `thoughts` からチャンクを作る移行。手順は `docs/OPS-backfill-chunks.md`
+- `npm run cleanup:guests`（PLAN 54）：30日以上使われていないゲストを Auth と Firestore から消す。手順は `docs/OPS-guest-cleanup.md`
 
 ### Firebase 側の設定
 
