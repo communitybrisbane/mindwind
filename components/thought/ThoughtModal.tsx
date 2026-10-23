@@ -177,6 +177,7 @@ function ThoughtModalBody({
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as ApiError | null;
         if (data?.error === "too_short") throw new Error(DIARY_TOO_SHORT_MESSAGE);
+        if (data?.error === "conflict") throw new Error("別の画面で先にこの記録が直されたみたい。開き直してから、もう一度試してね。");
         if (res.status === 404) throw new Error("この記録は見つかりませんでした。");
         throw new Error("保存できませんでした。少し待ってからもう一度試してください。");
       }

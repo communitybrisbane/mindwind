@@ -26,6 +26,7 @@ export type ApiErrorCode =
   | "not_found" // 404
   | "daily_limit" // 記録=409／AI=429
   | "date_taken" // 409（過去日は1日1件）
+  | "conflict" // 409（編集：別の画面が先に同じ記録を直した。開き直してやり直す）
   | "too_few_records" // 409（手紙：今週の記録が足りない）
   | "already_generating" // 409（手紙：生成中）
   | "not_available" // 409（手紙：まだ開けない週）
@@ -33,6 +34,7 @@ export type ApiErrorCode =
   | "incomplete_response" // 422（refusal・max_tokens）
   | "save_failed" // 502
   | "update_failed" // 502
+  | "delete_failed" // 502（相談・手紙に残る写しを伏せられなかった。記録は消していない）
   | "ai_failed"; // 502
 
 export type ApiError = { error: ApiErrorCode; retryAfter?: number };
@@ -58,7 +60,7 @@ export type CreateThoughtResponse = { id: string; title: string; date: string };
 /** GET /api/thoughts/[id] */
 export type ThoughtResponse = { thought: ThoughtSummary };
 
-/** PUT /api/thoughts/[id]（本文・深掘りの答えを直す。あとから深掘りを足すときは question も送る） */
+/** PUT /api/thoughts/[id]（本文・深掘りの答えを直す。あとから深掘りを足すときは question も送る。409 conflict は開き直してやり直す） */
 export type UpdateThoughtRequest = {
   rawText?: string;
   deepDiveQuestion?: string;
@@ -66,7 +68,7 @@ export type UpdateThoughtRequest = {
 };
 export type UpdateThoughtResponse = { ok: true; title: string };
 
-/** DELETE /api/thoughts/[id]（chunks・手紙の引用も処理する） */
+/** DELETE /api/thoughts/[id]（chunks も消し、相談の「読み返したページ」と手紙の引用に残る写しを伏せる） */
 export type DeleteThoughtResponse = { ok: true };
 
 /* ---------- /api/mood・/api/moods ---------- */

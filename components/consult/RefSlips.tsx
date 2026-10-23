@@ -26,8 +26,12 @@ export function refLongDate(dateKey: string): string {
   return p ? `${p.m}月${p.d}日（${p.w}）の記録` : `${dateKey}の記録`;
 }
 
-/** 表示する本文。新形式は quote（チャンクの本文そのまま）、旧形式は保存されていた項目をつなぐ */
+/** 消した記録の切れ端に出す文言（手紙の Slip と同じ） */
+export const DELETED_REF_TEXT = "（消した記録）";
+
+/** 表示する本文。新形式は quote（チャンクの本文そのまま）、旧形式は保存されていた項目をつなぐ。消した記録は伏せる */
 export function refBody(ref: RefPage): string {
+  if (ref.deleted) return DELETED_REF_TEXT;
   if (ref.quote) return ref.quote;
   const legacy = [ref.event, ref.thinking, ref.action, ref.reason, ref.emotion, ref.values]
     .filter((s): s is string => !!s && s.trim().length > 0)

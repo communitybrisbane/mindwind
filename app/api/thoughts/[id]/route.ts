@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { DeleteThoughtResponse, ThoughtResponse, UpdateThoughtResponse } from "@/lib/api/contracts";
 import { adminDb, verifyUser } from "@/lib/db/admin";
 import { deleteChunksInTx, getChunkIdsInTx, prepareChunks, writeChunks } from "@/lib/db/chunks";
+import { scrubThoughtCopies } from "@/lib/db/scrubDeleted";
 import { toMood } from "@/lib/logic/quickRecord";
 import { INPUT_ERROR_STATUS, parseUpdateThought, toThoughtSummary } from "@/lib/logic/recordText";
 import { autoTitle } from "@/lib/logic/title";
@@ -28,6 +29,8 @@ export async function GET(req: NextRequest, { params }: Params) {
 /**
  * 記録の編集：本文・深掘りの質問と答えを直す → タイトルを作り直す → チャンクを作り直して embedding を再生成。
  * 日付・kind は変えない。full の検索用メタは 57 の仕組みが裏で作り直す（ここでは付けない）。
+ * embedding はトランザクションの外で作るので、その間に別の画面が同じ記録を直していたら（updateTime が変わっていたら）
+ * 書かずに 409 conflict を返す（本文とチャンクがずれないように）。
  */
 export async function PUT(req: NextRequest, { params }: Params) {
   const uid = await verifyUser(req.headers.get("authorization"));
@@ -42,6 +45,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (!snap.exists) return NextResponse.json({ error: "not_found" }, { status: 404 });
     const data = snap.data() ?? {};
     const current = toThoughtSummary(id, data);
+    const readAt = snap.updateTime;
 
     const parsed = parseUpdateThought(body, current);
     if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: INPUT_ERROR_STATUS });
@@ -60,15 +64,17 @@ export async function PUT(req: NextRequest, { params }: Params) {
     });
 
     // thought の更新とチャンクの置き換え（余った order の削除）を1トランザクションで行う
-    const found = await adminDb.runTransaction(async (tx) => {
+    const outcome = await adminDb.runTransaction(async (tx): Promise<"ok" | "not_found" | "conflict"> => {
       const fresh = await tx.get(docRef);
-      if (!fresh.exists) return false;
+      if (!fresh.exists) return "not_found";
+      if (readAt && fresh.updateTime && !fresh.updateTime.isEqual(readAt)) return "conflict";
       const existingIds = await getChunkIdsInTx(tx, adminDb, uid, id);
       tx.update(docRef, { rawText, deepDiveQuestion, deepDiveAnswer, title });
       writeChunks(tx, adminDb, uid, chunks, existingIds);
-      return true;
+      return "ok";
     });
-    if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
+    if (outcome === "not_found") return NextResponse.json({ error: "not_found" }, { status: 404 });
+    if (outcome === "conflict") return NextResponse.json({ error: "conflict" }, { status: 409 });
 
     const res: UpdateThoughtResponse = { ok: true, title };
     return NextResponse.json(res);
@@ -78,7 +84,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
   }
 }
 
-/** 記録の完全削除（憲法第13条）：thought とそのチャンクを全部消す。旧 recordChat に残る写しも取り除く */
+/**
+ * 記録の完全削除（憲法第13条）：thought とそのチャンクを全部消す。
+ * 先に、相談の「読み返したページ」と手紙の引用に残る写しを伏せる（失敗したら記録は消さずに 502。やり直せば続きから伏せる）。
+ * 旧 recordChat に残る写しも取り除く。
+ */
 export async function DELETE(req: NextRequest, { params }: Params) {
   const uid = await verifyUser(req.headers.get("authorization"));
   if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -86,6 +96,13 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   const { id } = await params;
   const userDoc = adminDb.doc(`users/${uid}`);
   const docRef = userDoc.collection("thoughts").doc(id);
+
+  try {
+    await scrubThoughtCopies(adminDb, uid, id);
+  } catch (e) {
+    console.error("scrub deleted thought copies failed:", e);
+    return NextResponse.json({ error: "delete_failed" }, { status: 502 });
+  }
 
   const found = await adminDb.runTransaction(async (tx) => {
     // 読み取りを先にまとめる（トランザクションは読み → 書きの順）

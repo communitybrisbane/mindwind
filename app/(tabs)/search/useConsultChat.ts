@@ -7,12 +7,14 @@ import { MIN_THOUGHTS_FOR_CONSULT } from "@/lib/logic/limits";
 import { readNdjson } from "@/lib/logic/ndjson";
 
 /** 「読み返したページ」1枚。新形式は quote（検索で当たったチャンクの本文）。
- *  旧形式（成形6項目のスナップショット）の履歴も表示できるよう、旧フィールドは任意で残す */
+ *  旧形式（成形6項目のスナップショット）の履歴も表示できるよう、旧フィールドは任意で残す。
+ *  元の記録が消されると id と日付だけになり deleted: true（憲法第13条） */
 export type RefPage = {
   id: string;
   date: string;
   title?: string;
   quote?: string;
+  deleted?: boolean;
   event?: string;
   thinking?: string;
   action?: string;

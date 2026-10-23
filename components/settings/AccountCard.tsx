@@ -28,6 +28,7 @@ import { auth, googleProvider } from "@/lib/db/firebase";
 import { appCheckHeaders } from "@/lib/db/appCheck";
 import { authedFetch, type AppUser } from "@/lib/db/useUser";
 import { sound, vibrate } from "@/lib/ui/feedback";
+import { clearPersonalLocalData } from "@/lib/ui/localData";
 import {
   authCode,
   authErrorMessage,
@@ -139,6 +140,8 @@ export function useAccount(user: AppUser) {
           // 消せなくても、ゲストの記録は 30 日後の掃除で消える
         }
       }
+      // ゲストの下書きなど端末に残る値も、人が替わるので消す
+      clearPersonalLocalData();
       setConflict(null);
       requestToast(reloginToast(emailOf(res.user) ?? conflict.email));
       router.replace("/home");
@@ -158,6 +161,8 @@ export function useAccount(user: AppUser) {
     setBusy(true);
     try {
       await signOut(auth);
+      // 共有の端末を考えて、下書きなど本人に関わる端末内の値も消す（音・振動の好みは残す）
+      clearPersonalLocalData();
       requestToast("ログアウトしました");
       router.replace("/");
     } catch (e) {
@@ -166,12 +171,14 @@ export function useAccount(user: AppUser) {
     }
   }, [busy, router]);
 
-  /** 本人確認のあとの削除（Firestore を全部消してから Auth のユーザーを消す） */
+  /** 本人確認のあとの削除（Firestore を全部消し、端末の下書きも消してから Auth のユーザーを消す） */
   const finishDelete = useCallback(async () => {
     const current = auth.currentUser;
     if (!current) return;
     const res = await authedFetch(user, "/api/account", { method: "DELETE" });
     if (!res.ok) throw new Error(`account ${res.status}`);
+    // サーバーのデータが消えたら、端末に残る下書き（日記の本文）なども消す（憲法第13条。次のゲストに復元させない）
+    clearPersonalLocalData();
     try {
       await deleteUser(current);
     } catch {
