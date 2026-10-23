@@ -393,3 +393,11 @@ Tailwind v4 の `@theme`（`app/globals.css`）に置く。値は契約 §2 が�
 - 6項目の成形カードを画面に出すこと・AI が本人の文章を書き換えること
 - 空いた日を責める文言・点滅・荒れたまま止まらない演出
 - ホームのカレンダーと最近の記録の一覧
+
+## 12. 採用アプリアイコン（2026-10-24）
+
+アプリアイコンは `docs/brand/mindwind-mind-w-shadow.svg` をもとに、生成り `#f1e9d6` の正方形に緑の `mind` を配置し、m の下だけに斜めに伸びて薄くなる w 形の影を置く。
+
+- 対象：`app/icon.svg`、`public/icon-192.png`、`public/icon-512.png`、`app/apple-icon.png`（180px）。
+- アプリ内のロゴ・ログイン画面・読み込み画面・起動アニメーションは従来のまま。
+- アイコンの再生成：`node docs/brand/build-brand.cjs`。
