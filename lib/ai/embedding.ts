@@ -1,6 +1,5 @@
 // OpenAI Embeddings（サーバー側専用）。モデル選定は docs/ARCHITECTURE.md が正
 
-export const EMBEDDING_DIM = 1536;
 const MODEL = "text-embedding-3-small";
 
 async function requestEmbeddings(input: string | string[]): Promise<number[][]> {

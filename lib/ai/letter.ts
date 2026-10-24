@@ -25,7 +25,7 @@ const MIN_QUOTE_LENGTH = 2;
 /** 本文の「」『』の中身を検証する最短の長さ（これより短い囲みは言葉の強調とみなして見ない） */
 export const MIN_BODY_QUOTE_LENGTH = 4;
 
-/** 危機の週の固定文（AI の手紙が使えないときの手紙。文言は lib/logic/crisis.ts） */
+/** AI を使わず固定文で作った手紙に付けるモデル名（文言は lib/logic/crisis.ts の CRISIS_LETTER_PARAGRAPHS） */
 export const CRISIS_FALLBACK_MODEL = "fixed-text";
 
 /** 手紙の材料にする記録（Thought のうち使う項目だけ） */
