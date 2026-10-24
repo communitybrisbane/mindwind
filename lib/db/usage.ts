@@ -18,8 +18,9 @@ export async function consumeQuota(
   uid: string,
   kind: QuotaKind,
   limit: number
-): Promise<null | { refund: () => Promise<void> }> {
-  const ref = adminDb.doc(`users/${uid}/usage/${tokyoDateKey(new Date())}`);
+): Promise<null | { dateKey: string; refund: () => Promise<void> }> {
+  const dateKey = tokyoDateKey(new Date());
+  const ref = adminDb.doc(`users/${uid}/usage/${dateKey}`);
   const ok = await adminDb.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const used: number = snap.get(kind) ?? 0;
@@ -28,11 +29,16 @@ export async function consumeQuota(
     return true;
   });
   if (!ok) return null;
-  return {
-    refund: async () => {
-      await ref
-        .set({ [kind]: FieldValue.increment(-1) }, { merge: true })
-        .catch((e) => console.error("quota refund failed:", e));
-    },
-  };
+  return { dateKey, refund: () => refundQuota(uid, kind, dateKey) };
+}
+
+/**
+ * 消費した枠を1つ戻す（消費した日付のドキュメントに戻す）。
+ * 別のリクエストが消費した枠を戻すとき（止まった手紙の生成を作り直すときなど）に、日付を指定して呼ぶ。
+ */
+export async function refundQuota(uid: string, kind: QuotaKind, dateKey: string): Promise<void> {
+  await adminDb
+    .doc(`users/${uid}/usage/${dateKey}`)
+    .set({ [kind]: FieldValue.increment(-1) }, { merge: true })
+    .catch((e) => console.error("quota refund failed:", e));
 }

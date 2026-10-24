@@ -1,5 +1,7 @@
 // 週の手紙の保存（users/{uid}/letters/{weekKey}。サーバー専用。PLAN 77・79）。
 // - 生成は「開いたとき1回だけ」。始める前にトランザクションで status "generating" と genId を置き、二重生成を防ぐ
+// - 止まった生成中（startedAt から GENERATING_STALE_MS 超）を作り直すときは、前の生成が使った枠の日付（usageDate）を返し、
+//   呼び出し側が枠を戻せるようにする
 // - 呼び出しが失敗したら、作りかけ（自分の genId のもの）を消す
 // - 保存の直前に、引用した記録がまだあるかをトランザクションで確かめ、消えていれば引用を伏せる
 //   （記録の削除で引用を伏せる lib/db/scrubDeleted.ts と同じ形：quote "" ・deleted: true。手紙は残す）
@@ -61,7 +63,7 @@ export function toMoodWeek(value: unknown): (MoodId | null)[] {
   return Array.from({ length: 7 }, (_, i) => (isMoodId(arr[i]) ? (arr[i] as MoodId) : null));
 }
 
-/** Firestore の letters ドキュメントを Letter にする（genId などの内部の項目は返さない） */
+/** Firestore の letters ドキュメントを Letter にする（genId・startedAt・usageDate などの内部の項目は返さない） */
 export function toLetter(weekKey: string, data: Record<string, unknown>): Letter {
   const { from, to } = weekRange(weekKey);
   const refs = toRefs(data.refs);
@@ -177,7 +179,8 @@ export async function getLetterState(
 }
 
 export type BeginResult =
-  | { kind: "started"; genId: string }
+  /** staleUsageDate：止まった生成中を作り直した。前の生成が枠を使った日付（呼び出し側が戻す） */
+  | { kind: "started"; genId: string; staleUsageDate?: string }
   | { kind: "generating" }
   | { kind: "ready"; letter: Letter };
 
@@ -185,7 +188,7 @@ export type BeginResult =
 export async function beginLetter(
   db: Firestore,
   uid: string,
-  init: { weekKey: string; moods: (MoodId | null)[]; recordDays: number; model: string },
+  init: { weekKey: string; moods: (MoodId | null)[]; recordDays: number; model: string; usageDate: string },
   nowMs: number = Date.now()
 ): Promise<BeginResult> {
   const ref = db.doc(`${lettersPath(uid)}/${init.weekKey}`);
@@ -195,6 +198,7 @@ export async function beginLetter(
     const decision = decideBegin(snap.exists ? { status: snap.get("status"), startedAt: snap.get("startedAt") } : null, nowMs);
     if (decision === "ready") return { kind: "ready", letter: toLetter(init.weekKey, snap.data() ?? {}) };
     if (decision === "generating") return { kind: "generating" };
+    const stale = snap.exists && snap.get("status") === "generating" ? snap.get("usageDate") : undefined;
     const genId = randomUUID();
     tx.set(ref, {
       weekKey: init.weekKey,
@@ -208,23 +212,24 @@ export async function beginLetter(
       model: init.model,
       genId,
       startedAt: nowMs,
+      usageDate: init.usageDate,
       createdAt: FieldValue.serverTimestamp(),
       readAt: null,
     });
-    return { kind: "started", genId };
+    return { kind: "started", genId, ...(typeof stale === "string" ? { staleUsageDate: stale } : {}) };
   });
 }
 
 /**
  * できた手紙を保存する。自分の genId の生成中ドキュメントがまだあるときだけ書く（途中で手紙が消されたら null）。
- * 引用した記録が途中で消されていたら、その引用を伏せて保存する。
+ * 引用した記録が途中で消されていたら、その引用を伏せて保存する。model を渡すと上書きする（固定文の手紙）。
  */
 export async function saveLetter(
   db: Firestore,
   uid: string,
   weekKey: string,
   genId: string,
-  content: { blocks: LetterBlock[]; refs: LetterRef[] }
+  content: { blocks: LetterBlock[]; refs: LetterRef[]; model?: string }
 ): Promise<Letter | null> {
   const ref = db.doc(`${lettersPath(uid)}/${weekKey}`);
   const thoughtIds = [...new Set(content.refs.map((r) => r.thoughtId))];
@@ -236,18 +241,22 @@ export async function saveLetter(
       : [];
     const existing = new Set(thoughtSnaps.filter((s) => s.exists).map((s) => s.id));
     const refs = maskMissingRefs(content.refs, existing);
+    const model = content.model ?? snap.get("model");
     tx.update(ref, {
       status: "ready",
       blocks: content.blocks,
       refs,
+      ...(content.model ? { model: content.model } : {}),
       genId: FieldValue.delete(),
       startedAt: FieldValue.delete(),
+      usageDate: FieldValue.delete(),
     });
     return toLetter(weekKey, {
       ...snap.data(),
       status: "ready",
       blocks: content.blocks,
       refs,
+      model,
       createdAt: toIsoString(snap.get("createdAt")) ?? new Date().toISOString(),
     });
   });

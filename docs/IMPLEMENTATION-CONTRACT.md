@@ -235,7 +235,7 @@ export function useDraft(key: string /* draftKey() の戻り */): { draft: Draft
 // lib/ui/useMoodRange.ts（74）GET /api/moods のキャッシュつき取得
 export function useMoodRange(from: string, to: string): { days: DayEntry[] | null; reload(): void }
 
-// lib/db/useLetter.ts（78）GET/POST /api/letters/current の状態機械（locked/none/generating/ready・ストリーム受信）。lib/ui ではなく lib/db にある
+// lib/db/useLetter.ts（78）GET/POST /api/letters/current の状態機械（locked/none/generating/ready。generating の間は GET を取り直す）。lib/ui ではなく lib/db にある
 // lib/ui/usePullOut.ts（78）封筒から手紙を引っぱり出すドラッグ
 // lib/ui/wheelPhysics.ts（63）回転盤の物理（純粋関数。旧名 wheelMath）
 // lib/ui/fxParticles.ts（84）粒子・fxPlan・residualOpacity（純粋関数。旧名 windFx）
@@ -326,15 +326,15 @@ users/{uid}
 | メソッド・パス | リクエスト | 成功 | エラー | 持ち主 |
 |---|---|---|---|---|
 | `GET /api/thoughts[?date=]` | — | `200 { thoughts: ThoughtSummary[] }`（新しい順・最大2000・`date` 指定でその日だけ） | 400 invalid_date | 56 |
-| `POST /api/thoughts` | `CreateThoughtRequest` | `200 { id, title, date }` | 400 invalid_body / too_short（full<10・quick<2）/ too_long / invalid_date、409 daily_limit / date_taken、502 save_failed | 56 |
+| `POST /api/thoughts` | `CreateThoughtRequest` | `200 { id, title, date, crisis? }`（`crisis: true`＝本文か答えに危機の言葉。保存は成功。画面は `CrisisNote` で窓口を案内。PLAN 85） | 400 invalid_body / too_short（full<10・quick<2）/ too_long / invalid_date、409 daily_limit / date_taken、502 save_failed | 56 |
 | `GET /api/thoughts/[id]` | — | `200 { thought }` | 404 not_found | 67 |
-| `PUT /api/thoughts/[id]` | `UpdateThoughtRequest` | `200 { ok, title }`（チャンク作り直し・embedding 再生成・meta は 57 の仕組みで再生成） | 400、404 not_found、409 conflict（読んでから書くまでに別の画面が直した。開き直してやり直す）、502 update_failed | 67 |
+| `PUT /api/thoughts/[id]` | `UpdateThoughtRequest` | `200 { ok, title, crisis? }`（チャンク作り直し・embedding 再生成・meta は 57 の仕組みで再生成。`crisis: true`＝直した本文か答えに危機の言葉） | 400、404 not_found、409 conflict（読んでから書くまでに別の画面が直した。開き直してやり直す）、502 update_failed | 67 |
 | `DELETE /api/thoughts/[id]` | — | `200 { ok }`（先に相談の refs と手紙の引用の写しを伏せ、次に thought と chunks を消す） | 404 not_found、502 delete_failed（写しを伏せられず記録は消していない） | 67（引用は 79） |
 | `GET /api/mood` | — | `200 { date, mood: 0-4 \| null }`（今日・Asia/Tokyo） | — | 62 |
 | `PUT /api/mood` | `{ mood: 0-4 }` | `200 { date, mood }`（今日のみ・上書き） | 400 invalid_mood | 62 |
 | `GET /api/moods?from&to` | クエリ | `200 { from, to, days: DayEntry[] }`（両端含む・日付順・無い日も `mood:null, records:0` で埋める） | 400 invalid_range | 73 |
 | `GET /api/letters/current` | — | `200 CurrentLetterResponse` | — | 77 |
-| `POST /api/letters/current` | — | `200` NDJSON `LetterStreamEvent`（start → delta… → done） | 409 too_few_records / already_generating / not_available、429 daily_limit、422 incomplete_response、502 ai_failed | 77 |
+| `POST /api/letters/current` | — | `202 CurrentLetterResponse`（status generating。生成は `after()` で裏で続けて保存。画面は GET で取り直す）／`200`（status ready＝もう届いていた） | 409 too_few_records / not_available、429 daily_limit、502 ai_failed | 77 |
 | `GET /api/letters` | — | `200 { letters: LetterSummary[] }` | — | 77 |
 | `GET /api/letters/[weekKey]` | — | `200 { letter }` | 404 | 77 |
 | `PUT /api/letters/[weekKey]` | `{ read: true }` | `200 { ok }` | 404 | 77 |

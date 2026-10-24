@@ -149,7 +149,9 @@
 - 週は Asia/Tokyo の**月曜はじまり**。`weekKey` はその週の月曜の日付。`letterWeekFor(today)`：日曜ならその週、月〜土なら前の週（＝日曜に開けて翌土曜まで読める）
 - その週に記録が **3日以上**（`MIN_THOUGHTS_FOR_LETTER`。気分だけの日も数える）のとき書ける
 - **開いたときに生成**（スケジューラ・通知なし）。`GET /api/letters/current` が `status: "ready" | "locked" | "generating" | "none"` を返し、`none` なら画面が `POST /api/letters/current` で生成する
-- 生成はトランザクションで `letters/{weekKey}` を `status: "generating"` にしてから始め、二重生成を防ぐ（`409 already_generating`）。NDJSON ストリーム（`start → delta… → done`）。日次クォータ `letter`（会員3回/日・ゲスト1回/日。やり直し込み）。refusal・max_tokens は `422 incomplete_response`、AI の失敗は `502 ai_failed`（いずれもクォータを返却し、`status: "failed"`）
+- 生成はトランザクションで `letters/{weekKey}` を `status: "generating"` にしてから始め、二重生成を防ぐ。`POST` は `202 generating` をすぐ返し、生成そのものは `after()` で裏で最後まで続けて保存する（画面を閉じても・切断しても止まらない）。画面は `GET` を数秒おきに取り直して受け取る（途中の文は流さない＝検証前の文を見せない）。日次クォータ `letter`（会員3回/日・ゲスト1回/日。やり直し込み。届いている・生成中のときは枠を使わない。止まった生成〔6分超〕を作り直すときは前の枠を戻す）。refusal・max_tokens・使えない手紙・AI の失敗は作りかけを消してクォータを返す（画面は `none` に戻ったのを見てエラー文を出し、次に開いたときにもう一度）
+- **セーフティ（憲法第8条）をコードでも保証**：その週の本人の言葉に危機の言葉（`lib/logic/crisis.ts`）があれば、AI の出力から引用を全部落とし、窓口の案内（両方の番号）が無ければ固定文を足す。AI 自身が窓口を案内した手紙も引用を落とす。危機の週に AI の手紙が使えなければ、エラーではなく固定文だけの手紙（`model: "fixed-text"`）を届ける
+- 本文の段落の「」『』で囲んだ言葉も、その週の記録に無ければ段落ごと落とす（言い換えを本人の言葉として出さない。4字未満の囲みは強調とみなす）
 - AI に渡すのは**その週の本人の言葉のチャンク＋日付**だけ（meta・気分・呼び名は渡さない。宛名は画面側が表示名から付ける）
 - 保存：`{ weekKey, from, to, status, blocks, refs, moods[7], recordDays, model, createdAt, readAt }`。`blocks` は緑インクの段落と引用（`{ type: "quote", ref }`）。`refs[].quote` は `rawText` / `deepDiveAnswer` の**部分文字列そのまま**であることをサーバーが検証する（`lib/logic/letterRefs.ts`。本人の言葉を言い換えさせない）
 - 手紙は **RAG に入れない**。既読（`PUT { read: true }`）・過去の手紙一覧・手紙の削除ができる
@@ -245,7 +247,7 @@ users/{uid}/
 | メソッド・パス | 内容 | 主なエラー |
 |---|---|---|
 | `GET /api/thoughts[?date=]` | 記録の一覧（新しい順・最大2000。`date` でその日だけ） | 400 invalid_date |
-| `POST /api/thoughts` | 記録を保存（full / quick）。チャンクと embedding も作る | 400 invalid_body / too_short / too_long / invalid_date、409 daily_limit / date_taken、502 save_failed |
+| `POST /api/thoughts` | 記録を保存（full / quick）。チャンクと embedding も作る。本文か答えに危機の言葉（`lib/logic/crisis.ts`）があれば `crisis: true` を添え、画面が窓口を案内する（PUT も同じ。憲法第8条） | 400 invalid_body / too_short / too_long / invalid_date、409 daily_limit / date_taken、502 save_failed |
 | `GET /api/thoughts/[id]` | 1件 | 404 not_found |
 | `PUT /api/thoughts/[id]` | 本文・深掘りを直す／あとから深掘りを足す。チャンク・embedding・メタを作り直す | 400、404、502 update_failed |
 | `DELETE /api/thoughts/[id]` | 完全削除（chunks も。手紙の引用は伏せる） | 404 |
@@ -253,7 +255,7 @@ users/{uid}/
 | `PUT /api/mood` | 今日の気分を保存・上書き | 400 invalid_mood |
 | `GET /api/moods?from&to` | 範囲の気分と記録件数（最大366日・AI なし） | 400 invalid_range |
 | `GET /api/letters/current` | 今週の手紙の状態（ready / locked / generating / none） | — |
-| `POST /api/letters/current` | 手紙を生成（NDJSON） | 409 too_few_records / already_generating / not_available、429 daily_limit、422 incomplete_response、502 ai_failed |
+| `POST /api/letters/current` | 手紙の生成を始める（`202 generating`。裏で生成して保存。もう届いていれば `200 ready`） | 409 too_few_records / not_available、429 daily_limit、502 ai_failed |
 | `GET /api/letters` | 過去の手紙一覧 | — |
 | `GET /api/letters/[weekKey]` | 1通 | 404 |
 | `PUT /api/letters/[weekKey]` | 既読にする | 404 |

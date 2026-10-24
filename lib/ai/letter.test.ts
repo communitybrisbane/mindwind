@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { CRISIS_LETTER_PARAGRAPHS, hasHotlineGuidance } from "@/lib/logic/crisis";
 import {
+  applyLetterSafety,
   buildLetterEntries,
   countRecordDays,
-  createQuoteLineFilter,
+  crisisLetterBlocks,
+  detectCrisisWeek,
   formatLetterInput,
   isUsableLetter,
   parseLetterOutput,
+  verifyBodyQuotes,
   verifyQuote,
   type LetterThought,
 } from "./letter";
@@ -165,24 +169,94 @@ describe("parseLetterOutput", () => {
     expect(isUsableLetter(blocks)).toBe(true);
   });
 
+  it("本文の「」が記録に無い言葉なら、その段落を落とす（短い囲みは見ない）", () => {
+    const out = [
+      "火曜は「言いたいことはあったのに」と書いてたね。", // 記録にある → 残す
+      "",
+      "金曜には「メモを書いてから話せた」と書いてる。", // 言い換え → 落とす
+      "",
+      "同じ「会議」でも、動き方が少し違ったみたい。", // 2字の囲みは強調 → 残す
+      "",
+      ">> ［3］少し話せた。",
+    ].join("\n");
+    const { blocks, refs, droppedParagraphs } = parseLetterOutput(out, entries, map);
+    expect(droppedParagraphs).toBe(1);
+    expect(blocks).toEqual([
+      { type: "text", text: "火曜は「言いたいことはあったのに」と書いてたね。" },
+      { type: "text", text: "同じ「会議」でも、動き方が少し違ったみたい。" },
+      { type: "quote", ref: 0 },
+    ]);
+    expect(refs).toHaveLength(1);
+  });
+
   it("本文の段落が無ければ使えない", () => {
     expect(isUsableLetter(parseLetterOutput(">> ［3］少し話せた。", entries, map).blocks)).toBe(false);
     expect(isUsableLetter([])).toBe(false);
   });
 });
 
-describe("createQuoteLineFilter", () => {
-  it("引用の行を抜き、ほかの行はそのまま流す", () => {
-    const f = createQuoteLineFilter();
-    let out = "";
-    for (const d of ["今週も", "おつかれさま。\n>> ［1］言", "いたいこと\nそして", "金曜には\n\n最後"]) out += f.push(d);
-    out += f.flush();
-    expect(out).toBe("今週もおつかれさま。\nそして金曜には\n\n最後");
+describe("verifyBodyQuotes", () => {
+  it("囲みが無い・短い・記録にある言葉なら通る。Q だけにある言葉と言い換えは通らない", () => {
+    expect(verifyBodyQuotes("囲みのない文。", [tue])).toBe(true);
+    expect(verifyBodyQuotes("『議題が変わる前なら』と答えてた。", [tue])).toBe(true);
+    expect(verifyBodyQuotes("「どんなタイミングなら言えそう？」と聞かれて", [tue])).toBe(false);
+    expect(verifyBodyQuotes("「タイミングがわからなかった」と書いてた。", [tue])).toBe(false);
+  });
+});
+
+describe("セーフティ（憲法第8条）", () => {
+  const crisisThought = th({ id: "c1", date: "2026-10-21", rawText: "もう消えたい。会議のことばかり考えてしまう。" });
+  const thoughts = [tue, crisisThought, fri];
+  const entries = buildLetterEntries(thoughts);
+  const map = new Map(thoughts.map((t) => [t.id, t]));
+  const hotline = "いのちの電話 0570-783-556、よりそいホットライン 0120-279-338";
+
+  it("detectCrisisWeek：その週の本人の言葉に危機の言葉があれば true（Q は見ない）", () => {
+    expect(detectCrisisWeek(entries)).toBe(true);
+    expect(detectCrisisWeek(buildLetterEntries([tue, fri]))).toBe(false);
+    expect(detectCrisisWeek([{ text: "ふつうの日" }])).toBe(false);
   });
 
-  it("最後の行が引用なら流さない", () => {
-    const f = createQuoteLineFilter();
-    expect(f.push("a\n>> ［1］x")).toBe("a\n");
-    expect(f.flush()).toBe("");
+  it("危機の週：AI が引用を付けても落とし、窓口の案内が無ければ固定文を足す", () => {
+    // 番号：［1］火曜の本文・［2］火曜の深掘り・［3］水曜（危機の言葉）・［4］金曜
+    const out = ["受け止める文。", ">> ［3］もう消えたい。", "", "次の一歩の提案。"].join("\n");
+    const parsed = parseLetterOutput(out, entries, map);
+    expect(parsed.refs).toHaveLength(1);
+    const safe = applyLetterSafety(parsed, true);
+    expect(safe.quotesRemoved).toBe(true);
+    expect(safe.hotlineAdded).toBe(true);
+    expect(safe.refs).toEqual([]);
+    expect(safe.blocks.every((b) => b.type === "text")).toBe(true);
+    expect(hasHotlineGuidance(safe.blocks.map((b) => (b.type === "text" ? b.text : "")).join("\n"))).toBe(true);
+    expect(safe.blocks[0]).toEqual({ type: "text", text: "受け止める文。" });
+  });
+
+  it("危機の週：AI が窓口を案内していれば、そのまま（引用だけ落とす）", () => {
+    const parsed = parseLetterOutput(`受け止める文。\n\n${hotline}`, entries, map);
+    const safe = applyLetterSafety(parsed, true);
+    expect(safe.hotlineAdded).toBe(false);
+    expect(safe.quotesRemoved).toBe(false);
+    expect(safe.blocks).toEqual(parsed.blocks);
+  });
+
+  it("ふつうの週：AI 自身が窓口を案内した手紙なら引用を落とす。そうでなければ何も変えない", () => {
+    const plain = parseLetterOutput("a\n>> ［3］少し話せた。\nb", buildLetterEntries([tue, fri]), map);
+    const kept = applyLetterSafety(plain, false);
+    expect(kept.blocks).toEqual(plain.blocks);
+    expect(kept.refs).toEqual(plain.refs);
+    expect(kept.quotesRemoved).toBe(false);
+
+    const judged = parseLetterOutput(`a\n>> ［3］少し話せた。\n${hotline}`, buildLetterEntries([tue, fri]), map);
+    const safe = applyLetterSafety(judged, false);
+    expect(safe.refs).toEqual([]);
+    expect(safe.quotesRemoved).toBe(true);
+    expect(safe.hotlineAdded).toBe(false);
+  });
+
+  it("固定文の手紙は本文だけで、窓口の案内を含み、使える", () => {
+    const blocks = crisisLetterBlocks();
+    expect(blocks.map((b) => (b.type === "text" ? b.text : ""))).toEqual([...CRISIS_LETTER_PARAGRAPHS]);
+    expect(isUsableLetter(blocks)).toBe(true);
+    expect(hasHotlineGuidance(CRISIS_LETTER_PARAGRAPHS.join("\n"))).toBe(true);
   });
 });

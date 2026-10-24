@@ -2,10 +2,14 @@
 // - 入力：その週の本人の記録だけ（日付つき・本人の言葉のまま）。メタ・気分・会話・自動の呼び名・題は渡さない
 //   （docs/mentor-prompt.md「週の手紙用の追記」・憲法第12条3項。形は docs/drafts/mentor-prompt-v5-drafts.md §3）
 // - 出力：ふつうの段落と「>> ［n］引用」の行。引用は番号 n の記録の rawText か deepDiveAnswer の
-//   部分文字列そのもの（空白の正規化なし）だけを残し、違うもの・番号が無いもの・範囲外は落とす（本人の言葉でない文を本人の言葉として出さない）
+//   部分文字列そのもの（空白の正規化なし）だけを残し、違うもの・番号が無いもの・範囲外は落とす（本人の言葉でない文を本人の言葉として出さない）。
+//   本文の段落の中の「」『』も同じで、その週の記録に無い言葉を囲んだ段落は落とす。
+// - セーフティ（憲法第8条）：その週の記録に危機の言葉（lib/logic/crisis.ts）があれば、プロンプト任せにせず
+//   コードでも引用を全部落とし、窓口の案内が無ければ固定文を足す。AI の手紙が使えないときは固定文だけの手紙にする。
 // システムプロンプトの文面はここに書かない（lib/ai/mentorPrompt.ts の buildSystemPrompt("letter", …) をそのまま使う）。
 import type { LetterBlock, LetterRef, Thought } from "@/lib/db/types";
 import { splitIntoChunks } from "@/lib/logic/chunk";
+import { CRISIS_LETTER_PARAGRAPHS, detectCrisis, hasHotlineGuidance } from "@/lib/logic/crisis";
 import { dateWithWeekday } from "@/lib/logic/ragChunks";
 import { weekRange } from "@/lib/logic/week";
 
@@ -17,6 +21,12 @@ export const LETTER_MAX_TOKENS = 16_000;
 
 /** 引用として残す最短の長さ（記号1字だけの「引用」を落とす） */
 const MIN_QUOTE_LENGTH = 2;
+
+/** 本文の「」『』の中身を検証する最短の長さ（これより短い囲みは言葉の強調とみなして見ない） */
+export const MIN_BODY_QUOTE_LENGTH = 4;
+
+/** 危機の週の固定文（AI の手紙が使えないときの手紙。文言は lib/logic/crisis.ts） */
+export const CRISIS_FALLBACK_MODEL = "fixed-text";
 
 /** 手紙の材料にする記録（Thought のうち使う項目だけ） */
 export type LetterThought = Pick<Thought, "id" | "date" | "rawText" | "deepDiveQuestion" | "deepDiveAnswer" | "kind" | "createdAt">;
@@ -105,6 +115,14 @@ export function countRecordDays(thoughts: Pick<Thought, "date">[]): number {
   return new Set(thoughts.map((t) => t.date).filter(Boolean)).size;
 }
 
+/**
+ * 危機の週か：AI に渡す記録（本人の言葉だけ。Q は見ない）のどれかに危機の言葉があるとき true。
+ * プロンプトの「深刻な内容があれば引用せず窓口を案内する」をコード側でも保証するための入口（憲法第8条）。
+ */
+export function detectCrisisWeek(entries: Pick<LetterEntry, "text">[]): boolean {
+  return entries.some((e) => detectCrisis(e.text));
+}
+
 /** messages の末尾（user）に置く入力。下書き §3「AI に渡す入力」の形 */
 export function formatLetterInput(weekKey: string, recordDays: number, entries: LetterEntry[]): string {
   const { from, to } = weekRange(weekKey);
@@ -153,11 +171,35 @@ export function verifyQuote(quote: string, thought: Pick<Thought, "rawText" | "d
   return null;
 }
 
-export type ParsedLetter = { blocks: LetterBlock[]; refs: LetterRef[]; droppedQuotes: number };
+export type ParsedLetter = {
+  blocks: LetterBlock[];
+  refs: LetterRef[];
+  /** 検証に通らず落とした「>> 」の引用の数 */
+  droppedQuotes: number;
+  /** 記録に無い言葉を「」『』で囲んでいたため落とした本文の段落の数 */
+  droppedParagraphs: number;
+};
+
+const BODY_QUOTE = /[「『]([^「」『』]+)[」』]/g;
+
+/**
+ * 本文の段落の「」『』の中身が、その週の記録（rawText か deepDiveAnswer）のどれかにそのまま含まれるか。
+ * 短い囲み（MIN_BODY_QUOTE_LENGTH 未満）は強調とみなして見ない。囲みが無ければ true。
+ */
+export function verifyBodyQuotes(
+  paragraph: string,
+  thoughts: Iterable<Pick<Thought, "rawText" | "deepDiveAnswer">>
+): boolean {
+  const fragments = [...paragraph.matchAll(BODY_QUOTE)].map((m) => m[1].trim()).filter((f) => f.length >= MIN_BODY_QUOTE_LENGTH);
+  if (fragments.length === 0) return true;
+  const sources = [...thoughts];
+  return fragments.every((f) => sources.some((t) => t.rawText.includes(f) || t.deepDiveAnswer.includes(f)));
+}
 
 /**
  * AI の出力を便箋のブロックにする。段落は空行で区切る。「>> ［n］…」の行は検証を通ったものだけ quote ブロックにする。
- * 本文の文はそのまま使う（書き換えない）。同じ記録の同じ引用は refs を使い回す。
+ * 本文の文はそのまま使う（書き換えない）が、記録に無い言葉を「」『』で囲んだ段落は丸ごと落とす（言い換えを本人の言葉として出さない）。
+ * 同じ記録の同じ引用は refs を使い回す。
  */
 export function parseLetterOutput(
   text: string,
@@ -168,11 +210,17 @@ export function parseLetterOutput(
   const blocks: LetterBlock[] = [];
   const refs: LetterRef[] = [];
   let dropped = 0;
+  let droppedParagraphs = 0;
   let para: string[] = [];
   const flush = () => {
     const t = para.join("\n").trim();
-    if (t) blocks.push({ type: "text", text: t });
     para = [];
+    if (!t) return;
+    if (!verifyBodyQuotes(t, thoughts.values())) {
+      droppedParagraphs += 1;
+      return;
+    }
+    blocks.push({ type: "text", text: t });
   };
   for (const rawLine of text.replace(/\r\n?/g, "\n").split("\n")) {
     const line = rawLine.trimEnd();
@@ -200,7 +248,7 @@ export function parseLetterOutput(
     para.push(line.trim());
   }
   flush();
-  return { blocks, refs, droppedQuotes: dropped };
+  return { blocks, refs, droppedQuotes: dropped, droppedParagraphs };
 }
 
 /** 本文の段落が1つも無い（空の手紙・引用だけ）なら使えない */
@@ -208,30 +256,43 @@ export function isUsableLetter(blocks: LetterBlock[]): boolean {
   return blocks.some((b) => b.type === "text" && b.text.length > 0);
 }
 
+/* ---------- セーフティ（憲法第8条） ---------- */
+
+export type SafeLetter = {
+  blocks: LetterBlock[];
+  refs: LetterRef[];
+  /** 引用を落とした（危機の週、または AI が窓口を案内していた） */
+  quotesRemoved: boolean;
+  /** 窓口の案内が無かったので固定文を足した */
+  hotlineAdded: boolean;
+};
+
+function textOf(blocks: LetterBlock[]): string {
+  return blocks.map((b) => (b.type === "text" ? b.text : "")).join("\n");
+}
+
 /**
- * ストリームの delta から「>> 」で始まる引用の行を抜く（検証前の引用を画面に流さない）。
- * 行がそろうまで溜め、引用でない行だけ改行つきで返す。最後に flush で残りを出す。
+ * 手紙の安全を、プロンプト任せにせずコードで確かめる。
+ * - 危機の週（入力に危機の言葉）か、AI 自身が窓口を案内した手紙（＝AI が深刻と判断した）なら、引用を全部落とす
+ *   （つらい記録の言葉を切れ端にして並べない。プロンプト「引用もしない」の保証）
+ * - 危機の週なのに窓口の案内（両方の番号）が無ければ、固定文の段落を末尾に足す
+ * それ以外の週はそのまま返す。
  */
-export function createQuoteLineFilter(): { push(delta: string): string; flush(): string } {
-  let buf = "";
-  const keep = (line: string) => !line.trimStart().startsWith(">>");
-  return {
-    push(delta: string) {
-      buf += delta;
-      let out = "";
-      let nl = buf.indexOf("\n");
-      while (nl >= 0) {
-        const line = buf.slice(0, nl);
-        buf = buf.slice(nl + 1);
-        if (keep(line)) out += `${line}\n`;
-        nl = buf.indexOf("\n");
-      }
-      return out;
-    },
-    flush() {
-      const rest = buf;
-      buf = "";
-      return rest && keep(rest) ? rest : "";
-    },
-  };
+export function applyLetterSafety(parsed: Pick<ParsedLetter, "blocks" | "refs">, crisisWeek: boolean): SafeLetter {
+  const mentionsHotline = hasHotlineGuidance(textOf(parsed.blocks));
+  if (!crisisWeek && !mentionsHotline) {
+    return { blocks: parsed.blocks, refs: parsed.refs, quotesRemoved: false, hotlineAdded: false };
+  }
+  const blocks = parsed.blocks.filter((b) => b.type === "text");
+  const hotlineAdded = crisisWeek && !mentionsHotline;
+  if (hotlineAdded) {
+    // 固定文のうち、受け止めの一言は AI の本文があるので省き、案内と窓口だけを足す
+    for (const p of CRISIS_LETTER_PARAGRAPHS.slice(2)) blocks.push({ type: "text", text: p });
+  }
+  return { blocks, refs: [], quotesRemoved: parsed.refs.length > 0 || parsed.blocks.length !== blocks.length, hotlineAdded };
+}
+
+/** 危機の週に AI の手紙が使えない（refusal・max_tokens・失敗・空）ときの、固定文だけの手紙 */
+export function crisisLetterBlocks(): LetterBlock[] {
+  return CRISIS_LETTER_PARAGRAPHS.map((text) => ({ type: "text", text }));
 }
