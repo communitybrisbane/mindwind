@@ -8,33 +8,12 @@ import { showToast } from "@/components/ui/Toast";
 import { MAX_CONSULT_MESSAGE } from "@/lib/logic/limits";
 import { sound, vibrate } from "@/lib/ui/feedback";
 import { useLimitedInput } from "@/lib/ui/useLimitedInput";
+import { getRecognitionCtor, type Recognition } from "@/lib/ui/speechRecognition";
 import styles from "./consult.module.css";
 
 /** 1行の高さ（px）と、中でスクロールに切り替わる高さ（5行） */
 const LINE_PX = 30;
 const MAX_PX = LINE_PX * 5;
-
-// Web Speech API は TS の dom 型定義に無いので最小限を自前で定義する
-type Recognition = {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  start(): void;
-  stop(): void;
-  onresult: ((e: { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> }) => void) | null;
-  onend: (() => void) | null;
-  onerror: ((e: { error?: string }) => void) | null;
-};
-type RecognitionCtor = new () => Recognition;
-
-function getRecognitionCtor(): RecognitionCtor | undefined {
-  if (typeof window === "undefined") return undefined;
-  const w = window as unknown as {
-    SpeechRecognition?: RecognitionCtor;
-    webkitSpeechRecognition?: RecognitionCtor;
-  };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition;
-}
 
 type Props = {
   /** 最初に入れておく下書き（/search?draft=） */
