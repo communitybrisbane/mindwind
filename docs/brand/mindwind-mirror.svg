@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 480 400" fill="none">
+  <title>mindwind — mirror wordmark</title>
+  <desc>Hand-drawn lowercase mind and its exact reflection across a horizontal axis. The reflected m forms a rounded w. Transparent background.</desc>
+  <defs>
+    <g id="ind" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 143 76 V 146"/>
+      <circle cx="143" cy="39" r="7" stroke="none" fill="currentColor"/>
+      <path d="M 184 146 V 76 M 184 103 C 184 58 244 58 244 103 V 146"/>
+      <path d="M 352 14 V 146 M 352 110 C 352 61 282 61 282 110 C 282 159 352 159 352 110"/>
+    </g>
+  </defs>
+  <g transform="translate(64 40)" color="#202522">
+    <path d="M 0 146 V 76 M 0 103 C 0 58 51 58 51 103 V 146 M 51 103 C 51 58 102 58 102 103 V 146" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+    <use href="#ind"/>
+    <path d="M 0 146 V 76 M 0 103 C 0 58 51 58 51 103 V 146 M 51 103 C 51 58 102 58 102 103 V 146" transform="translate(0 320) scale(1 -1)" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+    <use href="#ind" transform="translate(0 320) scale(1 -1)"/>
+  </g>
+</svg>
