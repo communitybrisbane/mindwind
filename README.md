@@ -86,10 +86,10 @@
 
 コードと docs で確かめられるものだけを挙げます。
 
-- **本人の文章を AI が書き換えない**：日記と深掘りの答えは、検証するだけで一字も変えずに保存します。テストで、前後の空白も含めて同じ文字列が保存されることを確かめています。 → `lib/logic/recordText.ts`・`recordText.test.ts`
+- **本人の文章を AI が書き換えない**：日記と深掘りの答えは、検証するだけで一字も変えずに保存します。テストで、前後の空白も含めて同じ文字列が保存されることを確かめています（一言だけは前後の空白を削ります）。 → `lib/logic/recordText.ts`・`recordText.test.ts`
 - **本人の言葉を書き換えずに分けるチャンクの RAG**：文の境界で 200〜400 字目安に分け、連結すると元の本文に戻ることをテストしています。相談では、分けた言葉を日付つきで AI に渡します。 → `lib/logic/chunk.ts`・`chunk.test.ts`・`lib/ai/rag.ts`
 - **憲法とプロンプトの一致をテストで守る**：`docs/mentor-prompt.md` の実文と `lib/ai/mentorPrompt.ts` の文面が、空白も含めて一致することをテストで確かめます。文面を変えたいときは先にドキュメントを直す決まりです。 → `lib/ai/mentorPrompt.test.ts`・`docs/AI-CONSTITUTION.md`
-- **危機の言葉は AI を通さずコードで判定**：「死にたい」などの言葉をサーバーで見つけたら、AI を呼ばずに相談窓口を案内します（保存は成功させる）。週の手紙でも、その週に該当があれば引用を落とします。 → `lib/logic/crisis.ts`・`crisis.test.ts`・`lib/ai/letter.ts`
+- **危機の言葉は AI を通さずコードで判定**：「死にたい」などの言葉を保存時にサーバーのコードで見つけ、固定文の相談窓口を案内します。判定と案内文は AI を通しません（保存は成功させる）。週の手紙でも、その週に該当があればコードで引用を全部落とし、窓口の案内が無ければ固定文を足します。 → `lib/logic/crisis.ts`・`crisis.test.ts`・`components/mood/CrisisNote.tsx`・`lib/ai/letter.ts`
 - **手紙の引用は部分文字列で検証**：AI が手紙に引いた言葉が、本人の記録の本文（日記か深掘りの答え）にそのまま含まれるときだけ残し、違えば落とします。 → `lib/ai/letter.ts`（`verifyQuote`）・`letter.test.ts`
 - **ボット対策の二段構え**：`proxy.ts` が `/api/*` に、IP レート制限 → Firebase App Check の順で検証をかけます。未設定でも動く段階的な導入です。 → `proxy.ts`・`lib/api/rateLimit.ts`・`lib/api/appCheck.ts`・[`docs/SECURITY-SETUP.md`](docs/SECURITY-SETUP.md)
 - **ブラウザから DB に直接つながない**：Firestore はルールで全拒否にし、API Routes が本人確認のうえ Admin SDK で読み書きします。 → `firestore.rules`
