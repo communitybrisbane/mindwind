@@ -28,7 +28,6 @@ export type ApiErrorCode =
   | "date_taken" // 409（過去日は1日1件）
   | "conflict" // 409（編集：別の画面が先に同じ記録を直した。開き直してやり直す）
   | "too_few_records" // 409（手紙：今週の記録が足りない）
-  | "already_generating" // 409（手紙：生成中）
   | "not_available" // 409（手紙：まだ開けない週）
   | "rate_limited" // 429（IP 単位。Phase 12b の 53）
   | "incomplete_response" // 422（refusal・max_tokens）
@@ -55,7 +54,8 @@ export type CreateThoughtRequest = {
   /** 省略＝"full" */
   kind?: ThoughtKind;
 };
-export type CreateThoughtResponse = { id: string; title: string; date: string };
+/** crisis: 本文か深掘りの答えに危機の言葉があった（保存は成功。画面は窓口を案内する。PLAN 85・憲法第8条） */
+export type CreateThoughtResponse = { id: string; title: string; date: string; crisis?: true };
 
 /** GET /api/thoughts/[id] */
 export type ThoughtResponse = { thought: ThoughtSummary };
@@ -66,7 +66,8 @@ export type UpdateThoughtRequest = {
   deepDiveQuestion?: string;
   deepDiveAnswer?: string;
 };
-export type UpdateThoughtResponse = { ok: true; title: string };
+/** crisis: 直した本文か答えに危機の言葉があった（保存は成功。画面は窓口を案内する） */
+export type UpdateThoughtResponse = { ok: true; title: string; crisis?: true };
 
 /** DELETE /api/thoughts/[id]（chunks も消し、相談の「読み返したページ」と手紙の引用に残る写しを伏せる） */
 export type DeleteThoughtResponse = { ok: true };
@@ -88,8 +89,10 @@ export type MoodRangeResponse = { from: string; to: string; days: DayEntry[] };
 /** GET /api/letters/current
  *  - status "ready"    : letter あり（読める）
  *  - status "locked"   : まだ書けない（recordDays < needed）。letter なし
- *  - status "generating": 生成中（別タブなど）。letter なし
- *  - status "none"     : 条件は満たすが未生成（POST で生成する）。letter なし */
+ *  - status "generating": 生成中（この画面が POST したあと・別タブなど）。letter なし。数秒おきに GET で取り直す
+ *  - status "none"     : 条件は満たすが未生成（POST で生成する）。letter なし
+ *  POST /api/letters/current も同じ形で返す（200 ready＝もう届いていた／202 generating＝裏で生成を始めた。
+ *  生成は after() で最後まで続けて保存し、画面は GET で受け取る） */
 export type CurrentLetterResponse = {
   weekKey: string;
   from: string;
@@ -101,13 +104,6 @@ export type CurrentLetterResponse = {
   needed: number;
   letter?: Letter;
 };
-
-/** POST /api/letters/current：NDJSON ストリーム（1行1JSON）。失敗は HTTP エラーか { type: "error" } 行 */
-export type LetterStreamEvent =
-  | { type: "start"; weekKey: string }
-  | { type: "delta"; text: string }
-  | { type: "done"; letter: Letter }
-  | { type: "error"; error: ApiErrorCode };
 
 /** GET /api/letters（新しい週が先） */
 export type LettersListResponse = { letters: LetterSummary[] };

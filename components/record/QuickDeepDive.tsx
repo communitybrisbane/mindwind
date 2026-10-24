@@ -45,10 +45,13 @@ export function useQuickDeepDive({
   user,
   thought,
   onSaved,
+  onCrisis,
 }: {
   user: User | null;
   thought: ThoughtSummary | null;
   onSaved: (updated: ThoughtSummary) => void;
+  /** 足した答えに危機の言葉があった（保存は成功。呼び出し側が窓口を案内する。PLAN 85） */
+  onCrisis?: () => void;
 }) {
   const [phase, setPhase] = useState<QuickDeepDivePhase>("idle");
   const [question, setQuestion] = useState("");
@@ -149,7 +152,7 @@ export function useQuickDeepDive({
         if (res.status === 404) throw new Error("この記録は見つかりませんでした。");
         throw new Error("保存できませんでした。少し待ってからもう一度試してください。");
       }
-      const { title } = (await res.json()) as UpdateThoughtResponse;
+      const { title, crisis } = (await res.json()) as UpdateThoughtResponse;
       await wait;
       clearDraft();
       onSaved({ ...thought, deepDiveQuestion: question, deepDiveAnswer: ans, title });
@@ -157,6 +160,7 @@ export function useQuickDeepDive({
       answer.setValue("");
       setPhase("idle");
       showToast("深掘りの答えを足したよ。");
+      if (crisis === true) onCrisis?.();
     } catch (e) {
       await wait;
       setPhase("answer");

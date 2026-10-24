@@ -4,6 +4,7 @@ import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
 import { deleteChunksInTx, getChunkIdsInTx, prepareChunks, writeChunks } from "@/lib/db/chunks";
 import { refreshThoughtMeta } from "@/lib/db/chunkStore";
 import { scrubThoughtCopies } from "@/lib/db/scrubDeleted";
+import { detectCrisis } from "@/lib/logic/crisis";
 import { toMood } from "@/lib/logic/quickRecord";
 import { INPUT_ERROR_STATUS, parseUpdateThought, toThoughtSummary } from "@/lib/logic/recordText";
 import { autoTitle } from "@/lib/logic/title";
@@ -32,6 +33,7 @@ export async function GET(req: NextRequest, { params }: Params) {
  * 日付・kind は変えない。full の検索用メタは、書いたあと after() で裏で作り直す（PLAN 57。失敗しても編集は成功のまま）。
  * embedding はトランザクションの外で作るので、その間に別の画面が同じ記録を直していたら（updateTime が変わっていたら）
  * 書かずに 409 conflict を返す（本文とチャンクがずれないように）。
+ * 直した本文か答えに危機の言葉があれば（変わった項目だけ見る）crisis: true を返し、画面が窓口を案内する（PLAN 85・憲法第8条）。
  */
 export async function PUT(req: NextRequest, { params }: Params) {
   const authInfo = await verifyUserInfo(req.headers.get("authorization"));
@@ -79,7 +81,10 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (outcome === "conflict") return NextResponse.json({ error: "conflict" }, { status: 409 });
     if (current.kind === "full") after(() => refreshThoughtMeta(uid, id, isGuest));
 
-    const res: UpdateThoughtResponse = { ok: true, title };
+    const crisis =
+      (rawText !== current.rawText && detectCrisis(rawText)) ||
+      (deepDiveAnswer !== current.deepDiveAnswer && detectCrisis(deepDiveAnswer));
+    const res: UpdateThoughtResponse = { ok: true, title, ...(crisis ? { crisis: true as const } : {}) };
     return NextResponse.json(res);
   } catch (e) {
     console.error("update thought failed:", e);

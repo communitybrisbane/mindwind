@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { requestToast, showToast } from "@/components/ui/Toast";
-import type { ApiError, CreateThoughtRequest, ThoughtsListResponse } from "@/lib/api/contracts";
+import type { ApiError, CreateThoughtRequest, CreateThoughtResponse, ThoughtsListResponse } from "@/lib/api/contracts";
 import type { ThoughtSummary } from "@/lib/db/types";
 import { authedFetch, authedJson, useUser } from "@/lib/db/useUser";
 import { resolveRecordDate } from "@/lib/logic/backdate";
@@ -177,6 +177,8 @@ export function useRecordSession(dateParam: string | null) {
   const [sealing, setSealing] = useState(false);
   const [error, setError] = useState("");
   const [cards, setCards] = useState<ThoughtSummary[]>([]);
+  // 保存した本文か答えに危機の言葉があった（PLAN 85）：窓口を案内してからホームへ
+  const [crisis, setCrisis] = useState(false);
 
   /* ---- 下書き（端末内だけ） ---- */
   const draft = useDraft(key);
@@ -345,9 +347,15 @@ export function useRecordSession(dateParam: string | null) {
         if (data?.error === "too_short") throw new Error(DIARY_TOO_SHORT_MESSAGE);
         throw new Error("保存できませんでした。少し待ってからもう一度試してください。");
       }
+      const saved = (await res.json().catch(() => null)) as CreateThoughtResponse | null;
       draft.clear();
       await wait;
       requestToast("記録したよ。");
+      // 保存はできている。危機の言葉があったら、窓口を案内してからホームへ（CrisisNote のボタンで進む）
+      if (saved?.crisis === true) {
+        setCrisis(true);
+        return;
+      }
       router.push("/home");
     } catch (e) {
       await wait;
@@ -385,6 +393,8 @@ export function useRecordSession(dateParam: string | null) {
     setError,
     asking,
     sealing,
+    crisis,
+    finishCrisis: () => router.push("/home"),
     cards,
     onCardUpdated,
     onCardDeleted,

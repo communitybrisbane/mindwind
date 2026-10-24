@@ -1,8 +1,36 @@
-// 一言（quick）の危機の言葉の検出（PLAN 85・憲法第8条）。純粋関数。
-// 一言は AI を通らないので、サーバーで決まった言葉を見つけたら、AI を呼ばずに窓口を案内する（保存は成功させる）。
+// 記録の危機の言葉の検出（PLAN 85・憲法第8条）。純粋関数。
+// 保存・編集は AI を通らない経路がある（一言・深掘りの答え・AI の上限に当たった日記・あとからの編集）ので、
+// サーバーで決まった言葉を見つけたら、AI を呼ばずに窓口を案内する（保存は成功させる）。
+// 週の手紙でも、その週の記録にこの言葉があれば引用を落とし、窓口の案内が無ければ固定文を足す（lib/ai/letter.ts）。
 // 表記ゆれ（全角/半角・カタカナ/ひらがな・小さい母音・伸ばし棒・空白）をならしてから照らす。
 // 誤検知しすぎない：「忙しくて死にそう」「死ぬほど笑った」「わたしにたいして」「学校いきたくない」などは拾わない。
 // 迷う表現は、案内を出す側に倒す（案内は診断ではなく、窓口を知らせるだけなので害が小さい）。
+
+/** 相談窓口（憲法第8条・docs/mentor-prompt.md 共通部「セーフティ」と同じ番号） */
+export const HOTLINES = [
+  { name: "いのちの電話", tel: "0570-783-556" },
+  { name: "よりそいホットライン", tel: "0120-279-338" },
+] as const;
+
+/**
+ * 窓口の案内が入っているか（両方の番号があるとき true）。
+ * 番号は数字だけにならして照らす（「0570（783）556」のような書き方でも拾う）。
+ */
+export function hasHotlineGuidance(text: string): boolean {
+  const digits = text.normalize("NFKC").replace(/\D+/g, "");
+  return HOTLINES.every((h) => digits.includes(h.tel.replace(/\D+/g, "")));
+}
+
+/**
+ * 週の手紙の固定文（危機の週に、AI の手紙が使えない・窓口を案内していないときに使う）。
+ * 1要素＝1段落。本人の状態を推測する言い方・診断名は書かない（憲法第9条）。文言は下書き（ユーザー確認）。
+ */
+export const CRISIS_LETTER_PARAGRAPHS: readonly string[] = [
+  "今週も、ここに来てくれてありがとう。",
+  "今週は、いつもの手紙を書くのをやめて、これだけを置いておくね。ひとりで抱えなくていいよ。",
+  "話を聞いてくれる人がいるから、よかったら電話してみて。",
+  ...HOTLINES.map((h) => `${h.name} ${h.tel}`),
+];
 
 const SMALL_VOWELS: Record<string, string> = { ぁ: "あ", ぃ: "い", ぅ: "う", ぇ: "え", ぉ: "お" };
 
@@ -50,9 +78,14 @@ const PATTERNS: RegExp[] = [
   /生き(る|てる|ている|てく|ていく)意味(が|も|なんて)?(ない|無い)/,
 ];
 
-/** 一言に危機の言葉が含まれるか（true なら窓口を案内する） */
+/** 記録の文章に危機の言葉が含まれるか（true なら窓口を案内する） */
 export function detectCrisis(text: string): boolean {
   const s = normalizeForCrisis(text);
   if (!s) return false;
   return PATTERNS.some((re) => re.test(s));
+}
+
+/** 複数の文章（本文と深掘りの答えなど）のどれかに危機の言葉があるか */
+export function detectCrisisIn(texts: readonly string[]): boolean {
+  return texts.some((t) => detectCrisis(t));
 }

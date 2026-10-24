@@ -120,7 +120,7 @@ function QuickWrite() {
         const data = (await res.json().catch(() => null)) as ApiError | null;
         throw new Error(errorMessage(data?.error));
       }
-      const saved = (await res.json().catch(() => null)) as (CreateThoughtResponse & { crisis?: boolean }) | null;
+      const saved = (await res.json().catch(() => null)) as CreateThoughtResponse | null;
       await wait;
       if (mood !== null) {
         try {

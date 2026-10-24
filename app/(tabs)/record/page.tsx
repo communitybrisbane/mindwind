@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
+import { CrisisNote } from "@/components/mood/CrisisNote";
 import RecordSheet from "@/components/record/RecordSheet";
 import { SealHoldButton, SealStamp } from "@/components/record/SealHold";
 import styles from "@/components/record/record.module.css";
@@ -169,6 +170,8 @@ function RecordSession({ dateParam }: { dateParam: string | null }) {
           s.onCardDeleted(id);
         }}
       />
+      {/* 保存した文章に危機の言葉があったとき（PLAN 85・憲法第8条）。読んでからホームへ */}
+      <CrisisNote open={s.crisis} onDone={s.finishCrisis} />
     </Desk>
   );
 }

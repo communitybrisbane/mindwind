@@ -1,31 +1,38 @@
 "use client";
 
-// 一言の危機対応（PLAN 85・憲法第8条）。保存のあと、サーバーが crisis: true を返したときに出す紙のモーダル。
+// 記録の危機対応（PLAN 85・憲法第8条）。保存・編集のあと、サーバーが crisis: true を返したときに出す紙のモーダル。
+// 一言の画面・記録タブ・保存済みの記録のモーダル（編集・あとから深掘り）で共通。
 // 共感の一言と、相談窓口（いのちの電話・よりそいホットライン）を案内する。診断・病名は言わない。
-// 本人の一言は引用も言い換えもしない。丸いボタンを押すとホームへ進む（onDone）。
+// 本人の文章は引用も言い換えもしない。丸いボタンを押すと onDone（一言・記録タブはホームへ、モーダルはとじる）。
 // 案内を読み逃さないよう、幕のタップや Esc では閉じない。
-// 文言は固定（AI は通らない）。窓口の番号は docs/mentor-prompt.md 共通部「セーフティ」と同じ。
+// 文言は固定（AI は通らない）。窓口の番号は lib/logic/crisis.ts の HOTLINES（docs/mentor-prompt.md 共通部「セーフティ」と同じ）。
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Dialog } from "@/components/ui/Dialog";
+import type { IconName } from "@/components/ui/Icon";
+import { HOTLINES } from "@/lib/logic/crisis";
 import styles from "./mood.module.css";
 
-export const HOTLINES = [
-  { name: "いのちの電話", tel: "0570-783-556" },
-  { name: "よりそいホットライン", tel: "0120-279-338" },
-] as const;
+export { HOTLINES };
 
 const noop = () => {};
 
 export type CrisisNoteProps = {
   open: boolean;
-  /** 閉じたあとに1回だけ呼ぶ（ホームへ進む） */
+  /** 閉じたあとに1回だけ呼ぶ（ホームへ進む・とじる） */
   onDone: () => void;
+  /** ボタンの文字と絵（既定：「ホームへ」・矢印） */
+  doneLabel?: string;
+  doneIcon?: IconName;
 };
 
-export function CrisisNote({ open, onDone }: CrisisNoteProps) {
+export function CrisisNote({ open, onDone, doneLabel = "ホームへ", doneIcon = "arrow" }: CrisisNoteProps) {
   // 二度押しでホームへ2回進まないように1回にまとめる
   const doneRef = useRef(false);
+  // 開き直したら（モーダルの中で2回目の編集など）またボタンが効くようにする
+  useEffect(() => {
+    if (open) doneRef.current = false;
+  }, [open]);
   const finish = useCallback(() => {
     if (doneRef.current) return;
     doneRef.current = true;
@@ -52,7 +59,7 @@ export function CrisisNote({ open, onDone }: CrisisNoteProps) {
           </ul>
         </div>
       }
-      buttons={[{ icon: "arrow", label: "ホームへ", variant: "green", onPress: finish }]}
+      buttons={[{ icon: doneIcon, label: doneLabel, variant: "green", onPress: finish }]}
       onClose={noop}
     />
   );

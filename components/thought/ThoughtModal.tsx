@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { CrisisNote } from "@/components/mood/CrisisNote";
 import { canDeepenLater, useQuickDeepDive } from "@/components/record/QuickDeepDive";
 import { SealHoldButton, SealStamp } from "@/components/record/SealHold";
 import { Bead, BeadSlot } from "@/components/ui/Bead";
@@ -90,6 +91,8 @@ function ThoughtModalBody({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // 直した文章・足した答えに危機の言葉があった（PLAN 85・憲法第8条）：窓口を案内する
+  const [crisis, setCrisis] = useState(false);
 
   // thoughts を省略したときは、その日の分を取りに行く
   useEffect(() => {
@@ -133,7 +136,7 @@ function ThoughtModalBody({
     onSaved?.(updated);
   }
 
-  const deep = useQuickDeepDive({ user, thought, onSaved: applyUpdate });
+  const deep = useQuickDeepDive({ user, thought, onSaved: applyUpdate, onCrisis: () => setCrisis(true) });
   const deepening = deep.active;
 
   // Esc で閉じる（確認ダイアログが出ている間はダイアログ側が閉じる）
@@ -194,7 +197,7 @@ function ThoughtModalBody({
         if (res.status === 404) throw new Error("この記録は見つかりませんでした。");
         throw new Error("保存できませんでした。少し待ってからもう一度試してください。");
       }
-      const { title } = (await res.json()) as UpdateThoughtResponse;
+      const { title, crisis: flagged } = (await res.json()) as UpdateThoughtResponse;
       const updated: ThoughtSummary = {
         ...thought,
         rawText,
@@ -206,6 +209,7 @@ function ThoughtModalBody({
       setEditing(false);
       sound("seal");
       showToast("記録を直したよ。");
+      if (flagged === true) setCrisis(true);
     } catch (e) {
       setError(e instanceof Error && e.message ? e.message : "保存できませんでした。");
     } finally {
@@ -394,6 +398,7 @@ function ThoughtModalBody({
           ]}
           onClose={() => setConfirmDelete(false)}
         />
+        <CrisisNote open={crisis} onDone={() => setCrisis(false)} doneLabel="とじる" doneIcon="check" />
       </div>
     </div>
   );
