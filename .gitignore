@@ -39,3 +39,6 @@ docs/dena-research.md
 
 # 他社アプリの参考資料（ui-ref）。リポジトリには入れない
 /reference/
+
+# ロゴの透過動画（19.5MB。WebM・APNG で足りる）
+/docs/brand/exports/*.mov
