@@ -51,6 +51,12 @@ function toastError(e: unknown): void {
   if (msg) showToast(msg);
 }
 
+/** 削除の失敗：認証のエラーなら認証の文言、それ以外（サーバー側など）は共通の文言 */
+function toastDeleteError(e: unknown): void {
+  if (authCode(e)) toastError(e);
+  else showToast("削除できませんでした。少し待ってから、もう一度試してね。");
+}
+
 export type AccountState = ReturnType<typeof useAccount>;
 
 /** 設定のアカウント操作（契約 §9 の useAccount に相当。ダイアログの状態もここで持つ） */
@@ -209,8 +215,7 @@ export function useAccount(user: AppUser) {
       }
       await finishDelete();
     } catch (e) {
-      if (authCode(e)) toastError(e);
-      else showToast("削除できませんでした。少し待ってから、もう一度試してね。");
+      toastDeleteError(e);
       setBusy(false);
     }
   }, [busy, finishDelete]);
@@ -224,8 +229,7 @@ export function useAccount(user: AppUser) {
       await reauthenticateWithPopup(current, googleProvider);
       await finishDelete();
     } catch (e) {
-      if (authCode(e)) toastError(e);
-      else showToast("削除できませんでした。少し待ってから、もう一度試してね。");
+      toastDeleteError(e);
       setBusy(false);
     }
   }, [busy, finishDelete]);
