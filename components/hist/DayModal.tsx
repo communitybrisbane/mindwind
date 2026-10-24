@@ -139,6 +139,7 @@ export default function DayModal({ date, today, mood, records, onClose, onChange
 
   // 記録1件の日は、ThoughtModal だけを見せる（この日の紙は出さない）
   const showSheet = open && !(single && opened);
+  const writeLabel = date === today ? "今日の日記を書く" : "この日の日記を書く";
   const isEmpty = !loading && (records === 0 || (thoughts !== null && thoughts.length === 0));
 
   return (
@@ -208,8 +209,8 @@ export default function DayModal({ date, today, mood, records, onClose, onChange
                 <RoundButton
                   variant="green"
                   icon="book"
-                  label={date === today ? "今日の日記を書く" : "この日の日記を書く"}
-                  aria-label={date === today ? "今日の日記を書く" : "この日の日記を書く"}
+                  label={writeLabel}
+                  aria-label={writeLabel}
                   size={72}
                   onClick={write}
                 />
