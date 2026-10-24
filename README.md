@@ -152,7 +152,7 @@ Firebase（クライアント + Admin SDK）、Claude API、OpenAI API の認証
 - **認証**: Firebase Authentication（起動時に自動で匿名ゲスト。設定から `linkWithPopup` で Google と連携すると、データごと本登録に昇格）
 - **ボット対策**: Firebase App Check（reCAPTCHA Enterprise）＋ IP レート制限（Upstash Redis）。`proxy.ts` で検証（手順は [`docs/SECURITY-SETUP.md`](docs/SECURITY-SETUP.md)）
 - **デプロイ**: Vercel（`git push` で自動デプロイ）＋独自ドメイン
-- **テスト**: Vitest（47ファイル・491テスト。`lib/` のロジックと API の契約）
+- **テスト**: Vitest（49ファイル・505テスト。`lib/` のロジックと API の契約）
 
 ## 開発コマンド
 
