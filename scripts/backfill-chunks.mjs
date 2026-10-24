@@ -12,16 +12,12 @@
 //   node scripts/backfill-chunks.mjs --apply        （本実行）
 //   node scripts/backfill-chunks.mjs --apply --uid=<uid>   （1 ユーザーだけ）
 //
-// package.json の scripts に足す行（タスク 59 の担当に含まれる。指揮官が反映する）:
-//   "backfill-chunks": "node scripts/backfill-chunks.mjs",
-//
 // 実行はこのスクリプトを書いた段階では行っていない。手順は docs/OPS-backfill-chunks.md。
 
-import { readFileSync } from "node:fs";
-import { cert, initializeApp } from "firebase-admin/app";
 import { FieldValue, getFirestore, Timestamp } from "firebase-admin/firestore";
 import { splitIntoChunks } from "../lib/logic/chunk.ts";
 import { isMoodId, moodMetaLine } from "../lib/logic/moods.ts";
+import { initAdmin, loadEnv } from "./_admin.mjs";
 
 const apply = process.argv.includes("--apply");
 const onlyUid = process.argv.find((a) => a.startsWith("--uid="))?.slice("--uid=".length) || null;
@@ -29,27 +25,14 @@ const BATCH_SIZE = 100;
 const EMBED_BATCH = 50;
 const EMBED_RETRIES = 3;
 
-// .env.local を読み込む（dotenv なしの最小実装）
-for (const line of readFileSync(new URL("../.env.local", import.meta.url), "utf8").split("\n")) {
-  const m = line.match(/^([A-Z_0-9]+)=(.*)$/);
-  if (!m) continue;
-  let v = m[2].trim();
-  if (v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
-  process.env[m[1]] = v;
-}
+loadEnv();
 
 if (apply && !process.env.OPENAI_API_KEY) {
   console.error("OPENAI_API_KEY が .env.local にありません。中止します。");
   process.exit(1);
 }
 
-initializeApp({
-  credential: cert({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-  }),
-});
+initAdmin();
 const db = getFirestore();
 
 async function embedMany(inputs) {

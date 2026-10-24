@@ -4,27 +4,13 @@
 // 実行: node scripts/backup.mjs
 // 出力: backups/backup-YYYY-MM-DDTHH-mm-ss.json（backups/ は gitignore 済み）
 
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { cert, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { initAdmin, loadEnv } from "./_admin.mjs";
 
-// .env.local を読み込む（dotenv なしの最小実装）
-for (const line of readFileSync(new URL("../.env.local", import.meta.url), "utf8").split("\n")) {
-  const m = line.match(/^([A-Z_]+)=(.*)$/);
-  if (!m) continue;
-  let v = m[2].trim();
-  if (v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
-  process.env[m[1]] = v;
-}
-
-initializeApp({
-  credential: cert({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-  }),
-});
+loadEnv();
+initAdmin();
 const db = getFirestore();
 
 /** ドキュメント＋全サブコレクションを再帰的に JSON 化する */

@@ -2,9 +2,6 @@
 // 30日以上ログインのない匿名ユーザーを Auth から削除し、Firestore の users/{uid} 以下
 // （thoughts・chunks・moods・letters・chats・draft など全サブコレクション）も recursiveDelete する。
 //
-// package.json の scripts に足す行:
-//   "cleanup:guests": "node scripts/cleanup-guests.mjs"
-//
 // 実行（既定はドライラン＝何も消さず、対象を表示するだけ）:
 //   npm run cleanup:guests                        # ドライラン
 //   npm run cleanup:guests -- --days 45           # 日数を変える（既定30）
@@ -15,10 +12,9 @@
 // 消す順: Firestore → Auth。途中で失敗しても Auth が残るので、再実行で続きから消せる。
 // 画面の「30日使わないと、記録が消えます」と一致させるため、既定は30日。
 
-import { readFileSync } from "node:fs";
-import { cert, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { initAdmin, loadEnv } from "./_admin.mjs";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -48,22 +44,8 @@ export function isStaleGuest(user, now, days) {
 async function main() {
   const { apply, days } = parseArgs(process.argv.slice(2));
 
-  // .env.local を読み込む（backup.mjs と同じ最小実装）
-  for (const line of readFileSync(new URL("../.env.local", import.meta.url), "utf8").split("\n")) {
-    const m = line.match(/^([A-Z_]+)=(.*)$/);
-    if (!m) continue;
-    let v = m[2].trim();
-    if (v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
-    process.env[m[1]] = v;
-  }
-
-  initializeApp({
-    credential: cert({
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    }),
-  });
+  loadEnv();
+  initAdmin();
   const auth = getAuth();
   const db = getFirestore();
 
