@@ -36,3 +36,6 @@ docs/dena-research.md
 
 # ローカルバックアップ（scripts/backup.mjs の出力。日記の中身なのでコミットしない）
 /backups/
+
+# 他社アプリの参考資料（ui-ref）。リポジトリには入れない
+/reference/
