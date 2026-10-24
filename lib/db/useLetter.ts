@@ -3,8 +3,9 @@
 // 週の手紙の取得（PLAN 78）。契約 §6 の /api/letters* を呼ぶ。
 // - 今週：GET /api/letters/current → ready ならそのまま／none なら POST で生成（NDJSON）／locked・generating は状態だけ返す
 // - 過去：GET /api/letters/[weekKey]
-// - 生成 API（77）はユーザー承認待ちで未実装。404 のときは「開発中だけ」サンプルの手紙を返す
-//   （本番で作り物の「あなたの言葉」を見せないため。本番の 404 は届いていない扱い）
+// - サンプルの手紙は「開発中に API のルート自体が無いとき」だけのフォールバック
+//   （本番で作り物の「あなたの言葉」を見せないため。API が返す 404 { error: "not_found" } は届いていない扱い）
+// - POST（生成）は AbortController で、画面を離れたら受信をやめる（サーバーは生成を続けて保存する）
 // 手紙の本文・引用は API の値をそのまま使い、画面側で書き換えない。
 
 import { useCallback, useEffect, useState } from "react";
@@ -35,7 +36,7 @@ const IS_DEV = process.env.NODE_ENV !== "production";
 
 /* ---------- 開発用のサンプル（プロトタイプの文面） ---------- */
 
-/** 開発用のサンプルの手紙（生成 API が無い間だけ。本番では使わない） */
+/** 開発用のサンプルの手紙（開発中に API のルートが無いときだけ。本番では使わない） */
 export function sampleLetter(weekKey: string): Letter {
   const { from, to } = weekRange(weekKey);
   return {
@@ -133,9 +134,15 @@ async function readStream(res: Response, onDone: (l: Letter) => void): Promise<"
   }
 }
 
-async function fetchCurrent(user: AppUser): Promise<LetterState> {
-  const res = await authedFetch(user, "/api/letters/current");
-  if (res.status === 404) {
+/** API のルートそのものが無い（Next の 404/405 ページ。JSON の { error } ではない）。開発中のサンプル表示にだけ使う */
+function isRouteMissing(res: Response): boolean {
+  if (res.status !== 404 && res.status !== 405) return false;
+  return !(res.headers.get("content-type") ?? "").includes("application/json");
+}
+
+async function fetchCurrent(user: AppUser, signal: AbortSignal): Promise<LetterState> {
+  const res = await authedFetch(user, "/api/letters/current", { signal });
+  if (isRouteMissing(res)) {
     return IS_DEV
       ? { kind: "ready", letter: sampleLetter(letterWeekFor(todayKeyOf())), sample: true }
       : { kind: "missing" };
@@ -156,19 +163,29 @@ async function fetchCurrent(user: AppUser): Promise<LetterState> {
       return { kind: "generating", weekKey: data.weekKey };
     case "none":
     default:
-      return generate(user, data.weekKey);
+      return generate(user, data.weekKey, signal);
   }
 }
 
-async function generate(user: AppUser, weekKey: string): Promise<LetterState> {
-  const res = await authedFetch(user, "/api/letters/current", { method: "POST" });
-  if (res.status === 404 || res.status === 405) {
+async function generate(user: AppUser, weekKey: string, signal: AbortSignal): Promise<LetterState> {
+  const res = await authedFetch(user, "/api/letters/current", { method: "POST", signal });
+  if (isRouteMissing(res)) {
     return IS_DEV ? { kind: "ready", letter: sampleLetter(weekKey), sample: true } : { kind: "missing" };
   }
   if (res.status === 429) return { kind: "error", message: LIMIT_MESSAGE };
   if (res.status === 409) {
-    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    const body = (await res.json().catch(() => null)) as
+      | { error?: string; recordDays?: number; needed?: number }
+      | null;
     if (body?.error === "already_generating") return { kind: "generating", weekKey };
+    if (body?.error === "too_few_records") {
+      return {
+        kind: "locked",
+        weekKey,
+        recordDays: typeof body.recordDays === "number" ? body.recordDays : 0,
+        needed: typeof body.needed === "number" ? body.needed : MIN_THOUGHTS_FOR_LETTER,
+      };
+    }
     return { kind: "missing" };
   }
   if (!res.ok) return { kind: "error", message: ERROR_MESSAGE };
@@ -179,11 +196,12 @@ async function generate(user: AppUser, weekKey: string): Promise<LetterState> {
   return r === "done" && letter ? { kind: "ready", letter, sample: false } : { kind: "error", message: ERROR_MESSAGE };
 }
 
-async function fetchWeek(user: AppUser, weekKey: string): Promise<LetterState> {
-  const res = await authedFetch(user, `/api/letters/${encodeURIComponent(weekKey)}`);
-  if (res.status === 404) {
+async function fetchWeek(user: AppUser, weekKey: string, signal: AbortSignal): Promise<LetterState> {
+  const res = await authedFetch(user, `/api/letters/${encodeURIComponent(weekKey)}`, { signal });
+  if (isRouteMissing(res)) {
     return IS_DEV ? { kind: "ready", letter: sampleLetter(weekKey), sample: true } : { kind: "missing" };
   }
+  if (res.status === 404) return { kind: "missing" };
   if (!res.ok) return { kind: "error", message: ERROR_MESSAGE };
   const data = (await res.json()) as LetterResponse;
   return data.letter ? { kind: "ready", letter: data.letter, sample: false } : { kind: "missing" };
@@ -202,8 +220,10 @@ export function useLetter(week: string | null): { state: LetterState; reload(): 
     if (!user) return;
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    // 画面を離れたら（week が変わったら）取得・生成の受信をやめる
+    const controller = new AbortController();
     const run = () => {
-      (week ? fetchWeek(user, week) : fetchCurrent(user))
+      (week ? fetchWeek(user, week, controller.signal) : fetchCurrent(user, controller.signal))
         .then((s) => {
           if (cancelled) return;
           setState(s);
@@ -216,6 +236,7 @@ export function useLetter(week: string | null): { state: LetterState; reload(): 
     run();
     return () => {
       cancelled = true;
+      controller.abort();
       if (timer) clearTimeout(timer);
     };
   }, [user, week, version]);
