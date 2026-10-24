@@ -78,9 +78,54 @@
 
 ## 画面
 
-新 UI（v5）の見た目と動きは、[`docs/prototype/ui-v5.html`](docs/prototype/ui-v5.html) をブラウザで開くと触れます（基準フレーム 390×844）。実際の画面は上のリンクから確認できます。
+新 UI（v5）の見た目と動きは、[`docs/prototype/ui-v5.html`](docs/prototype/ui-v5.html) をブラウザで開くと触れます（基準フレーム 390×844）。実際の画面は上の「使ってみる」から確認できます。実アプリのスクリーンショットは、まだ用意していません。
 
-[`mockups/`](mockups/) は旧 UI の凍結モックです（現在の画面とは異なります）。実アプリの画面写真は、のちに差し替えます。
+[`mockups/`](mockups/) は**旧 UI**（成形カードがあった頃）の凍結モックで、現在の画面とは異なります。
+
+## このアプリの工夫
+
+コードと docs で確かめられるものだけを挙げます。
+
+- **本人の文章を AI が書き換えない**：日記と深掘りの答えは、検証するだけで一字も変えずに保存します。テストで、前後の空白も含めて同じ文字列が保存されることを確かめています（一言だけは前後の空白を削ります）。 → `lib/logic/recordText.ts`・`recordText.test.ts`
+- **本人の言葉を書き換えずに分けるチャンクの RAG**：文の境界で 200〜400 字目安に分け、連結すると元の本文に戻ることをテストしています。相談では、分けた言葉を日付つきで AI に渡します。 → `lib/logic/chunk.ts`・`chunk.test.ts`・`lib/ai/rag.ts`
+- **憲法とプロンプトの一致をテストで守る**：`docs/mentor-prompt.md` の実文と `lib/ai/mentorPrompt.ts` の文面が、空白も含めて一致することをテストで確かめます。文面を変えたいときは先にドキュメントを直す決まりです。 → `lib/ai/mentorPrompt.test.ts`・`docs/AI-CONSTITUTION.md`
+- **危機の言葉は AI を通さずコードで判定**：「死にたい」などの言葉を保存時にサーバーのコードで見つけ、固定文の相談窓口を案内します。判定と案内文は AI を通しません（保存は成功させる）。週の手紙でも、その週に該当があればコードで引用を全部落とし、窓口の案内が無ければ固定文を足します。 → `lib/logic/crisis.ts`・`crisis.test.ts`・`components/mood/CrisisNote.tsx`・`lib/ai/letter.ts`
+- **手紙の引用は部分文字列で検証**：AI が手紙に引いた言葉が、本人の記録の本文（日記か深掘りの答え）にそのまま含まれるときだけ残し、違えば落とします。 → `lib/ai/letter.ts`（`verifyQuote`）・`letter.test.ts`
+- **ボット対策の二段構え**：`proxy.ts` が `/api/*` に、IP レート制限 → Firebase App Check の順で検証をかけます。未設定でも動く段階的な導入です。 → `proxy.ts`・`lib/api/rateLimit.ts`・`lib/api/appCheck.ts`・[`docs/SECURITY-SETUP.md`](docs/SECURITY-SETUP.md)
+- **ブラウザから DB に直接つながない**：Firestore はルールで全拒否にし、API Routes が本人確認のうえ Admin SDK で読み書きします。 → `firestore.rules`
+- **ログイン不要で始まる**：起動時に匿名ゲストになり、Google 連携でデータごと本登録に昇格します。 → `lib/auth/link.ts`
+
+## 設計図
+
+ER 図・画面遷移図・シーケンス図・データ遷移図・構成図・状態遷移図を Mermaid で描いています（コードで確かめた事実だけ）。一覧と見方は [`docs/diagrams/README.md`](docs/diagrams/README.md)。
+
+- [`mindwind-diagrams.html`](docs/diagrams/mindwind-diagrams.html) — 全図を1ページにまとめたもの。ブラウザで開く
+- [`er-firestore.md`](docs/diagrams/er-firestore.md) — Firestore のデータモデル
+- [`arch-system.md`](docs/diagrams/arch-system.md) — システム全体の構成
+- [`flow-data.md`](docs/diagrams/flow-data.md) — 本人の言葉がどこへ流れ、どこに出るか
+
+## ディレクトリ構成
+
+```
+app/          Next.js App Router の画面（ホーム・記録・相談・手紙・設定ほか）と API Routes（app/api/）
+components/   UI コンポーネント（気分・記録・相談・手紙・ホーム・設定・演出など、画面ごと）
+lib/
+  ├── ai/     Claude / OpenAI の呼び出し（プロンプト組み立て・手紙・検索用メタ・RAG）
+  ├── api/    API の共通部（App Check・レート制限・NDJSON ストリーム・API の契約）
+  ├── auth/   ゲストから Google への連携
+  ├── db/     Firestore アクセス（Admin SDK・型・チャンク・手紙・気分）
+  ├── logic/  純粋ロジック（チャンク分割・危機判定・類似度・日付境界・ストリーク ほか）
+  └── ui/     画面側の小さな仕組み（下書き・フィードバック・演出）
+proxy.ts      /api/* のレート制限と App Check
+firestore.rules  クライアントからの直接アクセスを全拒否
+scripts/      運用スクリプト（バックアップ・チャンク移行・ゲスト掃除・継続率）
+docs/         設計・仕様・運用手順（地図は docs/README.md）
+mockups/      旧 UI の凍結モック
+```
+
+## ドキュメントの地図
+
+`docs/` の全ファイルの一覧と、読む順番（審査員向け・開発者向け・AI の仕様を知りたい人向け）は [`docs/README.md`](docs/README.md) にあります。
 
 ## セットアップ
 
@@ -103,11 +148,11 @@ Firebase（クライアント + Admin SDK）、Claude API、OpenAI API の認証
 - **バックエンド**: Next.js API Routes + Firebase Admin SDK
 - **AI**: Claude API — 深掘り質問・検索用メタ = Haiku 4.5 / 相談・週の手紙 = Opus 4.8（adaptive thinking・ストリーミング・prompt caching）
 - **RAG**: OpenAI text-embedding-3-small ＋ Firestore のベクトル検索（`chunks`）で、本人の言葉のチャンクから過去記録の上位5件を探す
-- **データ**: Firebase Firestore（東京リージョン・本人のみアクセス可のセキュリティルール）
+- **データ**: Firebase Firestore（東京リージョン）。ブラウザからの直接アクセスは `firestore.rules` で全拒否し、すべて API Routes（Admin SDK）経由
 - **認証**: Firebase Authentication（起動時に自動で匿名ゲスト。設定から `linkWithPopup` で Google と連携すると、データごと本登録に昇格）
 - **ボット対策**: Firebase App Check（reCAPTCHA Enterprise）＋ IP レート制限（Upstash Redis）。`proxy.ts` で検証（手順は [`docs/SECURITY-SETUP.md`](docs/SECURITY-SETUP.md)）
 - **デプロイ**: Vercel（`git push` で自動デプロイ）＋独自ドメイン
-- **テスト**: Vitest（`lib/` のロジックと API の契約・491件）
+- **テスト**: Vitest（47ファイル・491テスト。`lib/` のロジックと API の契約）
 
 ## 開発コマンド
 
@@ -125,12 +170,11 @@ npm run backup   # Firestore 全データをローカル JSON にバックアッ
 
 ## 詳細資料
 
-- **技術設計・実装詳細**（モデル選定・データモデル・フロー） → [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- **UI/UX デザイン仕様** → [`docs/DESIGN-mindwind.md`](docs/DESIGN-mindwind.md)（見た目の正は [`docs/prototype/ui-v5.html`](docs/prototype/ui-v5.html)）
-- **AI の最高規範** → [`docs/AI-CONSTITUTION.md`](docs/AI-CONSTITUTION.md)
-- **開発者向け情報**（セットアップ・エラー処理・スコープ） → [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
-- **AI メンターの人格・プロンプト（本番）** → [`docs/mentor-prompt.md`](docs/mentor-prompt.md)
-- **旧 UI のモック（凍結）** → [`mockups/`](mockups/)
+- 技術設計 → [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- UI/UX 仕様 → [`docs/DESIGN-mindwind.md`](docs/DESIGN-mindwind.md)
+- AI の最高規範 → [`docs/AI-CONSTITUTION.md`](docs/AI-CONSTITUTION.md)
+- 開発者向け情報 → [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
+- AI メンターの人格・プロンプト（本番） → [`docs/mentor-prompt.md`](docs/mentor-prompt.md)
 
 ---
 
