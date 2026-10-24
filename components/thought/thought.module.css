@@ -28,6 +28,7 @@
 }
 
 .sheet {
+  position: relative;
   width: 100%;
   min-height: 0;
   max-height: calc(100dvh - 220px);
@@ -168,4 +169,9 @@
   gap: 26px;
   margin-top: 24px;
   padding-bottom: 26px;
+}
+
+/* ボタンが4つ並ぶとき（一言の「あとから深掘りする」が加わる） */
+.buttons.many {
+  gap: 14px;
 }

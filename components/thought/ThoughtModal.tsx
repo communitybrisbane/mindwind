@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { canDeepenLater, useQuickDeepDive } from "@/components/record/QuickDeepDive";
+import { SealHoldButton, SealStamp } from "@/components/record/SealHold";
 import { Bead, BeadSlot } from "@/components/ui/Bead";
 import { Dialog } from "@/components/ui/Dialog";
 import { Paper } from "@/components/ui/Paper";
@@ -48,6 +50,7 @@ export type ThoughtModalProps = {
  * 保存済みの記録のモーダル（記録タブのしおり・風の記録の日付から開く）。
  * 少し傾いた紙に、日付（緑の波線）・本人の文章・深掘りの問いと答え。下に とじる／編集／削除。
  * 編集は本文と深掘りの答えを直して PUT /api/thoughts/[id]。削除は確認ダイアログで長押し（完全削除）。
+ * 一言（quick）でまだ深掘りが無い記録は「あとから深掘りする」で1問をもらい、答えを長押しの封で足せる（タスク65）。
  */
 export default function ThoughtModal(props: ThoughtModalProps) {
   // 開くたびに中の状態（めくり位置・編集中）を作り直す
@@ -124,17 +127,27 @@ function ThoughtModalBody({
   const raw = useLimitedInput({ max: isQuick ? MAX_QUICK_LENGTH : MAX_DIARY_LENGTH, label: isQuick ? "一言は" : "日記は" });
   const ans = useLimitedInput({ max: MAX_DIARY_LENGTH, label: "答えは" });
 
+  function applyUpdate(updated: ThoughtSummary) {
+    setLocal((m) => ({ ...m, [updated.id]: updated }));
+    onUpdated?.(updated);
+    onSaved?.(updated);
+  }
+
+  const deep = useQuickDeepDive({ user, thought, onSaved: applyUpdate });
+  const deepening = deep.active;
+
   // Esc で閉じる（確認ダイアログが出ている間はダイアログ側が閉じる）
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !confirmDelete) {
         if (editing) setEditing(false);
+        else if (deepening) deep.cancel();
         else onClose();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [confirmDelete, editing, onClose]);
+  }, [confirmDelete, editing, deepening, deep, onClose]);
 
   const dayKey = thought?.date ?? date ?? "";
   const heading = dayKey ? `${formatDateHeading(tokyoDayStart(dayKey))}の記録` : "";
@@ -189,9 +202,7 @@ function ThoughtModalBody({
         deepDiveAnswer: nextAnswer,
         title,
       };
-      setLocal((m) => ({ ...m, [thought.id]: updated }));
-      onUpdated?.(updated);
-      onSaved?.(updated);
+      applyUpdate(updated);
       setEditing(false);
       sound("seal");
       showToast("記録を直したよ。");
@@ -231,7 +242,7 @@ function ThoughtModalBody({
   const empty = !loading && !thought;
 
   return (
-    <div className={styles.veil} onClick={() => !editing && onClose()} role="presentation">
+    <div className={styles.veil} onClick={() => !editing && !deepening && onClose()} role="presentation">
       <div className={styles.stage} onClick={(e) => e.stopPropagation()}>
         <Paper as="article" role="dialog" aria-modal aria-label={heading || "記録"} className={styles.sheet}>
           {heading && <div className={styles.date}>{heading}</div>}
@@ -252,17 +263,33 @@ function ThoughtModalBody({
                 editing={editing}
                 rawField={{ value: raw.value, onChange: raw.onChange, shaking: raw.shaking, counter: raw.counter }}
                 answerField={{ value: ans.value, onChange: ans.onChange, shaking: ans.shaking, counter: ans.counter }}
+                deepen={
+                  deepening
+                    ? {
+                        question: deep.question,
+                        readOnly: deep.phase === "sealing",
+                        answerField: {
+                          value: deep.answer.value,
+                          onChange: deep.answer.onChange,
+                          shaking: deep.answer.shaking,
+                          counter: deep.answer.counter,
+                        },
+                      }
+                    : undefined
+                }
               />
             </div>
           )}
 
-          {error && (
+          {(error || deep.error) && (
             <p className={styles.error} role="alert">
-              ※ {error}
+              ※ {error || deep.error}
             </p>
           )}
 
-          {list && list.length > 1 && !editing && (
+          {deepening && thought && <SealStamp mood={thought.mood ?? null} playing={deep.phase === "sealing"} />}
+
+          {list && list.length > 1 && !editing && !deepening && (
             <div className={styles.pager}>
               <RoundButton
                 variant="ink"
@@ -285,8 +312,23 @@ function ThoughtModalBody({
           )}
         </Paper>
 
-        <div className={styles.buttons}>
-          {editing ? (
+        <div className={[styles.buttons, !editing && !deepening && canDeepenLater(thought) ? styles.many : ""].filter(Boolean).join(" ")}>
+          {deepening ? (
+            <>
+              <RoundButton
+                icon="arrow"
+                label="とばす"
+                aria-label="質問をとばす"
+                size={62}
+                onClick={() => {
+                  sound("tick");
+                  deep.cancel();
+                }}
+                disabled={deep.phase === "sealing"}
+              />
+              <SealHoldButton onSeal={() => void deep.seal()} disabled={deep.phase !== "answer"} />
+            </>
+          ) : editing ? (
             <>
               <RoundButton icon="undo" label="やめる" aria-label="直すのをやめる" size={62} onClick={() => setEditing(false)} disabled={busy} />
               <RoundButton variant="green" icon="check" label="保存する" aria-label="直した記録を保存する" size={72} onClick={() => void saveEdit()} disabled={busy} />
@@ -308,6 +350,17 @@ function ThoughtModalBody({
           ) : (
             <>
               <RoundButton icon="check" label="とじる" aria-label="とじる" size={62} onClick={onClose} />
+              {canDeepenLater(thought) && (
+                <RoundButton
+                  variant="green"
+                  icon="pencil"
+                  label="深掘りする"
+                  aria-label="あとから深掘りする"
+                  size={62}
+                  onClick={() => void deep.start()}
+                  disabled={busy}
+                />
+              )}
               <RoundButton icon="pencil" label="なおす" aria-label="この記録を直す" size={62} onClick={startEdit} disabled={!thought || busy} />
               <RoundButton
                 variant="warn"
