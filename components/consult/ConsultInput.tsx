@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, type KeyboardEvent } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Paper } from "@/components/ui/Paper";
 import { LimitCounter } from "@/components/ui/LimitCounter";
@@ -8,7 +8,7 @@ import { showToast } from "@/components/ui/Toast";
 import { MAX_CONSULT_MESSAGE } from "@/lib/logic/limits";
 import { sound, vibrate } from "@/lib/ui/feedback";
 import { useLimitedInput } from "@/lib/ui/useLimitedInput";
-import { getRecognitionCtor, type Recognition } from "@/lib/ui/speechRecognition";
+import { useRecognition } from "@/lib/ui/useRecognition";
 import styles from "./consult.module.css";
 
 /** 1行の高さ（px）と、中でスクロールに切り替わる高さ（5行） */
@@ -46,9 +46,6 @@ export default function ConsultInput({
   });
   const taRef = useRef<HTMLTextAreaElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
-  const [recording, setRecording] = useState(false);
-  const recRef = useRef<Recognition | null>(null);
-  const recordingRef = useRef(false);
   const valueRef = useRef(value);
   const onResizeRef = useRef(onResize);
   useEffect(() => {
@@ -77,80 +74,31 @@ export default function ConsultInput({
     return () => ro.disconnect();
   }, []);
 
-  // 外れたら録音を止める
-  useEffect(
-    () => () => {
-      recordingRef.current = false;
-      recRef.current?.stop();
-    },
-    [],
-  );
-
-  function stopRecording() {
-    recordingRef.current = false;
-    setRecording(false);
-    recRef.current?.stop();
-  }
-
-  function startRecording() {
-    const Ctor = getRecognitionCtor();
-    if (!Ctor) {
-      showToast("このブラウザでは音声で書けません");
-      return;
-    }
-    const rec = new Ctor();
-    rec.lang = "ja-JP";
-    rec.continuous = true;
-    rec.interimResults = false;
-    let fatal = false;
-    rec.onresult = (e) => {
-      let text = "";
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const r = e.results[i];
-        if (r.isFinal) text += r[0].transcript;
-      }
+  // 外れたら録音を止める（useRecognition の中で行う）
+  const {
+    recording,
+    start: startRecording,
+    stop: stopRecording,
+    isRecording,
+  } = useRecognition({
+    interimResults: false,
+    onUnsupported: () => showToast("このブラウザでは音声で書けません"),
+    onResult: ({ finals }) => {
+      const text = finals.join("");
       if (!text) return;
       const next = valueRef.current + text;
       if (next.length > MAX_CONSULT_MESSAGE) {
         showToast(`相談は${MAX_CONSULT_MESSAGE}文字までだよ`);
       }
       setValue(next);
-    };
-    rec.onerror = (e) => {
-      const code = e?.error ?? "";
-      if (code === "no-speech" || code === "aborted") return;
-      fatal = true;
-    };
-    // iOS Safari は連続認識が勝手に止まるので、録音中のあいだは再開する
-    rec.onend = () => {
-      if (fatal) {
-        recordingRef.current = false;
-        setRecording(false);
-        showToast("マイクが使えませんでした");
-        return;
-      }
-      if (!recordingRef.current) return;
-      try {
-        rec.start();
-      } catch {
-        recordingRef.current = false;
-        setRecording(false);
-      }
-    };
-    recRef.current = rec;
-    try {
-      rec.start();
-      recordingRef.current = true;
-      setRecording(true);
-    } catch {
-      showToast("マイクが使えませんでした");
-    }
-  }
+    },
+    onError: () => showToast("マイクが使えませんでした"),
+  });
 
   async function submit() {
     const text = value.trim();
     if (!text || disabled || busy) return;
-    if (recordingRef.current) stopRecording();
+    if (isRecording()) stopRecording();
     vibrate(12);
     sound("pop");
     setValue("");
