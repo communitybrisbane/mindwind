@@ -244,6 +244,7 @@ function ThoughtModalBody({
 
   const loading = list === null;
   const empty = !loading && !thought;
+  const writeLabel = date && date >= tokyoDateKey(new Date()) ? "今日の日記を書く" : "この日の日記を書く";
 
   return (
     <div className={styles.veil} onClick={() => !editing && !deepening && onClose()} role="presentation">
@@ -265,19 +266,14 @@ function ThoughtModalBody({
               <SavedSheet
                 thought={thought}
                 editing={editing}
-                rawField={{ value: raw.value, onChange: raw.onChange, shaking: raw.shaking, counter: raw.counter }}
-                answerField={{ value: ans.value, onChange: ans.onChange, shaking: ans.shaking, counter: ans.counter }}
+                rawField={raw}
+                answerField={ans}
                 deepen={
                   deepening
                     ? {
                         question: deep.question,
                         readOnly: deep.phase === "sealing",
-                        answerField: {
-                          value: deep.answer.value,
-                          onChange: deep.answer.onChange,
-                          shaking: deep.answer.shaking,
-                          counter: deep.answer.counter,
-                        },
+                        answerField: deep.answer,
                       }
                     : undefined
                 }
@@ -344,8 +340,8 @@ function ThoughtModalBody({
                 <RoundButton
                   variant="green"
                   icon="book"
-                  label={date >= tokyoDateKey(new Date()) ? "今日の日記を書く" : "この日の日記を書く"}
-                  aria-label={date >= tokyoDateKey(new Date()) ? "今日の日記を書く" : "この日の日記を書く"}
+                  label={writeLabel}
+                  aria-label={writeLabel}
                   size={72}
                   onClick={writeThatDay}
                 />
