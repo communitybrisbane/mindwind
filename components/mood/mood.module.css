@@ -494,3 +494,38 @@
     opacity: 0;
   }
 }
+
+/* 一言の危機対応（CrisisNote・PLAN 85）。紙のダイアログの本文 */
+.crisisText p {
+  margin: 0 0 8px;
+}
+.crisisLines {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.crisisLines li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  border-bottom: 1px dashed rgba(70, 90, 120, 0.3);
+  padding-bottom: 6px;
+}
+.crisisName {
+  font-size: 14.5px;
+}
+.crisisTel {
+  font-family: var(--font-mincho);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  color: #2e5a44;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

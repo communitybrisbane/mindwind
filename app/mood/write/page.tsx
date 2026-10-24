@@ -4,6 +4,8 @@
 // 長押しで封をして保存：POST /api/thoughts { rawText, kind: "quick" } → 封蝋（今日の玉の風の絵）→ /home。
 // 空・2文字未満はトースト「一言だけ書いてから、長押ししてね」で保存しない。上限は limits の MAX_QUICK_LENGTH。
 // 本文は書いたまま送る（AI は触らない）。玉が今週の便箋へ飛ぶ演出はホーム（72）が sessionStorage を見て行う。
+// 危機対応（PLAN 85）：サーバーが crisis: true を返したら、保存はできているので、紙のモーダル（CrisisNote）で
+// 共感の一言と相談窓口を案内してから、ボタンでホームへ進む。
 
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -14,9 +16,10 @@ import LimitCounter from "@/components/ui/LimitCounter";
 import { Paper } from "@/components/ui/Paper";
 import { RoundButton } from "@/components/ui/RoundButton";
 import { showToast } from "@/components/ui/Toast";
+import { CrisisNote } from "@/components/mood/CrisisNote";
 import { WaxSeal, moodDateLabel } from "@/components/mood/Postmark";
 import styles from "@/components/mood/mood.module.css";
-import type { ApiError } from "@/lib/api/contracts";
+import type { ApiError, CreateThoughtResponse } from "@/lib/api/contracts";
 import { authedJson, useUser } from "@/lib/db/useUser";
 import { MAX_QUICK_LENGTH } from "@/lib/logic/limits";
 import { MOODS } from "@/lib/logic/moods";
@@ -57,6 +60,7 @@ function QuickWrite() {
   const busyRef = useRef(false);
   const [sealed, setSealed] = useState(false);
   const [sparks, setSparks] = useState<Spark[]>([]);
+  const [crisis, setCrisis] = useState(false);
 
   // 開いたら書けるように（キーボードが上がる）
   useEffect(() => {
@@ -116,6 +120,7 @@ function QuickWrite() {
         const data = (await res.json().catch(() => null)) as ApiError | null;
         throw new Error(errorMessage(data?.error));
       }
+      const saved = (await res.json().catch(() => null)) as (CreateThoughtResponse & { crisis?: boolean }) | null;
       await wait;
       if (mood !== null) {
         try {
@@ -123,6 +128,11 @@ function QuickWrite() {
         } catch {
           // 演出が無くなるだけ
         }
+      }
+      // 保存はできている。危機の言葉があったら、窓口を案内してからホームへ（CrisisNote のボタンで進む）
+      if (saved?.crisis === true) {
+        setCrisis(true);
+        return;
       }
       router.push("/home");
     } catch (e) {
@@ -196,6 +206,7 @@ function QuickWrite() {
           />
         ))}
       </div>
+      <CrisisNote open={crisis} onDone={() => router.push("/home")} />
     </Desk>
   );
 }

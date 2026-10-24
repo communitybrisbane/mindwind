@@ -6,6 +6,7 @@ import { prepareChunks, writeChunks } from "@/lib/db/chunks";
 import { refreshThoughtMeta } from "@/lib/db/chunkStore";
 import { consumeQuota } from "@/lib/db/usage";
 import { resolveRecordDate } from "@/lib/logic/backdate";
+import { detectCrisis } from "@/lib/logic/crisis";
 import { tokyoDateKey } from "@/lib/logic/date";
 import { recordLimitFor } from "@/lib/logic/limits";
 import { toMood } from "@/lib/logic/quickRecord";
@@ -51,6 +52,8 @@ export async function GET(req: NextRequest) {
  * lib/logic/chunk.ts でチャンクに分けて、チャンクごとの embedding を users/{uid}/chunks に書く。
  * 成形（AI）は使わない。タイトルは本文の先頭から自動。
  * full は保存のあと after() で検索用メタを裏で作り、チャンクの embedding を作り直す（PLAN 57。失敗しても保存は成功のまま）。
+ * quick は AI を通らないので、危機の言葉を見つけたら（lib/logic/crisis.ts）保存は成功させたうえで crisis: true を返し、
+ * 画面が窓口を案内する（PLAN 85・憲法第8条）。
  */
 export async function POST(req: NextRequest) {
   const authInfo = await verifyUserInfo(req.headers.get("authorization"));
@@ -116,7 +119,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "date_taken" }, { status: 409 });
     }
     if (kind === "full") after(() => refreshThoughtMeta(uid, docRef.id, isGuest));
-    const res: CreateThoughtResponse = { id: docRef.id, title, date };
+    const res: CreateThoughtResponse & { crisis?: true } = {
+      id: docRef.id,
+      title,
+      date,
+      ...(kind === "quick" && detectCrisis(rawText) ? { crisis: true as const } : {}),
+    };
     return NextResponse.json(res);
   } catch (e) {
     console.error("save thought failed:", e);
