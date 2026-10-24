@@ -50,8 +50,6 @@ export const emptyProfile: Profile = {
 /** 記録の種類：full＝記録タブ（日記＋深掘り）／quick＝回転盤のあとの「一言」 */
 export type ThoughtKind = "full" | "quick";
 
-export const THOUGHT_KINDS: readonly ThoughtKind[] = ["full", "quick"];
-
 /**
  * users/{uid}/thoughts/{id}。本人の文章は AI が書き換えない。
  * 旧 6 項目（event…values）と旧 embedding は移行完了まで残る（型には含めない。読むときは unknown 扱い）。
