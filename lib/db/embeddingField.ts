@@ -1,11 +1,5 @@
-// embedding の保存形式（サーバー専用）。Firestore のベクトル型で保存すると findNearest（Vector Search）が使える。
+// embedding の読み取り（サーバー専用）。書くときは FieldValue.vector（Vector Search の findNearest 用）。
 // 移行前の記録は number 配列のまま残っているため、読むときは両方を受け付ける
-import { FieldValue } from "firebase-admin/firestore";
-
-/** 書き込み用：Firestore のベクトル型にする */
-export function toStoredEmbedding(embedding: number[]) {
-  return FieldValue.vector(embedding);
-}
 
 /** 読み取り用：ベクトル型（toArray を持つ）と旧形式の number 配列のどちらも number[] にする */
 export function readEmbedding(value: unknown): number[] | null {
