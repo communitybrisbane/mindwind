@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { showToast } from "@/components/ui/Toast";
+import { thoughtUpdateErrorMessage } from "@/lib/ui/thoughtUpdateError";
 import type { ApiError, UpdateThoughtRequest, UpdateThoughtResponse } from "@/lib/api/contracts";
 import type { ThoughtSummary } from "@/lib/db/types";
 import { authedJson, type useUser } from "@/lib/db/useUser";
@@ -147,10 +148,7 @@ export function useQuickDeepDive({
       const res = await authedJson(user, "PUT", `/api/thoughts/${thought.id}`, body);
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as ApiError | null;
-        if (data?.error === "conflict") throw new Error("別の画面で先にこの記録が直されたみたい。開き直してから、もう一度試してね。");
-        if (data?.error === "too_long") throw new Error(`答えは${MAX_DIARY_LENGTH}文字までだよ`);
-        if (res.status === 404) throw new Error("この記録は見つかりませんでした。");
-        throw new Error("保存できませんでした。少し待ってからもう一度試してください。");
+        throw new Error(thoughtUpdateErrorMessage(res.status, data, { too_long: `答えは${MAX_DIARY_LENGTH}文字までだよ` }));
       }
       const { title, crisis } = (await res.json()) as UpdateThoughtResponse;
       await wait;
