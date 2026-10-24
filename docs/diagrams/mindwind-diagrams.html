@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MindWind 設計図（ER・画面遷移・シーケンス・データ遷移・構成）</title>
+<style>
+:root{--bg:#fff;--fg:#1c1c1e;--sub:#5b5b60;--card:#f6f6f8;--line:#e2e2e6}
+@media (prefers-color-scheme:dark){:root{--bg:#16161a;--fg:#ececf0;--sub:#a0a0a8;--card:#202026;--line:#34343c}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 -apple-system,"Hiragino Sans",sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:24px} h2{font-size:20px;margin-top:0} h3,h4{font-size:16px;color:var(--sub)}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:20px 0;overflow-x:auto}
+.mermaid{background:transparent;text-align:center}
+p,li{color:var(--fg)}
+</style></head>
+<body><main><h1>MindWind 設計図（ER・画面遷移・シーケンス・データ遷移・構成）</h1>
+<section><h2>ER図：Firestore のデータモデル</h2>
+<p>すべてのデータは `users/{uid}` の下にある。クライアントから Firestore へ直接は読み書きせず（`firestore.rules` は全拒否）、API Routes が Admin SDK で読み書きする。</p>
+<p>`PK` は文書 ID、`FK` は別の文書 ID を指す項目。Firestore は外部キー制約を持たないので、関係はアプリが守る。</p>
+<pre class="mermaid">erDiagram
+    USERS ||--o{ THOUGHTS : &quot;1人が複数の記録を持つ&quot;
+    USERS ||--o{ CHUNKS : &quot;検索用の断片を持つ&quot;
+    USERS ||--o{ MOODS : &quot;1日1つの気分を持つ&quot;
+    USERS ||--o{ LETTERS : &quot;週ごとに1通の手紙を持つ&quot;
+    USERS ||--o{ CHATS : &quot;相談スレッドを持つ&quot;
+    USERS ||--o{ USAGE : &quot;1日の利用回数を持つ&quot;
+    THOUGHTS ||--|{ CHUNKS : &quot;本文を分けて作る(1記録に1つ以上)&quot;
+    CHATS ||--o{ MESSAGES : &quot;スレッドの発言&quot;
+    MESSAGES }o--o{ THOUGHTS : &quot;refs で参照(スナップショット)&quot;
+    LETTERS }o--o{ THOUGHTS : &quot;refs で引用(スナップショット)&quot;
+
+    USERS {
+        string uid PK &quot;Firebase Auth の uid(匿名も同じ)&quot;
+        map profile &quot;nickname activity stage goal hideStreak&quot;
+    }
+    THOUGHTS {
+        string id PK
+        string date &quot;YYYY-MM-DD(Asia/Tokyo)&quot;
+        string rawText &quot;本人の文章そのまま&quot;
+        string deepDiveQuestion &quot;深掘りの質問(なければ空)&quot;
+        string deepDiveAnswer &quot;深掘りの答え(なければ空)&quot;
+        string title &quot;本文の先頭から自動(20字まで)&quot;
+        string kind &quot;full か quick&quot;
+        string mood &quot;quick のときの気分(MoodId)&quot;
+        timestamp createdAt
+    }
+    CHUNKS {
+        string id PK &quot;thoughtId_order&quot;
+        string thoughtId FK
+        string date
+        string text &quot;本人の言葉そのまま(分けるだけ)&quot;
+        string source &quot;diary か deepdive&quot;
+        int order &quot;0始まり&quot;
+        string meta &quot;検索用の1行(画面に出さない)&quot;
+        vector embedding &quot;1536次元&quot;
+        timestamp createdAt
+    }
+    MOODS {
+        string date PK &quot;YYYY-MM-DD&quot;
+        string mood &quot;追い風 そよ風 凪 向かい風 嵐&quot;
+        timestamp updatedAt
+    }
+    LETTERS {
+        string weekKey PK &quot;その週の月曜 YYYY-MM-DD&quot;
+        string from &quot;週の月曜&quot;
+        string to &quot;週の日曜&quot;
+        string status &quot;generating ready failed&quot;
+        array blocks &quot;text か quote の並び&quot;
+        array refs &quot;thoughtId date quote deleted&quot;
+        array moods &quot;月から日の7日分&quot;
+        int recordDays &quot;記録があった日数&quot;
+        string model
+        timestamp createdAt
+        timestamp readAt &quot;未読なら null&quot;
+    }
+    CHATS {
+        string id PK
+        string title &quot;最初の質問の先頭25字&quot;
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    MESSAGES {
+        string id PK
+        string role &quot;user か assistant&quot;
+        string content
+        array refs &quot;id date title quote deleted&quot;
+        timestamp createdAt
+    }
+    USAGE {
+        string dateKey PK &quot;YYYY-MM-DD&quot;
+        int deepdive
+        int consult
+        int record
+        int letter
+        int meta
+    }</pre>
+<p>推測：なし。型は `lib/db/types.ts`、保存先は各 API Route のコードから起こした。</p>
+<p>補足：</p>
+<ul>
+<li>`THOUGHTS` には、移行完了まで旧6項目（event・thinking・action・reason・emotion・values）と旧 embedding が残る。図からは省いた。</li>
+<li>記録を消すと、そのチャンクも消え、手紙・相談の `refs` は `deleted: true` で引用を伏せる（憲法第13条）。</li>
+<li>下書きはサーバーに送らず、端末の localStorage だけにある。</li>
+</ul></section>
+<section><h2>画面遷移図①：起動と気分の流れ</h2>
+<p>アプリを開いてから、ホームに着くまで。1日の最初だけ気分の回転盤を通る。矢印のラベルは「押したもの／起きたこと」。</p>
+<pre class="mermaid">flowchart TD
+    START([&quot;アプリを開く&quot;]) --&gt; SPLASH[&quot;/ スプラッシュ&quot;]
+    SPLASH --&gt;|&quot;タップ・今日の気分がまだ無い(1日の最初)&quot;| WHEEL[&quot;/mood 気分の回転盤&quot;]
+    SPLASH --&gt;|&quot;タップ・今日の気分がある&quot;| HOME[&quot;/home ホーム&quot;]
+    SPLASH --&gt;|&quot;ログインに失敗&quot;| WHEEL
+    WHEEL --&gt;|&quot;玉を決める(風の演出)&quot;| CHOOSE{&quot;どうする?&quot;}
+    CHOOSE --&gt;|&quot;一言を残す&quot;| QUICK[&quot;/mood/write 一言&quot;]
+    CHOOSE --&gt;|&quot;日記を書く&quot;| REC[&quot;/record 記録&quot;]
+    CHOOSE --&gt;|&quot;今日はここまで&quot;| HOME
+    QUICK --&gt;|&quot;残す&quot;| HOME
+    QUICK --&gt;|&quot;危機の言葉あり&quot;| CRISIS[&quot;窓口の案内ダイアログ&quot;]
+    CRISIS --&gt;|&quot;丸ボタン&quot;| HOME</pre>
+<p>推測：「ログインに失敗 → 回転盤」は `Splash.tsx` の `authError` の分岐から起こした。「1日の最初」は端末の記録（localStorage）と今日の気分の有無で決まる。</p></section>
+<section><h2>画面遷移図②：3タブと、まわりの画面</h2>
+<p>ホーム・記録・相談の3タブは、下のタブバーで行き来する。そこから出ていく画面と、戻る先を示す。</p>
+<pre class="mermaid">flowchart TD
+    subgraph TABS[&quot;3タブ(下のタブバー・行き来できる)&quot;]
+        HOME[&quot;/home ホーム&quot;]
+        REC[&quot;/record 記録&quot;]
+        SEARCH[&quot;/search 相談&quot;]
+    end
+
+    HOME --&gt;|&quot;歯車&quot;| SETTINGS[&quot;/settings 設定&quot;]
+    HOME --&gt;|&quot;今日の玉をタップ&quot;| WHEEL[&quot;/mood 回転盤&quot;]
+    HOME --&gt;|&quot;手紙カード&quot;| LETTER[&quot;/letter 週の手紙&quot;]
+    HOME --&gt;|&quot;再会カードで相談する&quot;| SEARCH
+    HOME --&gt;|&quot;日付をタップして記録を開く&quot;| REC
+
+    REC --&gt;|&quot;長押しで保存&quot;| HOME
+    REC --&gt;|&quot;危機の言葉あり&quot;| CRISIS[&quot;窓口の案内&quot;]
+    CRISIS --&gt;|&quot;丸ボタン&quot;| HOME
+    REC --&gt;|&quot;ゲストの上限&quot;| SETTINGS
+    SEARCH --&gt;|&quot;連携の案内&quot;| SETTINGS
+
+    LETTER --&gt;|&quot;とじる&quot;| HOME
+    LETTER --&gt;|&quot;相談する(下書きつき)&quot;| SEARCH
+    LETTER --&gt;|&quot;過去の週を選ぶ&quot;| LETTER
+
+    SETTINGS --&gt;|&quot;戻る&quot;| HOME
+    SETTINGS --&gt;|&quot;Googleと連携&quot;| SETTINGS
+    SETTINGS --&gt;|&quot;ログインし直す・退会&quot;| SPLASH[&quot;/ スプラッシュ&quot;]
+    SETTINGS --&gt;|&quot;規約・プライバシー&quot;| LEGAL[&quot;/terms /privacy&quot;]
+    LEGAL --&gt;|&quot;設定へ&quot;| SETTINGS</pre>
+<p>推測：「ログインし直す・退会」の行き先は `AccountCard.tsx` の `router.replace(&quot;/&quot;)` による。`/onboarding` は `/settings` へ転送するだけ、`/dev-login` は開発用なので省いた。</p></section>
+<section><h2>データ遷移図：本人の言葉が、どこへ流れ、どこに出るか</h2>
+<p>「本人の言葉」を一字も変えずに通す経路と、AI に渡してよいもの・渡さないものを分けて示す。</p>
+<pre class="mermaid">flowchart LR
+    IN([&quot;本人が書く&lt;br/&gt;日記 / 深掘りの答え / 一言&quot;]) --&gt; RAW[&quot;thoughts.rawText など&lt;br/&gt;(そのまま保存)&quot;]
+    MOODIN([&quot;気分の玉を選ぶ&quot;]) --&gt; MOODS[&quot;moods/日付&quot;]
+
+    RAW --&gt;|&quot;分けるだけ(書き換えない)&quot;| CHK[&quot;chunks.text&quot;]
+    RAW --&gt;|&quot;裏でAI(Haiku)が1行を作る&quot;| META[&quot;chunks.meta&lt;br/&gt;(画面に出さない)&quot;]
+    MOODS --&gt;|&quot;quick の固定1行&quot;| META
+    CHK --&gt; EMB[&quot;chunks.embedding&lt;br/&gt;(text + meta)&quot;]
+    META --&gt; EMB
+
+    EMB --&gt;|&quot;ベクトル検索&quot;| CONSULT[&quot;相談の回答&lt;br/&gt;(Opus)&quot;]
+    CHK --&gt;|&quot;本人の言葉 + 日付だけ渡す&quot;| CONSULT
+    RAW --&gt;|&quot;今週分を日付つきで渡す&quot;| LETTER[&quot;週の手紙&lt;br/&gt;(Opus)&quot;]
+    MOODS --&gt;|&quot;表示用に保存するだけ(AIには渡さない)&quot;| LETTER
+
+    CONSULT --&gt; MSG[&quot;chats/messages&lt;br/&gt;(RAGには入れない)&quot;]
+    LETTER --&gt; LDOC[&quot;letters/週&lt;br/&gt;(RAGには入れない)&quot;]
+
+    RAW --&gt; SCREEN[&quot;画面に表示&lt;br/&gt;(本人の文章そのまま)&quot;]
+    MSG --&gt; SCREEN
+    LDOC --&gt; SCREEN
+    MOODS --&gt; SCREEN
+
+    DEL([&quot;記録を削除&quot;]) -.-&gt;|&quot;chunks も削除&quot;| CHK
+    DEL -.-&gt;|&quot;引用を伏せる(deleted)&quot;| MSG
+    DEL -.-&gt;|&quot;引用を伏せる(deleted)&quot;| LDOC</pre>
+<p>推測：なし。`docs/AI-CONSTITUTION.md`（第4・12・13条）・`docs/ARCHITECTURE.md`・各 API Route から起こした。</p>
+<p>補足：AI に渡さないもの＝気分・メタ・題・自動の呼び名。危機の言葉の判定（`lib/logic/crisis.ts`）はAIを通らない経路にも掛かる（図には入れていない）。</p></section>
+<section><h2>構成図：システム全体</h2>
+<p>ブラウザはFirestoreに直接つながない。すべて API Routes（Admin SDK）を通る。</p>
+<pre class="mermaid">flowchart LR
+    subgraph Client[&quot;ブラウザ / PWA&quot;]
+        UI[&quot;Next.js 画面&lt;br/&gt;(3タブ・回転盤・手紙)&quot;]
+        LS[&quot;localStorage&lt;br/&gt;(下書き・表示設定)&quot;]
+        FA[&quot;Firebase Auth&lt;br/&gt;(自動で匿名ログイン)&quot;]
+        AC[&quot;App Check&lt;br/&gt;(reCAPTCHA Enterprise)&quot;]
+    end
+
+    subgraph Vercel[&quot;Vercel(Next.js 16)&quot;]
+        PX[&quot;proxy.ts&lt;br/&gt;IP回数制限 + App Check検証&quot;]
+        API[&quot;API Routes&lt;br/&gt;thoughts deepdive consult&lt;br/&gt;letters moods mood&lt;br/&gt;profile chats account&quot;]
+        LIB[&quot;lib/ai ・ lib/db ・ lib/logic&quot;]
+    end
+
+    subgraph Google[&quot;Google / Firebase&quot;]
+        AUTH[&quot;Firebase Authentication&quot;]
+        FS[(&quot;Firestore&lt;br/&gt;users/uid 以下&quot;)]
+        RC[&quot;reCAPTCHA Enterprise&quot;]
+    end
+
+    UP[(&quot;Upstash Redis&lt;br/&gt;回数の記録&quot;)]
+    ANT[&quot;Anthropic API&lt;br/&gt;Haiku 4.5 / Opus 4.8&quot;]
+    OAI[&quot;OpenAI API&lt;br/&gt;text-embedding-3-small&quot;]
+
+    UI --&gt; FA
+    FA --&gt; AUTH
+    UI --&gt; AC
+    AC --&gt; RC
+    UI --&gt; LS
+    UI --&gt;|&quot;トークン + App Checkトークン&quot;| PX
+    PX --&gt; UP
+    PX --&gt; API
+    API --&gt; LIB
+    LIB --&gt;|&quot;IDトークン検証&quot;| AUTH
+    LIB --&gt;|&quot;Admin SDK&quot;| FS
+    LIB --&gt; ANT
+    LIB --&gt; OAI</pre>
+<p>推測：なし。`docs/ARCHITECTURE.md`・`docs/SECURITY-SETUP.md`・`proxy.ts` から起こした。</p>
+<p>補足：App Check は現在 `monitor`（検証は記録するだけで拒否しない）。Firestore のセキュリティルールは全拒否。</p></section>
+<section><h2>シーケンス図：記録の保存（日記 → 深掘り → 保存 → 裏でメタ）</h2>
+<p>本人の文章は書き換えず、そのまま `thoughts` に保存する。検索用の1行メタは、保存の応答を返したあとに裏で作る。</p>
+<pre class="mermaid">sequenceDiagram
+    actor U as 本人
+    participant C as 画面(記録タブ)
+    participant P as proxy.ts
+    participant API as API Routes
+    participant DB as Firestore
+    participant O as OpenAI(embedding)
+    participant H as Claude Haiku 4.5
+
+    U-&gt;&gt;C: 日記を書く(端末に下書き保存)
+    C-&gt;&gt;P: POST /api/deepdive(トークン付き)
+    P-&gt;&gt;P: IP回数制限 / App Check検証
+    P-&gt;&gt;API: 通す
+    API-&gt;&gt;DB: 深掘りの利用枠を1つ消費
+    API-&gt;&gt;H: 日記 + 共通部 + 深掘りの追記
+    H--&gt;&gt;API: 質問1つ
+    API--&gt;&gt;C: 質問
+    U-&gt;&gt;C: 答える(スキップ可) → 長押しで保存
+    C-&gt;&gt;API: POST /api/thoughts
+    API-&gt;&gt;DB: 記録の利用枠を1つ消費
+    API-&gt;&gt;O: 本文をチャンクに分けて embedding
+    O--&gt;&gt;API: ベクトル
+    API-&gt;&gt;DB: トランザクションで thought と chunks を保存
+    API--&gt;&gt;C: 完了(危機の言葉があれば crisis:true)
+    C-&gt;&gt;U: ホームへ(crisisなら窓口を案内)
+    Note over API,H: 応答のあと after() で続行
+    API-&gt;&gt;H: 本人の言葉 + 日付(メタ生成の追記)
+    H--&gt;&gt;API: 出来事・感情・場面の1行
+    API-&gt;&gt;O: 本文 + メタで embedding を作り直す
+    API-&gt;&gt;DB: 本文が変わっていなければ chunks のメタと embedding を更新</pre>
+<p>推測：なし。`app/api/deepdive/route.ts`・`app/api/thoughts/route.ts`・`lib/db/chunkStore.ts` から起こした。</p>
+<p>補足：</p>
+<ul>
+<li>一言（`quick`）はAIを呼ばず、気分から作った固定の1行をメタに入れる。裏のメタ生成は `full` だけ。</li>
+<li>上限に達した日は、深掘りを飛ばして保存だけできる。</li>
+<li>過去日に書いた記録は、その日にすでに記録があると 409（`date_taken`）で断る。</li>
+</ul></section>
+<section><h2>シーケンス図：相談（過去の自分の記録を根拠に答える）</h2>
+<p>AI に渡すのは、本人の言葉のチャンク（日付つき）と相談の文だけ。気分・メタ・題・呼び名は渡さない。</p>
+<pre class="mermaid">sequenceDiagram
+    actor U as 本人
+    participant C as 画面(相談タブ)
+    participant API as POST /api/consult
+    participant DB as Firestore
+    participant O as OpenAI(embedding)
+    participant M as Claude Opus 4.8
+
+    U-&gt;&gt;C: 質問を送る
+    C-&gt;&gt;API: message と chatId(あれば)
+    API-&gt;&gt;DB: 相談の利用枠を1つ消費
+    alt 上限に達した
+        API--&gt;&gt;C: 429 daily_limit
+    end
+    API-&gt;&gt;DB: スレッドの履歴を読む(直近20件)
+    API-&gt;&gt;O: 直前の発言 + 今回の質問で embedding
+    API-&gt;&gt;DB: chunks をベクトル検索(上位5記録・しきい値0.3)
+    alt 検索結果が3件未満
+        API-&gt;&gt;DB: 利用枠を戻す
+        API--&gt;&gt;C: 409 not_enough_records
+    end
+    API-&gt;&gt;DB: スレッドがなければ作る
+    API--&gt;&gt;C: chatId と参考にした記録(refs)
+    API-&gt;&gt;M: 共通部 + 相談の追記 + 履歴 + 本人の言葉と日付 + 質問
+    M--&gt;&gt;API: 回答(ストリーム)
+    API--&gt;&gt;C: 回答を少しずつ送る
+    API-&gt;&gt;DB: 質問と回答を messages に保存(refs つき)
+    C-&gt;&gt;U: 回答 + 参考にした記録</pre>
+<p>推測：なし。`app/api/consult/route.ts` から起こした。</p>
+<p>補足：</p>
+<ul>
+<li>チャンクがない人は、旧 `thoughts.embedding` の検索にフォールバックする。</li>
+<li>失敗したときは利用枠を戻し、作ったばかりの空のスレッドは消す。</li>
+<li>会話（`messages`）は RAG に入れない。</li>
+</ul></section>
+<section><h2>シーケンス図：週の手紙（開いたときに生成）</h2>
+<p>スケジューラは使わない。手紙を開いた1回目に生成を始め、画面を閉じても裏で最後まで続ける。</p>
+<pre class="mermaid">sequenceDiagram
+    actor U as 本人
+    participant C as 画面(手紙)
+    participant API as /api/letters/current
+    participant DB as Firestore
+    participant M as Claude Opus 4.8
+
+    U-&gt;&gt;C: ホームの手紙カードをタップ
+    C-&gt;&gt;API: GET
+    API-&gt;&gt;DB: 今週の手紙と記録日数を読む
+    API--&gt;&gt;C: ready / locked / generating / none
+    alt none(まだ書かれていない)
+        C-&gt;&gt;API: POST
+        API-&gt;&gt;DB: トランザクションで generating にする(二重生成を防ぐ)
+        API-&gt;&gt;DB: 手紙の利用枠を1つ消費
+        API--&gt;&gt;C: 202 generating
+        Note over API,M: 応答のあと after() で最後まで続ける
+        API-&gt;&gt;DB: 今週の記録を読む(本人の言葉のまま)
+        API-&gt;&gt;M: 共通部 + 手紙の追記 + 日付つきの記録
+        M--&gt;&gt;API: 手紙(text と quote の並び)
+        API-&gt;&gt;API: 引用が本人の文章の部分文字列かを検証 / 危機の言葉の週は引用を落として窓口を案内
+        API-&gt;&gt;DB: ready で保存(今週の玉も一緒に)
+        loop 生成が終わるまで
+            C-&gt;&gt;API: GET(ポーリング)
+            API--&gt;&gt;C: generating
+        end
+        C-&gt;&gt;API: GET
+        API--&gt;&gt;C: ready と手紙
+    end
+    C-&gt;&gt;U: 封が開く → 便箋</pre>
+<p>推測：「ポーリング」の間隔は画面側（`useLetter.ts`）による。本図では省いた。</p>
+<p>補足：</p>
+<ul>
+<li>今週3日以上の記録がないと `locked`（AI は呼ばない）。</li>
+<li>AI が使えない週（refusal・max_tokens・失敗）は、エラーではなく固定文の手紙（窓口の案内）を届ける。</li>
+<li>止まった生成（6分超）は、作り直して前の利用枠を戻す。</li>
+</ul></section>
+<section><h2>状態遷移図：手紙（`letters/{weekKey}` と画面の状態）</h2>
+<p>画面が受け取る状態は `locked / none / generating / ready`。保存される `status` は `generating / ready / failed`。</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; locked: 今週の記録が3日未満
+    locked --&gt; none: 記録が3日に達した
+    [*] --&gt; none: 記録が3日以上で、まだ書かれていない
+    none --&gt; generating: 開いて POST(利用枠を消費)
+    generating --&gt; ready: 生成と検証に成功して保存
+    generating --&gt; ready: AIが使えない週は固定文の手紙を保存
+    generating --&gt; none: 6分以上止まった(作り直しで枠を戻す)
+    failed --&gt; none: 作り直す
+    ready --&gt; ready: 初めて開く(readAt を記録)
+    ready --&gt; [*]: 翌週の土曜をすぎる(過去の手紙一覧へ)</pre>
+<p>推測：`failed` が作られる経路は、コード上は「失敗した手紙は未作成として扱う」（GET/POST が none とみなす）扱い。`failed → none` はその説明のための矢印。</p></section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.3/mermaid.min.js"></script>
+<script>
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+mermaid.initialize({startOnLoad:true, theme: dark ? 'dark' : 'default'});
+</script></body></html>
