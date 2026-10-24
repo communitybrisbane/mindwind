@@ -4,7 +4,7 @@
 // アカウント・呼び名・くらし（音／振動／動きをへらす）・そのほか（利用規約・プライバシー・ログアウト・アカウント削除）。
 // 見た目と文言はプロトタイプ docs/prototype/ui-v5.html の #s-settings のとおり。
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthGuard from "@/components/AuthGuard";
 import { Desk } from "@/components/ui/Desk";
@@ -18,6 +18,7 @@ import ToggleRows from "@/components/settings/ToggleRows";
 import ConfirmDialog from "@/components/settings/ConfirmDialog";
 import { authedJson, useUser, type AppUser } from "@/lib/db/useUser";
 import { useProfile } from "@/lib/ui/useDisplayName";
+import { markSettingsSeen } from "@/lib/ui/useSettingsSeen";
 import { sound, vibrate } from "@/lib/ui/feedback";
 import styles from "@/components/settings/settings.module.css";
 
@@ -41,6 +42,11 @@ function Settings({ user }: { user: AppUser }) {
   const account = useAccount(user);
   const { profile, loading, reload } = useProfile();
   const [hideStreak, setHideStreak] = useState<boolean | null>(null);
+
+  // 直接開いても（記録・相談のリンクから来ても）歯車の赤い点を消す
+  useEffect(() => {
+    markSettingsSeen();
+  }, []);
 
   const streakHidden = hideStreak ?? profile?.hideStreak === true;
 
