@@ -1,6 +1,6 @@
 # MindWind - あなたが自分のメンター
 
-**▶ 使ってみる: https://mindwind.days-count.com**（Google ログイン、または「ゲストで試す」で登録なしに体験できます。スマホなら「ホーム画面に追加」でアプリとして使えます）
+**▶ 使ってみる: https://mindwind.days-count.com**（アプリを開くとログインなしで始まります。記録を守りたくなったら、設定から Google と連携できます。スマホなら「ホーム画面に追加」でアプリとして使えます）
 
 調子がいい時、結果が出ている時、そのマインドと行動を記録しておく。調子が悪い時、結果が出ていない時、その記録を見て再現する。つまり、**あなたが自分のメンターになる。**
 
@@ -32,15 +32,21 @@
 
 ## 使い方
 
-### 毎日：日記を書く（チャット形式・3分以内）
+### 毎日：気分を選んで、日記を書く（3分以内）
 
-記録タブはチャット画面。**日記 → 深掘り → 成形** の3ステップで、その日のことが構造化されて積み重なります。
+アプリを開くと、革の机の上に紙が置かれた画面で始まります。まず**気分の回転盤**をくるくる回して、今日の風を選びます（追い風・そよ風・凪・向かい風・嵐）。選ぶと、その風が画面に吹きます。
 
-1. **日記** — 今日のことを音声またはテキストで自由に話す/書く（書くヒント付き）
-2. **深掘り** — AI が1回だけ質問を返す（曖昧なところを具体化。スキップ可）
-3. **成形** — AI が日記＋回答を **出来事 / 思考 / 行動 / 理由 / 感情 / 価値観** の6項目＋タイトルに整理してチャット内にカード表示。その場で編集して保存
+- **一言**：気分を選んだあと、一言だけ残して終えられます（60字まで）。
+- **日記**：記録タブで、今日のことを音声またはテキストで自由に書きます。
+  1. **日記** — 書いた文章は、そのまま保存されます。AI が書き換えることはありません
+  2. **深掘り** — AI が1回だけ質問を返します（スキップ可）
+  3. **保存** — 長押しで封をして、ホームに戻ります
 
-保存するとホームに戻り、ストリークとカレンダーが更新されます。成形は生成中から項目が順に埋まって見えるストリーミング表示です（記録は実質無制限。安全上限あり）。
+裏では、本人の言葉を分けて検索できるようにしています（画面には出ません）。記録は実質無制限（安全上限あり）です。
+
+### 週の終わりに：手紙が届く
+
+その週に3日以上記録すると、メンターから**週の手紙**が届きます。あなた自身の言葉を引きながら、その週を振り返ります。封を開けたときに書かれる、週1通の手紙です。
 
 ### 迷った時：過去の自分に相談する
 
@@ -58,9 +64,9 @@
 
 追い質問で会話を続けられ、過去の相談は履歴から見返せます（スレッド間で文脈は混ざりません）。
 
-### 初回：プロフィール登録（スキップ可）
+### プロフィール（任意）
 
-呼び名・いましていること・ステージ（学生〜社会人3年目以上）・目標を登録すると、深掘りや相談があなたの立場を踏まえた内容になります。
+呼び名・いましていること・ステージ（学生〜社会人3年目以上）・目標を設定から登録すると、深掘りや相談があなたの立場を踏まえた内容になります。
 
 ## メリット
 
@@ -72,14 +78,9 @@
 
 ## 画面
 
-設計時のモックは [`mockups/`](mockups/) にあります（基準フレーム 390×844）。実際の画面は上のリンクから触って確認できます。
+新 UI（v5）の見た目と動きは、[`docs/prototype/ui-v5.html`](docs/prototype/ui-v5.html) をブラウザで開くと触れます（基準フレーム 390×844）。実際の画面は上のリンクから確認できます。
 
-| | | |
-|---|---|---|
-| ![スタート](mockups/01-start.png) | ![ホーム](mockups/02-home.png) | ![相談](mockups/06-search.png) |
-| スタート | ホーム（ダッシュボード） | 相談 |
-| ![日記](mockups/03-record-input.png) | ![深掘り](mockups/04-record-deepdive.png) | ![成形](mockups/05-record-shaping.png) |
-| 記録・日記 | 記録・深掘り | 記録・成形（編集可） |
+[`mockups/`](mockups/) は旧 UI の凍結モックです（現在の画面とは異なります）。実アプリの画面写真は、のちに差し替えます。
 
 ## セットアップ
 
@@ -100,12 +101,13 @@ Firebase（クライアント + Admin SDK）、Claude API、OpenAI API の認証
 
 - **フロントエンド**: Next.js 16（App Router）+ TypeScript + Tailwind CSS 4。PWA 対応（ホーム画面追加・スタンドアロン起動）
 - **バックエンド**: Next.js API Routes + Firebase Admin SDK
-- **AI**: Claude API — 深掘り質問 = Haiku 4.5 / 成形 = Sonnet 5（Structured Outputs・ストリーミング）/ 相談 = Opus 4.8（adaptive thinking・ストリーミング・prompt caching）
-- **RAG**: OpenAI text-embedding-3-small ＋ コサイン類似度で過去記録の上位5件を検索
+- **AI**: Claude API — 深掘り質問・検索用メタ = Haiku 4.5 / 相談・週の手紙 = Opus 4.8（adaptive thinking・ストリーミング・prompt caching）
+- **RAG**: OpenAI text-embedding-3-small ＋ Firestore のベクトル検索（`chunks`）で、本人の言葉のチャンクから過去記録の上位5件を探す
 - **データ**: Firebase Firestore（東京リージョン・本人のみアクセス可のセキュリティルール）
-- **認証**: Firebase Authentication（Google ログイン＋匿名ゲスト。ゲストは `linkWithPopup` でデータごと本登録に昇格）
+- **認証**: Firebase Authentication（起動時に自動で匿名ゲスト。設定から `linkWithPopup` で Google と連携すると、データごと本登録に昇格）
+- **ボット対策**: Firebase App Check（reCAPTCHA Enterprise）＋ IP レート制限（Upstash Redis）。`proxy.ts` で検証（手順は [`docs/SECURITY-SETUP.md`](docs/SECURITY-SETUP.md)）
 - **デプロイ**: Vercel（`git push` で自動デプロイ）＋独自ドメイン
-- **テスト**: Vitest（`lib/` の純ロジックのみ・45件）
+- **テスト**: Vitest（`lib/` のロジックと API の契約・491件）
 
 ## 開発コマンド
 
@@ -117,15 +119,18 @@ npm run build    # 本番ビルド
 npm run backup   # Firestore 全データをローカル JSON にバックアップ
 ```
 
+運用スクリプト（`backfill-chunks`・`cleanup:guests`・`retention`）の手順は `docs/OPS-*.md` にあります。
+
 ---
 
 ## 詳細資料
 
 - **技術設計・実装詳細**（モデル選定・データモデル・フロー） → [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- **UI/UX デザイン仕様** → [`docs/DESIGN-mindwind.md`](docs/DESIGN-mindwind.md)
+- **UI/UX デザイン仕様** → [`docs/DESIGN-mindwind.md`](docs/DESIGN-mindwind.md)（見た目の正は [`docs/prototype/ui-v5.html`](docs/prototype/ui-v5.html)）
+- **AI の最高規範** → [`docs/AI-CONSTITUTION.md`](docs/AI-CONSTITUTION.md)
 - **開発者向け情報**（セットアップ・エラー処理・スコープ） → [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)
 - **AI メンターの人格・プロンプト（本番）** → [`docs/mentor-prompt.md`](docs/mentor-prompt.md)
-- **UI モック** → [`mockups/`](mockups/)
+- **旧 UI のモック（凍結）** → [`mockups/`](mockups/)
 
 ---
 
