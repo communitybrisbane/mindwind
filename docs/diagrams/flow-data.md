@@ -31,5 +31,5 @@ flowchart LR
     DEL -.->|"引用を伏せる(deleted)"| LDOC
 ```
 
-推測：なし。`docs/AI-CONSTITUTION.md`（第4・12・13条）・`docs/ARCHITECTURE.md`・各 API Route から起こした。
+出典：`docs/AI-CONSTITUTION.md`（第4・12・13条）・`docs/ARCHITECTURE.md`・各 API Route。
 補足：AI に渡さないもの＝気分・メタ・題・自動の呼び名。危機の言葉の判定（`lib/logic/crisis.ts`）はAIを通らない経路にも掛かる（図には入れていない）。

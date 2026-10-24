@@ -42,5 +42,5 @@ flowchart LR
     LIB --> OAI
 ```
 
-推測：なし。`docs/ARCHITECTURE.md`・`docs/SECURITY-SETUP.md`・`proxy.ts` から起こした。
+出典：`docs/ARCHITECTURE.md`・`docs/SECURITY-SETUP.md`・`proxy.ts`・`firestore.rules`。
 補足：App Check は現在 `monitor`（検証は記録するだけで拒否しない）。Firestore のセキュリティルールは全拒否。

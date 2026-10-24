@@ -33,7 +33,7 @@ sequenceDiagram
     C->>U: 回答 + 参考にした記録
 ```
 
-推測：なし。`app/api/consult/route.ts` から起こした。
+出典：`app/api/consult/route.ts`・`docs/DEVELOPMENT.md`（フォールバック）。
 補足：
 - チャンクがない人は、旧 `thoughts.embedding` の検索にフォールバックする。
 - 失敗したときは利用枠を戻し、作ったばかりの空のスレッドは消す。

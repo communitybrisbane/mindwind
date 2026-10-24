@@ -39,6 +39,7 @@ p,li{color:var(--fg)}
         string deepDiveQuestion &quot;深掘りの質問(なければ空)&quot;
         string deepDiveAnswer &quot;深掘りの答え(なければ空)&quot;
         string title &quot;本文の先頭から自動(20字まで)&quot;
+        array tags &quot;保存時は空配列&quot;
         string kind &quot;full か quick&quot;
         string mood &quot;quick のときの気分(MoodId)&quot;
         timestamp createdAt
@@ -93,7 +94,7 @@ p,li{color:var(--fg)}
         int letter
         int meta
     }</pre>
-<p>推測：なし。型は `lib/db/types.ts`、保存先は各 API Route のコードから起こした。</p>
+<p>出典：型は `lib/db/types.ts`、保存先は各 API Route のコード。</p>
 <p>補足：</p>
 <ul>
 <li>`THOUGHTS` には、移行完了まで旧6項目（event・thinking・action・reason・emotion・values）と旧 embedding が残る。図からは省いた。</li>
@@ -114,7 +115,7 @@ p,li{color:var(--fg)}
     QUICK --&gt;|&quot;残す&quot;| HOME
     QUICK --&gt;|&quot;危機の言葉あり&quot;| CRISIS[&quot;窓口の案内ダイアログ&quot;]
     CRISIS --&gt;|&quot;丸ボタン&quot;| HOME</pre>
-<p>推測：「ログインに失敗 → 回転盤」は `Splash.tsx` の `authError` の分岐から起こした。「1日の最初」は端末の記録（localStorage）と今日の気分の有無で決まる。</p></section>
+<p>出典：`components/splash/Splash.tsx`（`nextRoute`・`authError` の分岐）、`app/mood/page.tsx`、`app/mood/write/page.tsx`。「1日の最初」は、今日の気分が無く、端末に記録した日付が今日でないとき。</p></section>
 <section><h2>画面遷移図②：3タブと、まわりの画面</h2>
 <p>ホーム・記録・相談の3タブは、下のタブバーで行き来する。そこから出ていく画面と、戻る先を示す。</p>
 <pre class="mermaid">flowchart TD
@@ -142,10 +143,11 @@ p,li{color:var(--fg)}
 
     SETTINGS --&gt;|&quot;戻る&quot;| HOME
     SETTINGS --&gt;|&quot;Googleと連携&quot;| SETTINGS
-    SETTINGS --&gt;|&quot;ログインし直す・退会&quot;| SPLASH[&quot;/ スプラッシュ&quot;]
+    SETTINGS --&gt;|&quot;ログアウト・すべて削除&quot;| SPLASH[&quot;/ スプラッシュ&quot;]
+    SETTINGS --&gt;|&quot;別のアカウントでログインし直す&quot;| HOME
     SETTINGS --&gt;|&quot;規約・プライバシー&quot;| LEGAL[&quot;/terms /privacy&quot;]
     LEGAL --&gt;|&quot;設定へ&quot;| SETTINGS</pre>
-<p>推測：「ログインし直す・退会」の行き先は `AccountCard.tsx` の `router.replace(&quot;/&quot;)` による。`/onboarding` は `/settings` へ転送するだけ、`/dev-login` は開発用なので省いた。</p></section>
+<p>出典：`components/TabBar.tsx`、`app/settings/page.tsx`、`components/settings/AccountCard.tsx`、`app/letter/page.tsx`、`app/(tabs)/home/page.tsx`。`/onboarding` は `/settings` へ転送するだけ、`/dev-login` は開発用なので省いた。</p></section>
 <section><h2>データ遷移図：本人の言葉が、どこへ流れ、どこに出るか</h2>
 <p>「本人の言葉」を一字も変えずに通す経路と、AI に渡してよいもの・渡さないものを分けて示す。</p>
 <pre class="mermaid">flowchart LR
@@ -174,7 +176,7 @@ p,li{color:var(--fg)}
     DEL([&quot;記録を削除&quot;]) -.-&gt;|&quot;chunks も削除&quot;| CHK
     DEL -.-&gt;|&quot;引用を伏せる(deleted)&quot;| MSG
     DEL -.-&gt;|&quot;引用を伏せる(deleted)&quot;| LDOC</pre>
-<p>推測：なし。`docs/AI-CONSTITUTION.md`（第4・12・13条）・`docs/ARCHITECTURE.md`・各 API Route から起こした。</p>
+<p>出典：`docs/AI-CONSTITUTION.md`（第4・12・13条）・`docs/ARCHITECTURE.md`・各 API Route。</p>
 <p>補足：AI に渡さないもの＝気分・メタ・題・自動の呼び名。危機の言葉の判定（`lib/logic/crisis.ts`）はAIを通らない経路にも掛かる（図には入れていない）。</p></section>
 <section><h2>構成図：システム全体</h2>
 <p>ブラウザはFirestoreに直接つながない。すべて API Routes（Admin SDK）を通る。</p>
@@ -215,7 +217,7 @@ p,li{color:var(--fg)}
     LIB --&gt;|&quot;Admin SDK&quot;| FS
     LIB --&gt; ANT
     LIB --&gt; OAI</pre>
-<p>推測：なし。`docs/ARCHITECTURE.md`・`docs/SECURITY-SETUP.md`・`proxy.ts` から起こした。</p>
+<p>出典：`docs/ARCHITECTURE.md`・`docs/SECURITY-SETUP.md`・`proxy.ts`・`firestore.rules`。</p>
 <p>補足：App Check は現在 `monitor`（検証は記録するだけで拒否しない）。Firestore のセキュリティルールは全拒否。</p></section>
 <section><h2>シーケンス図：記録の保存（日記 → 深掘り → 保存 → 裏でメタ）</h2>
 <p>本人の文章は書き換えず、そのまま `thoughts` に保存する。検索用の1行メタは、保存の応答を返したあとに裏で作る。</p>
@@ -249,11 +251,11 @@ p,li{color:var(--fg)}
     H--&gt;&gt;API: 出来事・感情・場面の1行
     API-&gt;&gt;O: 本文 + メタで embedding を作り直す
     API-&gt;&gt;DB: 本文が変わっていなければ chunks のメタと embedding を更新</pre>
-<p>推測：なし。`app/api/deepdive/route.ts`・`app/api/thoughts/route.ts`・`lib/db/chunkStore.ts` から起こした。</p>
+<p>出典：`app/api/deepdive/route.ts`・`app/api/thoughts/route.ts`・`lib/db/chunkStore.ts`・`app/(tabs)/record/useRecordSession.ts`。</p>
 <p>補足：</p>
 <ul>
 <li>一言（`quick`）はAIを呼ばず、気分から作った固定の1行をメタに入れる。裏のメタ生成は `full` だけ。</li>
-<li>上限に達した日は、深掘りを飛ばして保存だけできる。</li>
+<li>深掘りの上限に達した日（429）は、質問なしで日記を保存できる。</li>
 <li>過去日に書いた記録は、その日にすでに記録があると 409（`date_taken`）で断る。</li>
 </ul></section>
 <section><h2>シーケンス図：相談（過去の自分の記録を根拠に答える）</h2>
@@ -286,7 +288,7 @@ p,li{color:var(--fg)}
     API--&gt;&gt;C: 回答を少しずつ送る
     API-&gt;&gt;DB: 質問と回答を messages に保存(refs つき)
     C-&gt;&gt;U: 回答 + 参考にした記録</pre>
-<p>推測：なし。`app/api/consult/route.ts` から起こした。</p>
+<p>出典：`app/api/consult/route.ts`・`docs/DEVELOPMENT.md`（フォールバック）。</p>
 <p>補足：</p>
 <ul>
 <li>チャンクがない人は、旧 `thoughts.embedding` の検索にフォールバックする。</li>
@@ -294,7 +296,7 @@ p,li{color:var(--fg)}
 <li>会話（`messages`）は RAG に入れない。</li>
 </ul></section>
 <section><h2>シーケンス図：週の手紙（開いたときに生成）</h2>
-<p>スケジューラは使わない。手紙を開いた1回目に生成を始め、画面を閉じても裏で最後まで続ける。</p>
+<p>スケジューラは使わない。手紙を開いたときに生成を始め、画面を閉じても裏で最後まで続く。</p>
 <pre class="mermaid">sequenceDiagram
     actor U as 本人
     participant C as 画面(手紙)
@@ -304,48 +306,55 @@ p,li{color:var(--fg)}
 
     U-&gt;&gt;C: ホームの手紙カードをタップ
     C-&gt;&gt;API: GET
-    API-&gt;&gt;DB: 今週の手紙と記録日数を読む
-    API--&gt;&gt;C: ready / locked / generating / none
+    API-&gt;&gt;DB: 今週の手紙を読む
+    API--&gt;&gt;C: ready / generating / none / locked
     alt none(まだ書かれていない)
         C-&gt;&gt;API: POST
-        API-&gt;&gt;DB: トランザクションで generating にする(二重生成を防ぐ)
+        API-&gt;&gt;API: 開ける週か(日曜から翌土曜) / 記録が3日以上か
         API-&gt;&gt;DB: 手紙の利用枠を1つ消費
+        API-&gt;&gt;DB: トランザクションで generating にする(二重生成を防ぐ)
         API--&gt;&gt;C: 202 generating
         Note over API,M: 応答のあと after() で最後まで続ける
-        API-&gt;&gt;DB: 今週の記録を読む(本人の言葉のまま)
-        API-&gt;&gt;M: 共通部 + 手紙の追記 + 日付つきの記録
-        M--&gt;&gt;API: 手紙(text と quote の並び)
-        API-&gt;&gt;API: 引用が本人の文章の部分文字列かを検証 / 危機の言葉の週は引用を落として窓口を案内
-        API-&gt;&gt;DB: ready で保存(今週の玉も一緒に)
-        loop 生成が終わるまで
-            C-&gt;&gt;API: GET(ポーリング)
+        API-&gt;&gt;M: 共通部 + 手紙の追記 + 今週の記録(日付つき・本人の言葉)
+        M--&gt;&gt;API: 手紙の本文
+        API-&gt;&gt;API: 引用が本人の文章の部分文字列かを検証
+        alt 成功
+            API-&gt;&gt;DB: ready で保存(今週の玉も一緒に)
+        else 失敗かつ危機の言葉のある週
+            API-&gt;&gt;DB: 固定文の手紙(窓口の案内)を保存
+        else 失敗
+            API-&gt;&gt;DB: 作りかけの手紙を消して利用枠を戻す
+        end
+        loop 4秒ごとに GET
+            C-&gt;&gt;API: GET
             API--&gt;&gt;C: generating
         end
         C-&gt;&gt;API: GET
         API--&gt;&gt;C: ready と手紙
     end
     C-&gt;&gt;U: 封が開く → 便箋</pre>
-<p>推測：「ポーリング」の間隔は画面側（`useLetter.ts`）による。本図では省いた。</p>
+<p>出典：`app/api/letters/current/route.ts`・`lib/db/letterStore.ts`・`lib/db/useLetter.ts`（再取得の間隔 4000ms）。</p>
 <p>補足：</p>
 <ul>
-<li>今週3日以上の記録がないと `locked`（AI は呼ばない）。</li>
-<li>AI が使えない週（refusal・max_tokens・失敗）は、エラーではなく固定文の手紙（窓口の案内）を届ける。</li>
-<li>止まった生成（6分超）は、作り直して前の利用枠を戻す。</li>
+<li>開けない週は 409 `not_available`、記録が3日未満は 409 `too_few_records`（AI は呼ばない）。</li>
+<li>失敗かつ危機の言葉のない週は、固定文の手紙は作らず、手紙を消して枠を戻す。次に開いたときにもう一度作る。</li>
+<li>生成中のまま6分以上止まった手紙は、次の POST で作り直す（前の生成が使った枠を戻す）。</li>
+<li>別のタブが先に作っていた場合は、利用枠を戻して、その手紙を返す。</li>
 </ul></section>
 <section><h2>状態遷移図：手紙（`letters/{weekKey}` と画面の状態）</h2>
-<p>画面が受け取る状態は `locked / none / generating / ready`。保存される `status` は `generating / ready / failed`。</p>
+<p>画面が受け取る状態は `locked / none / generating / ready`。手紙のドキュメントに保存されるのは `generating` と `ready` のとき。</p>
 <pre class="mermaid">stateDiagram-v2
     [*] --&gt; locked: 今週の記録が3日未満
+    [*] --&gt; none: 記録が3日以上・手紙がまだ無い
     locked --&gt; none: 記録が3日に達した
-    [*] --&gt; none: 記録が3日以上で、まだ書かれていない
     none --&gt; generating: 開いて POST(利用枠を消費)
-    generating --&gt; ready: 生成と検証に成功して保存
-    generating --&gt; ready: AIが使えない週は固定文の手紙を保存
-    generating --&gt; none: 6分以上止まった(作り直しで枠を戻す)
-    failed --&gt; none: 作り直す
-    ready --&gt; ready: 初めて開く(readAt を記録)
-    ready --&gt; [*]: 翌週の土曜をすぎる(過去の手紙一覧へ)</pre>
-<p>推測：`failed` が作られる経路は、コード上は「失敗した手紙は未作成として扱う」（GET/POST が none とみなす）扱い。`failed → none` はその説明のための矢印。</p></section>
+    generating --&gt; ready: 生成・検証に成功して保存
+    generating --&gt; ready: 失敗したが危機の言葉のある週(固定文の手紙を保存)
+    generating --&gt; none: 失敗(作りかけを消して利用枠を戻す)
+    generating --&gt; generating: 6分以上止まっていたとき POST で作り直す
+    ready --&gt; ready: 初めて開く(readAt を記録)</pre>
+<p>出典：`app/api/letters/current/route.ts`（GET・POST・`generateLetter`）、`lib/db/letterStore.ts`（`decideBegin`・`GENERATING_STALE_MS` = 6分）。</p>
+<p>補足：`LetterStatus` の型には `failed` があるが、コードのどこにも `failed` を書き込む処理は無い（保存値が未知のときの読み取りの既定値としてだけ使われる）。そのため図には入れていない。</p></section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.3/mermaid.min.js"></script>
 <script>

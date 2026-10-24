@@ -27,6 +27,7 @@ erDiagram
         string deepDiveQuestion "深掘りの質問(なければ空)"
         string deepDiveAnswer "深掘りの答え(なければ空)"
         string title "本文の先頭から自動(20字まで)"
+        array tags "保存時は空配列"
         string kind "full か quick"
         string mood "quick のときの気分(MoodId)"
         timestamp createdAt
@@ -83,7 +84,7 @@ erDiagram
     }
 ```
 
-推測：なし。型は `lib/db/types.ts`、保存先は各 API Route のコードから起こした。
+出典：型は `lib/db/types.ts`、保存先は各 API Route のコード。
 補足：
 - `THOUGHTS` には、移行完了まで旧6項目（event・thinking・action・reason・emotion・values）と旧 embedding が残る。図からは省いた。
 - 記録を消すと、そのチャンクも消え、手紙・相談の `refs` は `deleted: true` で引用を伏せる（憲法第13条）。

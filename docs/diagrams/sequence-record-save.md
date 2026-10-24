@@ -35,8 +35,8 @@ sequenceDiagram
     API->>DB: 本文が変わっていなければ chunks のメタと embedding を更新
 ```
 
-推測：なし。`app/api/deepdive/route.ts`・`app/api/thoughts/route.ts`・`lib/db/chunkStore.ts` から起こした。
+出典：`app/api/deepdive/route.ts`・`app/api/thoughts/route.ts`・`lib/db/chunkStore.ts`・`app/(tabs)/record/useRecordSession.ts`。
 補足：
 - 一言（`quick`）はAIを呼ばず、気分から作った固定の1行をメタに入れる。裏のメタ生成は `full` だけ。
-- 上限に達した日は、深掘りを飛ばして保存だけできる。
+- 深掘りの上限に達した日（429）は、質問なしで日記を保存できる。
 - 過去日に書いた記録は、その日にすでに記録があると 409（`date_taken`）で断る。

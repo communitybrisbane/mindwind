@@ -17,4 +17,4 @@ flowchart TD
     CRISIS -->|"丸ボタン"| HOME
 ```
 
-推測：「ログインに失敗 → 回転盤」は `Splash.tsx` の `authError` の分岐から起こした。「1日の最初」は端末の記録（localStorage）と今日の気分の有無で決まる。
+出典：`components/splash/Splash.tsx`（`nextRoute`・`authError` の分岐）、`app/mood/page.tsx`、`app/mood/write/page.tsx`。「1日の最初」は、今日の気分が無く、端末に記録した日付が今日でないとき。

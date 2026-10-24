@@ -28,9 +28,10 @@ flowchart TD
 
     SETTINGS -->|"戻る"| HOME
     SETTINGS -->|"Googleと連携"| SETTINGS
-    SETTINGS -->|"ログインし直す・退会"| SPLASH["/ スプラッシュ"]
+    SETTINGS -->|"ログアウト・すべて削除"| SPLASH["/ スプラッシュ"]
+    SETTINGS -->|"別のアカウントでログインし直す"| HOME
     SETTINGS -->|"規約・プライバシー"| LEGAL["/terms /privacy"]
     LEGAL -->|"設定へ"| SETTINGS
 ```
 
-推測：「ログインし直す・退会」の行き先は `AccountCard.tsx` の `router.replace("/")` による。`/onboarding` は `/settings` へ転送するだけ、`/dev-login` は開発用なので省いた。
+出典：`components/TabBar.tsx`、`app/settings/page.tsx`、`components/settings/AccountCard.tsx`、`app/letter/page.tsx`、`app/(tabs)/home/page.tsx`。`/onboarding` は `/settings` へ転送するだけ、`/dev-login` は開発用なので省いた。
