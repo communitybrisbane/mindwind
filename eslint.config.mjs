@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // ロゴの生成スクリプト（アプリのコードではない）
+    "docs/brand/**",
   ]),
 ]);
 

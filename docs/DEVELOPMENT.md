@@ -84,7 +84,7 @@ RATE_LIMIT_DISABLED=
    - インデックスが無い状態で最初に `findNearest` が失敗すると、サーバーログ（`[rag] chunks の findNearest に失敗…`）にインデックス作成用のコンソールリンクも出る。それでも作成できる
    - 相談 API は `[consult] embed=…ms search=…ms source=chunks|chunks-scan|legacy|legacy-scan first_token=…ms` を出す。`source=chunks-scan` が続くならインデックスが無い
    - 参考記録のしきい値（`RAG_MIN_SIMILARITY`＝0.3）と1記録あたりの文字数（800）は `lib/logic/ragChunks.ts`
-   - （旧）`thoughts` の `embedding` へのインデックスと `scripts/migrate-embeddings.mjs` は、移行前の人のフォールバックにだけ使う。全員の移行が済んだら不要
+   - （旧）`thoughts` の `embedding` へのインデックスは、チャンクが無い人のフォールバックにだけ使う。旧の移行スクリプト `migrate-embeddings.mjs` は 2026-10-24 に削除した
 
 ## エラーハンドリング（MVP）
 
