@@ -11,6 +11,7 @@ export function useSpeech(handlers: {
   const { supported, recording, start, stop } = useRecognition({
     interimResults: true,
     ignoreStartWhileRecording: true,
+    sharedFatalFlag: true,
     onResult: ({ finals, interim }) => {
       for (const text of finals) handlers.onFinal(text);
       handlers.onInterim(interim);

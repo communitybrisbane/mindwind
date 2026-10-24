@@ -21,6 +21,9 @@ export type RecognitionOptions = {
   onReset?: () => void;
   /** true なら、録音中の start は何もしない */
   ignoreStartWhileRecording?: boolean;
+  /** 致命エラーの印の持ち方。true なら hook 全体で1つの ref を共有（記録）、
+   *  省略（false）なら認識オブジェクトごとのローカル変数（相談）。元の実装の違いをそのまま残す */
+  sharedFatalFlag?: boolean;
 };
 
 /** 音声認識の本体（記録 useSpeech と相談 ConsultInput の共通部）。
@@ -65,12 +68,19 @@ export function useRecognition(options: RecognitionOptions) {
     rec.onresult = (e) => {
       optionsRef.current.onResult(parseRecognitionResults(e));
     };
+    const shared = !!optionsRef.current.sharedFatalFlag;
+    let fatalLocal = false;
+    const getFatal = () => (shared ? fatalRef.current : fatalLocal);
+    const setFatal = (v: boolean) => {
+      if (shared) fatalRef.current = v;
+      else fatalLocal = v;
+    };
     rec.onerror = (e) => {
-      if (isFatalRecognitionError(e?.error)) fatalRef.current = true;
+      if (isFatalRecognitionError(e?.error)) setFatal(true);
     };
     rec.onend = () => {
-      if (fatalRef.current) {
-        fatalRef.current = false;
+      if (getFatal()) {
+        setFatal(false);
         setRec(false);
         optionsRef.current.onReset?.();
         optionsRef.current.onError();
