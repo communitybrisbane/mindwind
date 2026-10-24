@@ -34,7 +34,8 @@ npm run cleanup:guests -- --days 45     # 日数を変える（既定30）
 - 消す内容: `users/{uid}` と全サブコレクション（thoughts・chunks・moods・letters・chats・usage・draft など）を `recursiveDelete`。そのあと Auth のユーザーを削除。
 - 順番は Firestore → Auth。途中で失敗しても Auth が残るので、もう一度回せば続きから消える。
 - `.env.local` の管理者キーで本番に繋がる。ドライランで対象を目で確認してから `--apply` を付ける。
-- 自動では回さない（手動）。月1回くらいを目安に。
+- 消すのは手動。月1回くらいを目安に。
+- 毎月1日 9:00 に、launchd（`com.taku.mindwind-guest-check`、`scripts/monthly-guest-check.sh`）が、控えを取ってドライランだけ回す。結果は `~/Library/Logs/mindwind-guest-check.log`。対象が出ていたら uid を見てから `--apply` を付ける（この Mac 専用。Auth の自動削除は有効にしていない）。
 
 ## 3. 画面の文言との一致
 
