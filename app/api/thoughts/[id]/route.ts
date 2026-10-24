@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import type { DeleteThoughtResponse, ThoughtResponse, UpdateThoughtResponse } from "@/lib/api/contracts";
-import { adminDb, verifyUser } from "@/lib/db/admin";
+import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
 import { deleteChunksInTx, getChunkIdsInTx, prepareChunks, writeChunks } from "@/lib/db/chunks";
+import { refreshThoughtMeta } from "@/lib/db/chunkStore";
 import { scrubThoughtCopies } from "@/lib/db/scrubDeleted";
 import { toMood } from "@/lib/logic/quickRecord";
 import { INPUT_ERROR_STATUS, parseUpdateThought, toThoughtSummary } from "@/lib/logic/recordText";
@@ -28,13 +29,14 @@ export async function GET(req: NextRequest, { params }: Params) {
 
 /**
  * 記録の編集：本文・深掘りの質問と答えを直す → タイトルを作り直す → チャンクを作り直して embedding を再生成。
- * 日付・kind は変えない。full の検索用メタは 57 の仕組みが裏で作り直す（ここでは付けない）。
+ * 日付・kind は変えない。full の検索用メタは、書いたあと after() で裏で作り直す（PLAN 57。失敗しても編集は成功のまま）。
  * embedding はトランザクションの外で作るので、その間に別の画面が同じ記録を直していたら（updateTime が変わっていたら）
  * 書かずに 409 conflict を返す（本文とチャンクがずれないように）。
  */
 export async function PUT(req: NextRequest, { params }: Params) {
-  const uid = await verifyUser(req.headers.get("authorization"));
-  if (!uid) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const authInfo = await verifyUserInfo(req.headers.get("authorization"));
+  if (!authInfo) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { uid, isGuest } = authInfo;
 
   const body = await req.json().catch(() => null);
   const { id } = await params;
@@ -75,6 +77,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     });
     if (outcome === "not_found") return NextResponse.json({ error: "not_found" }, { status: 404 });
     if (outcome === "conflict") return NextResponse.json({ error: "conflict" }, { status: 409 });
+    if (current.kind === "full") after(() => refreshThoughtMeta(uid, id, isGuest));
 
     const res: UpdateThoughtResponse = { ok: true, title };
     return NextResponse.json(res);

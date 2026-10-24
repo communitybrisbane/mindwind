@@ -1,8 +1,9 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import type { CreateThoughtResponse, ThoughtsListResponse } from "@/lib/api/contracts";
 import { adminDb, verifyUser, verifyUserInfo } from "@/lib/db/admin";
 import { prepareChunks, writeChunks } from "@/lib/db/chunks";
+import { refreshThoughtMeta } from "@/lib/db/chunkStore";
 import { consumeQuota } from "@/lib/db/usage";
 import { resolveRecordDate } from "@/lib/logic/backdate";
 import { tokyoDateKey } from "@/lib/logic/date";
@@ -49,6 +50,7 @@ export async function GET(req: NextRequest) {
  * 記録の保存（full＝日記＋深掘り／quick＝一言）。本人の文章はそのまま保存し、
  * lib/logic/chunk.ts でチャンクに分けて、チャンクごとの embedding を users/{uid}/chunks に書く。
  * 成形（AI）は使わない。タイトルは本文の先頭から自動。
+ * full は保存のあと after() で検索用メタを裏で作り、チャンクの embedding を作り直す（PLAN 57。失敗しても保存は成功のまま）。
  */
 export async function POST(req: NextRequest) {
   const authInfo = await verifyUserInfo(req.headers.get("authorization"));
@@ -113,6 +115,7 @@ export async function POST(req: NextRequest) {
       await quota.refund();
       return NextResponse.json({ error: "date_taken" }, { status: 409 });
     }
+    if (kind === "full") after(() => refreshThoughtMeta(uid, docRef.id, isGuest));
     const res: CreateThoughtResponse = { id: docRef.id, title, date };
     return NextResponse.json(res);
   } catch (e) {

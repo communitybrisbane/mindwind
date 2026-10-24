@@ -3,8 +3,11 @@ import { FieldValue } from "firebase-admin/firestore";
 import { tokyoDateKey } from "@/lib/logic/date";
 import { adminDb } from "./admin";
 
-/** 成形（shape）は廃止したので数えない（旧データの shape フィールドは残っていても読まない） */
-export type QuotaKind = "deepdive" | "consult" | "record" | "letter";
+/**
+ * 成形（shape）は廃止したので数えない（旧データの shape フィールドは残っていても読まない）。
+ * meta は検索用メタの生成（PLAN 57。保存・編集のあと裏で1回。上限は lib/ai/meta.ts の metaLimitFor）
+ */
+export type QuotaKind = "deepdive" | "consult" | "record" | "letter" | "meta";
 
 /**
  * 利用枠を1つ消費する。上限到達なら null、消費できたら返金関数を返す。
