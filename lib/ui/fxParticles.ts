@@ -56,8 +56,96 @@ const LEAF_COLORS = ["rgba(176,212,110,.8)", "rgba(214,236,150,.8)", "rgba(140,1
 
 /** 粒子の数。quality（0.25〜1）は重い端末で下げる係数。凪は 0（動きを止める） */
 export function particleCount(mood: MoodId, quality = 1): number {
-  const q = clamp(quality, 0.25, 1);
+  const q = clampQuality(quality);
   return Math.round(BASE_COUNT[mood] * 2 * q);
+}
+
+const TWO_PI_ISH = 6.28; // プロトタイプの値のまま（厳密な 2π にはしない）
+const MIN_QUALITY = 0.25;
+
+function clampQuality(quality: number): number {
+  return clamp(quality, MIN_QUALITY, 1);
+}
+
+/** 追い風＝花びら */
+function tailwindPetal(i: number, H: number, rand: Rand): Petal {
+  return {
+    kind: "petal",
+    x: between(rand, -20, LOGICAL_WIDTH),
+    y: between(rand, 0, H),
+    vx: between(rand, 40, 95),
+    vy: between(rand, 6, 22),
+    s: between(rand, 3.5, 8),
+    r: between(rand, 0, TWO_PI_ISH),
+    vr: between(rand, -1.4, 1.4),
+    f: between(rand, 0.8, 2),
+    ph: between(rand, 0, 6),
+    sw: between(rand, 10, 30),
+    c: PETAL_COLORS[i % PETAL_COLORS.length],
+  };
+}
+
+/** そよ風＝葉 */
+function breezeLeaf(i: number, H: number, rand: Rand): Petal {
+  return {
+    kind: "petal",
+    x: between(rand, -20, LOGICAL_WIDTH),
+    y: between(rand, 0, H),
+    vx: between(rand, 28, 52),
+    vy: between(rand, 5, 16),
+    s: between(rand, 5, 9),
+    r: between(rand, 0, TWO_PI_ISH),
+    vr: between(rand, -0.9, 0.9),
+    f: between(rand, 0.6, 1.4),
+    ph: between(rand, 0, 6),
+    sw: between(rand, 14, 34),
+    c: LEAF_COLORS[i % LEAF_COLORS.length],
+  };
+}
+
+function headwindStreak(H: number, rand: Rand): Streak {
+  return {
+    kind: "streak",
+    x: between(rand, 0, LOGICAL_WIDTH + 30),
+    y: between(rand, 0, H),
+    v: between(rand, 420, 720),
+    l: between(rand, 40, 120),
+    a: between(rand, 0.2, 0.38),
+  };
+}
+
+function stormRain(H: number, rand: Rand): Rain {
+  return {
+    kind: "rain",
+    x: between(rand, 0, LOGICAL_WIDTH + 70),
+    y: between(rand, -100, H),
+    vy: between(rand, 900, 1400),
+    vx: between(rand, -380, -300),
+    a: between(rand, 0.26, 0.46),
+  };
+}
+
+function stormStreak(H: number, rand: Rand): Streak {
+  return {
+    kind: "streak",
+    x: between(rand, 0, LOGICAL_WIDTH + 30),
+    y: between(rand, 0, H),
+    v: between(rand, 700, 1000),
+    l: between(rand, 60, 150),
+    a: between(rand, 0.14, 0.26),
+  };
+}
+
+function headwindLeaf(H: number, rand: Rand): Leaf {
+  return {
+    kind: "leaf",
+    x: between(rand, 0, LOGICAL_WIDTH + 30),
+    y: between(rand, 0, H),
+    v: between(rand, 260, 420),
+    s: between(rand, 3, 6),
+    r: between(rand, 0, 6),
+    vr: between(rand, -5, 5),
+  };
 }
 
 export function makeParticles(
@@ -67,97 +155,36 @@ export function makeParticles(
   quality = 1
 ): { parts: Particle[]; leaves: Leaf[] } {
   const n = particleCount(mood, quality);
-  const W = LOGICAL_WIDTH;
+  const q = clampQuality(quality);
   const parts: Particle[] = [];
   const leaves: Leaf[] = [];
   for (let i = 0; i < n; i++) {
-    if (mood === 0) {
-      parts.push({
-        kind: "petal",
-        x: between(rand, -20, W),
-        y: between(rand, 0, H),
-        vx: between(rand, 40, 95),
-        vy: between(rand, 6, 22),
-        s: between(rand, 3.5, 8),
-        r: between(rand, 0, 6.28),
-        vr: between(rand, -1.4, 1.4),
-        f: between(rand, 0.8, 2),
-        ph: between(rand, 0, 6),
-        sw: between(rand, 10, 30),
-        c: PETAL_COLORS[i % 4],
-      });
-    } else if (mood === 1) {
-      parts.push({
-        kind: "petal",
-        x: between(rand, -20, W),
-        y: between(rand, 0, H),
-        vx: between(rand, 28, 52),
-        vy: between(rand, 5, 16),
-        s: between(rand, 5, 9),
-        r: between(rand, 0, 6.28),
-        vr: between(rand, -0.9, 0.9),
-        f: between(rand, 0.6, 1.4),
-        ph: between(rand, 0, 6),
-        sw: between(rand, 14, 34),
-        c: LEAF_COLORS[i % 3],
-      });
-    } else if (mood === 3) {
-      parts.push({
-        kind: "streak",
-        x: between(rand, 0, W + 30),
-        y: between(rand, 0, H),
-        v: between(rand, 420, 720),
-        l: between(rand, 40, 120),
-        a: between(rand, 0.2, 0.38),
-      });
-    } else if (mood === 4) {
-      parts.push({
-        kind: "rain",
-        x: between(rand, 0, W + 70),
-        y: between(rand, -100, H),
-        vy: between(rand, 900, 1400),
-        vx: between(rand, -380, -300),
-        a: between(rand, 0.26, 0.46),
-      });
-    }
+    if (mood === 0) parts.push(tailwindPetal(i, H, rand));
+    else if (mood === 1) parts.push(breezeLeaf(i, H, rand));
+    else if (mood === 3) parts.push(headwindStreak(H, rand));
+    else if (mood === 4) parts.push(stormRain(H, rand));
   }
   if (mood === 3) {
-    const nl = Math.round(HEADWIND_LEAVES * clamp(quality, 0.25, 1));
-    for (let i = 0; i < nl; i++) {
-      leaves.push({
-        kind: "leaf",
-        x: between(rand, 0, W + 30),
-        y: between(rand, 0, H),
-        v: between(rand, 260, 420),
-        s: between(rand, 3, 6),
-        r: between(rand, 0, 6),
-        vr: between(rand, -5, 5),
-      });
-    }
+    const nl = Math.round(HEADWIND_LEAVES * q);
+    for (let i = 0; i < nl; i++) leaves.push(headwindLeaf(H, rand));
   }
   if (mood === 4) {
-    const ns = Math.round(STORM_STREAKS * clamp(quality, 0.25, 1));
-    for (let i = 0; i < ns; i++) {
-      parts.push({
-        kind: "streak",
-        x: between(rand, 0, W + 30),
-        y: between(rand, 0, H),
-        v: between(rand, 700, 1000),
-        l: between(rand, 60, 150),
-        a: between(rand, 0.14, 0.26),
-      });
-    }
+    const ns = Math.round(STORM_STREAKS * q);
+    for (let i = 0; i < ns; i++) parts.push(stormStreak(H, rand));
   }
   return { parts, leaves };
 }
+
+/** 「グワッ」で玉から飛ばす粒の最大数 */
+const SCATTER_MAX = 26;
 
 /** 「グワッ」：追い風・そよ風は、最初の最大26粒を玉（cx, cy）から放射状に飛ばす */
 export function scatterFromBead(parts: Particle[], cx: number, cy: number, rand: Rand = Math.random): void {
   let done = 0;
   for (const p of parts) {
-    if (done >= 26) break;
+    if (done >= SCATTER_MAX) break;
     if (p.kind !== "petal") continue;
-    const a = between(rand, 0, 6.28);
+    const a = between(rand, 0, TWO_PI_ISH);
     const sp = between(rand, 170, 380);
     p.x = cx;
     p.y = cy;

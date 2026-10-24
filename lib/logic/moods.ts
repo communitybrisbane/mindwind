@@ -90,12 +90,6 @@ export function moodDef(id: MoodId): MoodDef {
   return MOODS[id];
 }
 
-/** 「とてもいい日。背中を押されて、すっと進める。」のような1文（aria-label・トースト用） */
-export function moodSummary(id: MoodId): string {
-  const m = MOODS[id];
-  return `${m.stage}${m.description}`;
-}
-
 /** 検索用メタ・一言の chunk に添える固定の一行（例：「気分：向かい風（つらい日）」）。本人の文章には混ぜない */
 export function moodMetaLine(id: MoodId): string {
   const m = MOODS[id];
